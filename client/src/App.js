@@ -1,23 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import Header from './containers/homepage/header';
+import Feature from './containers/homepage/feature';
+import About from './containers/homepage/aboutUs';
+import Presentation from './containers/homepage/presentation';
+import aboutimage from './assets/images/Frame 19.png';
+import aboutimage1 from './assets/images/download.png';
+import SignIn from './containers/login';
+
+// Codigo de colores de la app:
+/* 
+   Blanco     E5D8D1 
+   Azul claro 5B88C6
+   Morado     4B2B95
+   Purpura    56579F
+   Azul Dark  0C0F2A
+*/
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <Header />
+        <Feature />
+        <About
+          image={aboutimage}
+          tittle="Comes with all you need for daily life"
+          button="Probar ahora"
+        />
       </header>
+      {/* <SignIn /> */}
     </div>
   );
 }
