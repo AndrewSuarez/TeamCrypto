@@ -1,7 +1,10 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+import React from "react";
+import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
+import ReactDOM from "react-dom";
+import "./index.css";
+import Homepage from "./containers/homepage";
+import SignIn from "./containers/login";
+import PageNotFound from "./containers/PageNotFound";
 
 // Codigo de colores de la app:
 /* 
@@ -14,7 +17,13 @@ import App from './App';
 
 ReactDOM.render(
   <>
-    <App />
+    <Router>
+      <Switch>
+        <Route exact path="/" component={Homepage} />
+        <Route exact path="/access/:login" component={SignIn} />
+        <Route component={PageNotFound} />
+      </Switch>
+    </Router>
   </>,
-  document.getElementById('root')
+  document.getElementById("root")
 );

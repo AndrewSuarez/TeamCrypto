@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import logo from '../../assets/images/logo.png';
+import React, { useState } from "react";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import logo from "../../assets/images/logo.png";
 
 const NavBar = () => {
   const [nav, setNav] = useState(false);
@@ -12,28 +13,28 @@ const NavBar = () => {
     }
   };
 
-  window.addEventListener('scroll', changeBackground);
+  window.addEventListener("scroll", changeBackground);
 
   return (
-    <nav className={nav ? 'nav active' : 'nav'}>
-      <a href="#" className="logo">
+    <nav className={nav ? "nav active" : "nav"}>
+      <Link to="/" className="logo">
         <img src={logo} alt="" />
-      </a>
+      </Link>
       <input type="checkbox" className="menu-btn" id="menu-btn" />
       <label className="menu-icon" for="menu-btn">
         <span className="nav-icon"></span>
       </label>
       <ul className="menu">
         <li>
-          <a href="#" className="active">
+          <Link to="/" className="active">
             Inicio
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="#">Iniciar Sesión</a>
+          <Link to="/access/login">Iniciar Sesión</Link>
         </li>
         <li>
-          <a href="#">Acerca de CryptoChat</a>
+          <Link to="#">Acerca de CryptoChat</Link>
         </li>
       </ul>
     </nav>

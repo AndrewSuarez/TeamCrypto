@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -19,7 +20,7 @@ export default function AppMenu() {
           </Typography>
           <div className={classes.menuOptions}>
             <Button color="inherit" className={classes.option}>
-              Inicio
+              <Link to="/">Inicio</Link>
             </Button>
           </div>
         </Toolbar>

@@ -1,6 +1,6 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import NavBar from '../../components/navbar';
-
 const Header = () => {
   return (
     <div id="main">
@@ -13,9 +13,9 @@ const Header = () => {
           Facilmente a traves de un chat inutitivo y con diversas opciones que
           les permitiran mantener una dinamica de comunicacion ideal.
         </p>
-        <a href="#" className="cv-btn">
+        <Link to="access/signup" className="cv-btn">
           Registrarme
-        </a>
+        </Link>
       </div>
     </div>
   );
