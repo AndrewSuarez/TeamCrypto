@@ -1,10 +1,10 @@
-import Header from './containers/homepage/header';
-import Feature from './containers/homepage/feature';
-import About from './containers/homepage/aboutUs';
-import Presentation from './containers/homepage/presentation';
-import aboutimage from './assets/images/Frame 19.png';
-import aboutimage1 from './assets/images/download.png';
-import SignIn from './containers/login';
+import Header from './header';
+import Feature from './feature';
+import About from './aboutUs';
+import Presentation from './presentation';
+import aboutimage from '../../assets/images/Frame 19.png';
+import aboutimage1 from '../../assets/images/download.png';
+import SignIn from '../login';
 
 // Codigo de colores de la app:
 /* 
@@ -16,20 +16,7 @@ import SignIn from './containers/login';
 */
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <Header />
-        <Feature />
-        <About
-          image={aboutimage}
-          tittle="Comes with all you need for daily life"
-          button="Probar ahora"
-        />
-      </header>
-      {/* <SignIn /> */}
-    </div>
-  );
+  return <div></div>;
 }
 
 export default App;
