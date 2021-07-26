@@ -18,7 +18,7 @@ import SignIn from './containers/login';
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
+      {/* <header className="App-header">
         <Header />
         <Feature />
         <About
@@ -26,8 +26,8 @@ function App() {
           tittle="Comes with all you need for daily life"
           button="Probar ahora"
         />
-      </header>
-      {/* <SignIn /> */}
+      </header> */}
+      <SignIn />
     </div>
   );
 }
