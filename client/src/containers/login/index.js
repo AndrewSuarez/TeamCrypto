@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
+import MailOutlineIcon from '@material-ui/icons/MailOutline';
+import CreateIcon from '@material-ui/icons/Create';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
@@ -13,7 +14,8 @@ import { InputAdornment } from '@material-ui/core';
 import { PermIdentity } from '@material-ui/icons';
 import Lock from '@material-ui/icons/LockOutlined';
 import AppMenu from '../../components/appMenu';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { BrowserRouter, Route, useParams, Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -44,9 +46,24 @@ const handleClick = () => {
   console.log('You clicked this');
 };
 
-export default function SignIn() {
+const SignIn = () => {
   const classes = useStyles();
+  const [access, setAccess] = useState();
+  const [loginText, setLoginText] = useState('');
+  let { login } = useParams();
   document.body.style = 'background: #FFFFFF;';
+
+  useEffect(() => {
+    if (login == 'login') {
+      setAccess(true);
+      setLoginText('Iniciar Sesión');
+      console.log(access);
+    } else {
+      setAccess(false);
+      setLoginText('Registrarse');
+      console.log(access);
+    }
+  }, [login]);
 
   return (
     <>
@@ -58,9 +75,69 @@ export default function SignIn() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Iniciar Sesión
+            {loginText}
           </Typography>
           <form className={classes.form} noValidate>
+            {!access ? (
+              <TextField
+                variant="standard"
+                margin="normal"
+                required
+                fullWidth
+                id="username"
+                placeholder="Nombre de Usuario"
+                name="username"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PermIdentity className={classes.icon} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            ) : (
+              <></>
+            )}
+            {!access ? (
+              <TextField
+                variant="standard"
+                margin="normal"
+                required
+                fullWidth
+                id="name"
+                placeholder="Nombre"
+                name="name"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CreateIcon className={classes.icon} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            ) : (
+              <></>
+            )}
+            {!access ? (
+              <TextField
+                variant="standard"
+                margin="normal"
+                required
+                fullWidth
+                id="lastName"
+                placeholder="Apellido"
+                name="lastName"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CreateIcon className={classes.icon} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            ) : (
+              <></>
+            )}
             <TextField
               variant="standard"
               margin="normal"
@@ -73,7 +150,7 @@ export default function SignIn() {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <PermIdentity className={classes.icon} />
+                    <MailOutlineIcon className={classes.icon} />
                   </InputAdornment>
                 ),
               }}
@@ -105,18 +182,28 @@ export default function SignIn() {
               className={classes.submit}
               onClick={() => handleClick}
             >
-              Iniciar Sesión
+              {loginText}
             </Button>
             <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  ¿Olvidaste tu contraseña?
-                </Link>
-              </Grid>
+              {access ? (
+                <Grid item xs>
+                  <Link href="#" variant="body2">
+                    ¿Olvidaste tu contraseña?
+                  </Link>
+                </Grid>
+              ) : (
+                <></>
+              )}
               <Grid item>
-                <Link href="#" variant="body2">
-                  {'¿No tienes cuenta aún? ¡Registrate!'}
-                </Link>
+                {access ? (
+                  <Link to="/access/signup" variant="body2">
+                    ¿No tienes cuenta aún? ¡Registrate!
+                  </Link>
+                ) : (
+                  <Link to="/access/login" variant="body2">
+                    ¿Ya tienes una cuenta?
+                  </Link>
+                )}
               </Grid>
             </Grid>
           </form>
@@ -124,4 +211,8 @@ export default function SignIn() {
       </Container>
     </>
   );
-}
+};
+
+SignIn.propTypes = {};
+
+export default SignIn;

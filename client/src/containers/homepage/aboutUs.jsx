@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const About = (props) => {
   return (
@@ -20,7 +21,9 @@ const About = (props) => {
           comunicaciones para garantizar en todo momento proteccion a los datos
           de los equipos y usuarios.
         </p>
-        <button>{props.button}</button>
+        <Link to="access/signup" className="cv-btn">
+          {props.button}
+        </Link>
       </div>
     </div>
   );
