@@ -2,14 +2,14 @@
     height: 80vh;
     display: flex;
     margin-top: 70px;
-    
 }
 
-.chatMenu{
+.chatGroup{
     flex: 3.5;
+    overflow-y: scroll
 }
 
-.chatMenuInput{
+.chatGroupInput{
     width: 90%;
     padding: 10px 0;
     border: none;
@@ -57,10 +57,11 @@
 }
 
 .chatMember{
-    flex: 3
+    flex: 3;
+    overflow-y: scroll;
 }
 
-.chatMenuWrapper, .chatBoxWrapper, .chatMemberWrapper{
+.chatGroupWrapper, .chatBoxWrapper, .chatMemberWrapper{
     padding: 10px;
     height: 110.1%;
 }

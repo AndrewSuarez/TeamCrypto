@@ -9,9 +9,16 @@ export default function Chat() {
         <>
             <NavBar />
             <div className="chat">
-                <div className="chatMenu"> 
-                    <div className="chatMenuWrapper">
-                        <input placeholder="Buscar Grupo" className="chatMenuInput" />
+                <div className="chatGroup"> 
+                    <div className="chatGroupWrapper">
+                        <input placeholder="Buscar Grupo" className="chatGroupInput" />
+                        <Group />
+                        <Group />
+                        <Group />
+                        <Group />
+                        <Group />
+                        <Group />
+                        <Group />
                         <Group />
                         <Group />
                         <Group />
@@ -31,7 +38,6 @@ export default function Chat() {
                             <Message own={true}/>
                             <Message own={true}/>
                             <Message />
-
                         </div>
                         <div className="chatBoxBottom">
                             <textarea className="chatMessageInput" placeholder="Escriba algo..."></textarea>
@@ -39,9 +45,16 @@ export default function Chat() {
                         </div>
                     </div>
                 </div>
-
+                
                 <div className="chatMember"> 
                     <div className="chatMemberWrapper">
+                        <Member />
+                        <Member />
+                        <Member />
+                        <Member />
+                        <Member />
+                        <Member />
+                        <Member />
                         <Member />
                         <Member />
                         <Member />
