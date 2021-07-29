@@ -5,6 +5,7 @@ import "./index.css";
 import Homepage from "./containers/homepage";
 import SignIn from "./containers/login";
 import PageNotFound from "./containers/PageNotFound";
+import Chat from "./containers/chat/Chat"
 
 // Codigo de colores de la app:
 /* 
@@ -21,6 +22,8 @@ ReactDOM.render(
       <Switch>
         <Route exact path="/" component={Homepage} />
         <Route exact path="/access/:login" component={SignIn} />
+        <Route exact path="/chat" component={Chat}/>
+        
         <Route component={PageNotFound} />
       </Switch>
     </Router>

@@ -36,6 +36,11 @@ const NavBar = () => {
         <li>
           <Link to="#">Acerca de CryptoChat</Link>
         </li>
+        {/* BORRAR DESPUES */}
+        <li>
+          <Link to="/chat">Chat</Link>
+        </li>
+
       </ul>
     </nav>
   );
