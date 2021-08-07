@@ -1,21 +1,25 @@
+import { BrowserRouter, Link, Route, useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+
+import AppMenu from '../../components/appMenu';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-import MailOutlineIcon from '@material-ui/icons/MailOutline';
+import Container from '@material-ui/core/Container';
 import CreateIcon from '@material-ui/icons/Create';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
 import { InputAdornment } from '@material-ui/core';
-import { PermIdentity } from '@material-ui/icons';
 import Lock from '@material-ui/icons/LockOutlined';
-import AppMenu from '../../components/appMenu';
-import { BrowserRouter, Route, useParams, Link } from 'react-router-dom';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import MailOutlineIcon from '@material-ui/icons/MailOutline';
+import { PermIdentity } from '@material-ui/icons';
 import PropTypes from 'prop-types';
+import Session from 'react-session-api';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import UserProfile from '../../objects/user';
+import { makeStyles } from '@material-ui/core/styles';
+import tryLogin from '../../api/login';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -42,19 +46,43 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const handleClick = () => {
-  console.log('You clicked this');
-};
-
-const SignIn = () => {
+const SignIn = ({ history, location }) => {
   const classes = useStyles();
   const [access, setAccess] = useState();
   const [loginText, setLoginText] = useState('');
   let { login } = useParams();
+
   document.body.style = 'background: #FFFFFF;';
 
+  const handleSubmit = () => {
+    Session.set('user', UserProfile);
+    history.push('/chat');
+    // tryLogin(UserProfile.getEmail(), UserProfile.getPassword())
+    //   .then((data) => {
+    //     console.log(data);
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
+  };
+
+  const handleAccessChange = (e) => {
+    const target = e.target;
+
+    switch (target.name) {
+      case 'email':
+        UserProfile.setEmail(target.value);
+        break;
+      case 'password':
+        UserProfile.setPassword(target.value);
+        break;
+      default:
+        break;
+    }
+  };
+
   useEffect(() => {
-    if (login == 'login') {
+    if (login === 'login') {
       setAccess(true);
       setLoginText('Iniciar Sesión');
       console.log(access);
@@ -68,28 +96,29 @@ const SignIn = () => {
   return (
     <>
       <AppMenu />
-      <Container component="main" maxWidth="xs">
+      <Container component='main' maxWidth='xs'>
         <CssBaseline />
         <div className={classes.paper}>
           <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
           </Avatar>
-          <Typography component="h1" variant="h5">
+          <Typography component='h1' variant='h5'>
             {loginText}
           </Typography>
-          <form className={classes.form} noValidate>
+          <form className={classes.form} onSubmit={handleSubmit}>
             {!access ? (
               <TextField
-                variant="standard"
-                margin="normal"
+                variant='standard'
+                margin='normal'
                 required
                 fullWidth
-                id="username"
-                placeholder="Nombre de Usuario"
-                name="username"
+                id='username'
+                onChange={handleAccessChange}
+                placeholder='Nombre de Usuario'
+                name='username'
                 InputProps={{
                   startAdornment: (
-                    <InputAdornment position="start">
+                    <InputAdornment position='start'>
                       <PermIdentity className={classes.icon} />
                     </InputAdornment>
                   ),
@@ -100,16 +129,16 @@ const SignIn = () => {
             )}
             {!access ? (
               <TextField
-                variant="standard"
-                margin="normal"
+                variant='standard'
+                margin='normal'
                 required
                 fullWidth
-                id="name"
-                placeholder="Nombre"
-                name="name"
+                id='name'
+                placeholder='Nombre'
+                name='name'
                 InputProps={{
                   startAdornment: (
-                    <InputAdornment position="start">
+                    <InputAdornment position='start'>
                       <CreateIcon className={classes.icon} />
                     </InputAdornment>
                   ),
@@ -120,16 +149,16 @@ const SignIn = () => {
             )}
             {!access ? (
               <TextField
-                variant="standard"
-                margin="normal"
+                variant='standard'
+                margin='normal'
                 required
                 fullWidth
-                id="lastName"
-                placeholder="Apellido"
-                name="lastName"
+                id='lastName'
+                placeholder='Apellido'
+                name='lastName'
                 InputProps={{
                   startAdornment: (
-                    <InputAdornment position="start">
+                    <InputAdornment position='start'>
                       <CreateIcon className={classes.icon} />
                     </InputAdornment>
                   ),
@@ -139,17 +168,18 @@ const SignIn = () => {
               <></>
             )}
             <TextField
-              variant="standard"
-              margin="normal"
+              variant='standard'
+              margin='normal'
               required
               fullWidth
-              id="email"
-              placeholder="Correo Electronico"
-              name="email"
-              autoComplete="email"
+              id='email'
+              placeholder='Correo Electronico'
+              onChange={handleAccessChange}
+              name='email'
+              autoComplete='email'
               InputProps={{
                 startAdornment: (
-                  <InputAdornment position="start">
+                  <InputAdornment position='start'>
                     <MailOutlineIcon className={classes.icon} />
                   </InputAdornment>
                 ),
@@ -157,37 +187,37 @@ const SignIn = () => {
               autoFocus
             />
             <TextField
-              variant="standard"
-              margin="normal"
+              variant='standard'
+              margin='normal'
               required
               fullWidth
-              name="password"
-              placeholder="Contraseña"
-              type="password"
-              id="password"
-              autoComplete="current-password"
+              name='password'
+              onChange={handleAccessChange}
+              placeholder='Contraseña'
+              type='password'
+              id='password'
+              autoComplete='current-password'
               InputProps={{
                 startAdornment: (
-                  <InputAdornment position="start">
+                  <InputAdornment position='start'>
                     <Lock className={classes.icon} />
                   </InputAdornment>
                 ),
               }}
             />
             <Button
-              type="submit"
+              type='submit'
               fullWidth
-              variant="contained"
-              color="primary"
+              variant='contained'
+              color='primary'
               className={classes.submit}
-              onClick={() => handleClick}
             >
               {loginText}
             </Button>
             <Grid container>
               {access ? (
                 <Grid item xs>
-                  <Link href="#" variant="body2">
+                  <Link href='#' variant='body2'>
                     ¿Olvidaste tu contraseña?
                   </Link>
                 </Grid>
@@ -196,11 +226,11 @@ const SignIn = () => {
               )}
               <Grid item>
                 {access ? (
-                  <Link to="/access/signup" variant="body2">
+                  <Link to='/access/signup' variant='body2'>
                     ¿No tienes cuenta aún? ¡Registrate!
                   </Link>
                 ) : (
-                  <Link to="/access/login" variant="body2">
+                  <Link to='/access/login' variant='body2'>
                     ¿Ya tienes una cuenta?
                   </Link>
                 )}
