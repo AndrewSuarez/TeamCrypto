@@ -1,5 +1,6 @@
 import { Button } from '@material-ui/core';
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const options = [
   {
@@ -126,10 +127,12 @@ const AppSettings = () => {
       <div className="container my-5">
         <h1>
           <span>
-            <Button className="btn btn-secondary">
-              {' '}
-              <span>&lt;</span> Back{' '}
-            </Button>{' '}
+            <Link to="/chat">
+              <Button className="btn btn-secondary">
+                {' '}
+                <span>&lt;</span> Back{' '}
+              </Button>{' '}
+            </Link>
           </span>
           Settings
         </h1>

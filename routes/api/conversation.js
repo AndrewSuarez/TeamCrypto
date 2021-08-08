@@ -2,8 +2,9 @@ const router = require('express').Router();
 const Conversation = require('../../models/Conversation');
 
 //Nueva conversacion 
-router.post('/', async(req, res)=>{
+router.post('/:groupId', async(req, res)=>{
     const newConversation = new Conversation({
+        groupId: req.params.groupId,
         members: [req.body.senderId, req.body.receiverId],
     })
 
@@ -16,10 +17,11 @@ router.post('/', async(req, res)=>{
 })
 
 //get conversacion
-router.get('/:userId', async(req, res)=> {
+router.get('/:groupId', async(req, res)=> {
     try{
         const conversation = await Conversation.find({
-            members: {$in: [req.params.userId]},
+            groupId: req.params.groupId,
+            members: {$in: [req.body.userId]},
         });
         res.status(200).json(conversation)
     }catch(err){

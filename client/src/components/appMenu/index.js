@@ -16,7 +16,7 @@ export default function AppMenu() {
       <AppBar position="fixed" className={classes.AppBar}>
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            CryptoChat
+            TeamCrypto
           </Typography>
           <div className={classes.menuOptions}>
             <Button color="inherit" className={classes.option}>

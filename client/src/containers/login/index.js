@@ -1,5 +1,5 @@
-import { BrowserRouter, Link, Route, useParams } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import { BrowserRouter, Link, Route, useParams, withRouter } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
 
 import AppMenu from '../../components/appMenu';
 import Avatar from '@material-ui/core/Avatar';
@@ -20,6 +20,9 @@ import Typography from '@material-ui/core/Typography';
 import UserProfile from '../../objects/user';
 import { makeStyles } from '@material-ui/core/styles';
 import tryLogin from '../../api/login';
+
+import { loginCall } from '../../apiCalls';
+import {AuthContext} from '../../context/AuthContext'
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -50,20 +53,25 @@ const SignIn = ({ history, location }) => {
   const classes = useStyles();
   const [access, setAccess] = useState();
   const [loginText, setLoginText] = useState('');
+  const {user, error, dispatch} = useContext(AuthContext);
   let { login } = useParams();
 
   document.body.style = 'background: #FFFFFF;';
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    console.log('Prueba Submit')
     Session.set('user', UserProfile);
-    history.push('/chat');
-    // tryLogin(UserProfile.getEmail(), UserProfile.getPassword())
-    //   .then((data) => {
-    //     console.log(data);
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
+    loginCall({email:UserProfile.getEmail(), password:UserProfile.getPassword()}, dispatch)
+    .then(() => {
+      if(Session.get('usuario')){
+        history.push('/chat')
+      }else{
+        console.log('datos incorrectos')
+      }
+    })
+    
+    
   };
 
   const handleAccessChange = (e) => {

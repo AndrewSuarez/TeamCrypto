@@ -1,6 +1,5 @@
-import "./member.css"
-import userIcon from "../../assets/images/userIcon.png"
-
+import "./memberTemp.css"
+import userIcon from "../../../assets/images/userIcon.png"
 import FolderIcon from '@material-ui/icons/Folder';
 
 export default function Member() {
@@ -11,9 +10,9 @@ export default function Member() {
                     <img className="groupMemberImage" src={userIcon} alt="" />
                     <div className="groupMemberOnlineBadge"></div>
                 </div>
-                <div className="groupMemberName">Andres Suarez</div>
+                <div className="groupMemberName">Paola Mostaffa</div>
                 <div className="role">
-                    PM
+                    TM
                 </div>
                 <div className="memberFileIcon">
                     <FolderIcon />

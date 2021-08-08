@@ -1,13 +1,7 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import ReactDOM from 'react-dom';
-import './index.css';
-import Homepage from './containers/homepage';
-import SignIn from './containers/login';
-import PageNotFound from './containers/PageNotFound';
-import Chat from './containers/chat/Chat';
-import { Settings } from '@material-ui/icons';
-import AppSettings from './containers/appSettings';
+import React from "react"
+import ReactDOM from "react-dom";
+import "./index.css";
+import App from "./App";
 
 // Codigo de colores de la app:
 /* 
@@ -20,16 +14,7 @@ import AppSettings from './containers/appSettings';
 
 ReactDOM.render(
   <>
-    <Router>
-      <Switch>
-        <Route exact path="/" component={Homepage} />
-        <Route exact path="/access/:login" component={SignIn} />
-        <Route exact path="/chat" component={Chat} />
-        <Route exact path="/settings" component={AppSettings} />
-
-        <Route component={PageNotFound} />
-      </Switch>
-    </Router>
+    <App />
   </>,
   document.getElementById('root')
 );
