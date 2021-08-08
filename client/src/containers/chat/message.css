@@ -16,25 +16,37 @@
     margin-right: 10px;
 }
 
-.messageText{
+.messageBubble{
+    display: flex;
+    align-items: center;
+    position: relative;
     padding: 10px;
-    border-radius: 20px;
+    border-radius: 10px;
     background-color: aquamarine;
-    color: black;
     max-width: 350px;
+}
+
+.messageText{
+    font-weight: 500;
 }
 
 .messageBottom{
     font-size: 10px;
     margin-left: 30px;
-
 }
 
 .message.own{
     align-items: flex-end;
 }
 
-.message.own .messageText{
+.message.own .messageBubble{
     background-color: dodgerblue;
     color: white;
+}
+
+.fileMessageImage{
+    object-fit: contain;
+    height: 100%;
+    width: 20px;
+    margin-right: 10px;
 }

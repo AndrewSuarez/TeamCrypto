@@ -47,6 +47,18 @@ const UserSchema = new mongoose.Schema({
         default: []
     },
 
+    publicKey:{
+        type: String,
+        default: '',
+        require: true,
+    },
+
+    privateKey:{
+        type:String,
+        default: '',
+        require:true
+    }
+
 },
 {timestamps:true}
 );

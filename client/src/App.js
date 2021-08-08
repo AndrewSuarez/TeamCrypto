@@ -1,11 +1,11 @@
-import Header from './header';
-import Feature from './feature';
-import About from './aboutUs';
-import Presentation from './presentation';
-import aboutimage from '../../assets/images/Frame 19.png';
-import aboutimage1 from '../../assets/images/download.png';
-import SignIn from '../login';
-
+import React, { useContext } from "react";
+import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
+import Homepage from "./containers/homepage";
+import SignIn from "./containers/login";
+import PageNotFound from "./containers/PageNotFound";
+import Chat from "./containers/chat/Chat"
+import { AuthContext, AuthContextProvider } from "./context/AuthContext";
+import AppSettings from './containers/appSettings';
 // Codigo de colores de la app:
 /* 
    Blanco     E5D8D1 
@@ -16,7 +16,21 @@ import SignIn from '../login';
 */
 
 function App() {
-  return <div></div>;
+  return (
+  <div>
+    <AuthContextProvider>
+    <Router>
+      <Switch>
+        <Route exact path="/chat" component={Chat}/>
+        <Route exact path="/settings" component={AppSettings}/>
+        <Route exact path="/access/:login" component={SignIn}/> 
+        <Route exact path="/" component={Homepage}/>
+        <Route component={PageNotFound} />
+      </Switch>
+    </Router>
+  </AuthContextProvider>  
+  </div>
+  )
 }
 
 export default App;

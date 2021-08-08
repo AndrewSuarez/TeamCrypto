@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import NavBar from '../../components/navbar';
+import logo from "../../assets/images/TeamCryptoLogo.png";
 const Header = () => {
   return (
     <div id="main">
@@ -17,6 +18,7 @@ const Header = () => {
           Registrarme
         </Link>
       </div>
+      <img className="mainLogo" src={logo} alt="" />
     </div>
   );
 };
