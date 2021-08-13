@@ -1,5 +1,7 @@
 const router = require('express').Router();
 const Member = require('../../models/Member');
+const User = require('../../models/User');
+const Group = require('../../models/Group')
 
 //Nuevo miembro
 router.post('/', async (req, res) =>{
@@ -20,6 +22,24 @@ router.get('/:groupId', async(req, res)=>{
         })
         res.status(200).json(members)
         }catch(err){
+        res.status(500).json(err)
+    }
+})
+
+
+//Todos los grupos de un usuario
+router.get('/user/:userId', async(req, res) => {
+    try{
+        const currentUser = await User.findById(req.params.userId)
+        const memberGroups = await Member.find({userId: currentUser._id});
+        // const {groupId} = memberGroups._doc
+        const userGroups = await Promise.all(
+            memberGroups.map((members) => {
+                return Group.findById(members.groupId)
+            })
+        )
+        res.status(200).json(userGroups)
+    }catch(err){
         res.status(500).json(err)
     }
 })

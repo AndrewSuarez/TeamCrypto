@@ -1,68 +1,110 @@
 import './chat.css';
+import useStyles from './styles';
+import { useState, useEffect } from 'react'
+import axios from 'axios';
 
-import react, { useContext, useEffect, useState } from 'react';
-
-import AddBoxIcon from '@material-ui/icons/AddBox';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
-import { AuthContext } from '../../context/AuthContext';
-import CustomTabs from '../../components/CustomTabs';
+import AddBoxIcon from '@material-ui/icons/AddBox';
 import DeleteIcon from '@material-ui/icons/Delete';
-import ElementsList from '../../components/ElementsList';
-import Select from '@material-ui/core/Select';
+import SendIcon from '@material-ui/icons/Send';
+import LockIcon from '@material-ui/icons/Lock';
+import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import MenuItem from '@material-ui/core/MenuItem';
+import { Typography } from '@material-ui/core';
+
 import Group from './Group';
-import Group1 from './chatTemporal/Group1';
-import Group2 from './chatTemporal/Group2';
-import LockIcon from '@material-ui/icons/Lock';
 import Member from './Member';
-import Member1 from './chatTemporal/Member1';
-import Member3 from './chatTemporal/Member3';
-import Member4 from './chatTemporal/Member4';
-import Member5 from './chatTemporal/Member5';
-import Member6 from './chatTemporal/Member6';
-import Member7 from './chatTemporal/Member7';
-import Member8 from './chatTemporal/Member8';
 import Message from './Message';
+
+
 import Modal from '../../components/modal';
 import NavBar from '../../components/navbar';
-import SendIcon from '@material-ui/icons/Send';
 import Session from 'react-session-api';
-import TextField from '@material-ui/core/TextField';
-import { Typography } from '@material-ui/core';
 import UserProfile from '../../objects/user';
-import useStyles from './styles';
+import ElementsList from '../../components/ElementsList';
+import CustomTabs from '../../components/CustomTabs';
+
 
 export default function Chat({ history, location }) {
   // const {user} = useContext(AuthContext)
   const classes = useStyles();
   const [openWorks, setOpenWorks] = useState(false);
   const [switchWorkItems, setSwitchWorkItems] = useState(0);
+  
+  const [groups, setGroups] = useState([])
+  const [currentMembers, setCurrentMembers] = useState([])
+  const [currentGroup, setCurrentGroup] = useState([])
+  const [currentUser, setCurrentUser] = useState([])
 
+  
+  
+  useEffect(() => {
+    const fetchGroups = async () => {
+      const res = await axios.get('/api/members/user/6105c08d1fbf991ef816593a')
+      setGroups(res.data)
+    };
+    fetchGroups();
+  }, []);
+  
+  useEffect(()=> {
+    try{
+      const fetchMembers = async () => {
+        const res = await axios.get('/api/members/' + currentGroup._id)
+        setCurrentMembers(res.data)
+      }
+      fetchMembers()
+    }catch(err){
+      console.log(err)
+    }
+  }, [currentGroup])
+  
+  useEffect(() => {
+    console.log(currentUser)
+  }, [currentUser])
+  
   const handleAddWorks = () => {
     setOpenWorks(true);
-  };
-
-  const onCloseAddWorks = () => {
-    setOpenWorks(false);
-  };
+  };  
 
   const navOptions = [
     { label: 'Chat', direction: '/chat' },
-    { label: <span onClick={handleAddWorks}>Tareas</span>, direction: '#' },
+    { label: <span onClick={currentGroup._id && handleAddWorks}>Tareas</span>, direction: '#' },
     { label: 'Contactos', direction: '#' },
     { label: 'Ajustes', direction: '/settings' },
     { label: 'Cerrar Sesion', direction: '/' },
   ];
 
+  const onCloseAddWorks = () => {
+    setOpenWorks(false);
+  };
+
+  const handleGroupClick = (group) => {
+    setCurrentUser([])
+    setCurrentGroup(group)
+  }
+
+  const handleMemberClick = (member) => {
+    const fetchUser = async () => {
+      try{
+          const res = await axios.get('/api/users/' + member.userId)
+          setCurrentUser(res.data)
+      }catch(err){
+          console.log(err)
+      }
+    }
+    fetchUser()
+  }
+
+  const workItems = ['Tareas', 'Crear Tareas'];
+
   const handleTabClick = (value) => {
     console.log(value);
     setSwitchWorkItems(value);
   };
-
-  const workItems = ['Tareas', 'Crear Tareas'];
 
   const itemsForWorks = [
     {
@@ -99,9 +141,11 @@ export default function Chat({ history, location }) {
                 <AddBoxIcon />
               </div>
             </div>
-            <Group />
-            <Group1 />
-            <Group2 />
+            {groups.map((g) => (
+              <div onClick={()=>handleGroupClick(g)}>
+                <Group group={g} />
+              </div>
+            ))}
           </div>
         </div>
 
@@ -110,7 +154,8 @@ export default function Chat({ history, location }) {
             <div className='chatBoxTop'>
               <nav className='chatNameWrapper'>
                 <h1 className='chatName'>
-                  Andres Suarez <LockIcon />
+                  {currentUser.nombre && `${currentUser.nombre} ${currentUser.apellido}`} 
+                  {currentUser.nombre && <LockIcon />}
                 </h1>
               </nav>
             </div>
@@ -127,28 +172,28 @@ export default function Chat({ history, location }) {
               </button>
             </div>
           </div>
-        </div>
-
-        <div className='chatMember'>
-          <div className='chatMemberWrapper'>
-            <nav className='chatGroupNameWrapper'>
-              <h1 className='chatGroupMemberBox'>Projecto Principal</h1>
+        </div>        
+        <div className="chatMember"> 
+          <div className="chatMemberWrapper">
+            <nav className="chatGroupNameWrapper">
+              <h1 className="chatGroupMemberBox">{currentGroup?.name}</h1>
             </nav>
-            <Member />
-            <Member1 />
-            <Member3 />
-            <Member4 />
-            <Member5 />
-            <Member6 />
-            <Member7 />
-            <Member8 />
+            {
+              currentGroup._id ?
+              currentMembers.map((m) => (
+                <div className="chatMemberRender" onClick={() => handleMemberClick(m)}>
+                  <Member member={m}/>
+                </div>
+            )) 
+            : 
+            <span> Seleccione un grupo </span> }
           </div>
         </div>
       </div>
 
       <Modal
         open={openWorks}
-        title='Tareas de #IDGRUPO'
+        title={`Tareas de ${currentGroup?.name}`}
         closeText='Cerrar'
         acceptText={'Aceptar'}
         handleClose={onCloseAddWorks}

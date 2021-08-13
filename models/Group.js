@@ -11,7 +11,6 @@ const GroupSchema = new mongoose.Schema({
         default:''
     },
 
-
 },
 {timestamps:true}
 );
