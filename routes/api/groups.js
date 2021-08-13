@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const Group = require('../../models/Group');
+const User = require('../../models/User')
 
 //Nuevo grupo
 router.post('/', async(req, res) => {
@@ -24,5 +25,7 @@ router.get('/:groupId', async(req, res)=>{
         res.status(500).json(err)
     }
 })
+
+
 
 module.exports = router 
