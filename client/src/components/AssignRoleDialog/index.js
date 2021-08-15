@@ -43,7 +43,7 @@ const AssignRoleDialog = ({ open, handleClose }) => {
       open={open}
       title='Asignar un rol'
       closeText='Cerrar'
-      acceptText='Crear'
+      acceptText='Asignar'
       handleClose={handleClose}
       maxWidth='sm'
     >
