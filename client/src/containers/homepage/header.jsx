@@ -5,7 +5,7 @@ import logo from '../../assets/images/TeamCryptoLogo.png';
 const Header = () => {
   const options = [
     { label: 'Inicio', direction: '/' },
-    { label: 'Iniciar Sesión', direction: '/access/:login' },
+    { label: 'Iniciar Sesión', direction: '/access/login' },
     { label: 'Acerca de CryptoChat', direction: '#' },
   ];
 

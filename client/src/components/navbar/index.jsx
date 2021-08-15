@@ -36,46 +36,9 @@ const NavBar = ({ options }) => {
             </li>
           );
         })}
-        {/* <li>
-            <Link to='/access/login'>Iniciar Sesión</Link>
-          </li>
-          <li>
-            <Link to='#'>Acerca de CryptoChat</Link>
-          </li> */}
       </ul>
     </nav>
   );
-  // }else if(!user){
-  // } else {
-  //   return (
-  //     <nav className='nav'>
-  //       <Link className='logo'>
-  //         <img src={logo} alt='' />
-  //       </Link>
-  //       <input type='checkbox' className='menu-btn' id='menu-btn' />
-  //       <label className='menu-icon' for='menu-btn'>
-  //         <span className='nav-icon'></span>
-  //       </label>
-  //       <ul className='menu'>
-  //         <li>
-  //           <Link to='/chat'>Chat</Link>
-  //         </li>
-  //         <li>
-  //           <Link>Tareas</Link>
-  //         </li>
-  //         <li>
-  //           <Link>Contactos</Link>
-  //         </li>
-  //         <li>
-  //           <Link to='/settings'>Ajustes</Link>
-  //         </li>
-  //         <li>
-  //           <Link to='/'>Cerrar Sesion</Link>
-  //         </li>
-  //       </ul>
-  //     </nav>
-  //   );
-  // }
 };
 
 NavBar.propTypes = {
