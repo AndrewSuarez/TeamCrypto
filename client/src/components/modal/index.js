@@ -17,6 +17,8 @@ const Modal = ({
   children,
   closeText,
   acceptText,
+  onAccept,
+  titleStyles,
   maxWidth,
 }) => {
   const classes = useStyles();
@@ -29,13 +31,13 @@ const Modal = ({
         maxWidth={maxWidth}
         aria-labelledby='form-dialog-title'
       >
-        <DialogTitle id='form-dialog-title'>{title}</DialogTitle>
+        <DialogTitle id='form-dialog-title' className={titleStyles} >{title}</DialogTitle>
         <DialogContent className={classes.root}>{children}</DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color='primary'>
             {closeText}
           </Button>
-          <Button onClick={handleClose} color='primary'>
+          <Button onClick={onAccept} color='primary'>
             {acceptText}
           </Button>
         </DialogActions>
@@ -48,8 +50,10 @@ Modal.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func,
   children: PropTypes.any.isRequired,
+  titleStyles: PropTypes.any.isRequired,
   closeText: PropTypes.string.isRequired,
   acceptText: PropTypes.string.isRequired,
+  onAccept: PropTypes.func,
   maxWidth: PropTypes.string,
 };
 

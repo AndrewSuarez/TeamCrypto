@@ -1,6 +1,6 @@
 import './chat.css';
 import useStyles from './styles';
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import AttachFileIcon from '@material-ui/icons/AttachFile';
@@ -20,59 +20,65 @@ import Group from './Group';
 import Member from './Member';
 import Message from './Message';
 
-
 import Modal from '../../components/modal';
 import NavBar from '../../components/navbar';
 import Session from 'react-session-api';
 import UserProfile from '../../objects/user';
 import ElementsList from '../../components/ElementsList';
 import CustomTabs from '../../components/CustomTabs';
-
+import AddGroupDialog from '../../components/AddGroupDialog';
+import AssignRoleDialog from '../../components/AssignRoleDialog';
 
 export default function Chat({ history, location }) {
   // const {user} = useContext(AuthContext)
   const classes = useStyles();
   const [openWorks, setOpenWorks] = useState(false);
+  const [addGroup, setAddGroup] = useState(false);
+  const [assignRoles, setAssignRoles] = useState(true);
   const [switchWorkItems, setSwitchWorkItems] = useState(0);
-  
-  const [groups, setGroups] = useState([])
-  const [currentMembers, setCurrentMembers] = useState([])
-  const [currentGroup, setCurrentGroup] = useState([])
-  const [currentUser, setCurrentUser] = useState([])
 
-  
-  
+  const [groups, setGroups] = useState([]);
+  const [currentMembers, setCurrentMembers] = useState([]);
+  const [currentGroup, setCurrentGroup] = useState([]);
+  const [currentUser, setCurrentUser] = useState([]);
+
   useEffect(() => {
     const fetchGroups = async () => {
-      const res = await axios.get('/api/members/user/6105c08d1fbf991ef816593a')
-      setGroups(res.data)
+      const res = await axios.get('/api/members/user/6105c08d1fbf991ef816593a');
+      setGroups(res.data);
     };
     fetchGroups();
   }, []);
-  
-  useEffect(()=> {
-    try{
-      const fetchMembers = async () => {
-        const res = await axios.get('/api/members/' + currentGroup._id)
-        setCurrentMembers(res.data)
-      }
-      fetchMembers()
-    }catch(err){
-      console.log(err)
-    }
-  }, [currentGroup])
-  
+
   useEffect(() => {
-    console.log(currentUser)
-  }, [currentUser])
-  
+    try {
+      const fetchMembers = async () => {
+        const res = await axios.get('/api/members/' + currentGroup._id);
+        setCurrentMembers(res.data);
+      };
+      fetchMembers();
+    } catch (err) {
+      console.log(err);
+    }
+  }, [currentGroup]);
+
+  useEffect(() => {
+    console.log(currentUser);
+  }, [currentUser]);
+
   const handleAddWorks = () => {
     setOpenWorks(true);
-  };  
+  };
+  const handleAddGroups = () => {
+    setAddGroup(true);
+  };
 
   const navOptions = [
     { label: 'Chat', direction: '/chat' },
-    { label: <span onClick={currentGroup._id && handleAddWorks}>Tareas</span>, direction: '#' },
+    {
+      label: <span onClick={currentGroup._id && handleAddWorks}>Tareas</span>,
+      direction: '#',
+    },
     { label: 'Contactos', direction: '#' },
     { label: 'Ajustes', direction: '/settings' },
     { label: 'Cerrar Sesion', direction: '/' },
@@ -81,23 +87,29 @@ export default function Chat({ history, location }) {
   const onCloseAddWorks = () => {
     setOpenWorks(false);
   };
+  const onCloseAddGroups = () => {
+    setAddGroup(false);
+  };
+  const onCloseAssignRoles = () => {
+    setAssignRoles(false);
+  };
 
   const handleGroupClick = (group) => {
-    setCurrentUser([])
-    setCurrentGroup(group)
-  }
+    setCurrentUser([]);
+    setCurrentGroup(group);
+  };
 
   const handleMemberClick = (member) => {
     const fetchUser = async () => {
-      try{
-          const res = await axios.get('/api/users/' + member.userId)
-          setCurrentUser(res.data)
-      }catch(err){
-          console.log(err)
+      try {
+        const res = await axios.get('/api/users/' + member.userId);
+        setCurrentUser(res.data);
+      } catch (err) {
+        console.log(err);
       }
-    }
-    fetchUser()
-  }
+    };
+    fetchUser();
+  };
 
   const workItems = ['Tareas', 'Crear Tareas'];
 
@@ -138,11 +150,11 @@ export default function Chat({ history, location }) {
             <div className='addGroup'>
               <input placeholder='Buscar Grupo' className='chatGroupInput' />
               <div className='addGroupIcon'>
-                <AddBoxIcon />
+                <AddBoxIcon onClick={handleAddGroups} />
               </div>
             </div>
             {groups.map((g) => (
-              <div onClick={()=>handleGroupClick(g)}>
+              <div onClick={() => handleGroupClick(g)}>
                 <Group group={g} />
               </div>
             ))}
@@ -154,7 +166,8 @@ export default function Chat({ history, location }) {
             <div className='chatBoxTop'>
               <nav className='chatNameWrapper'>
                 <h1 className='chatName'>
-                  {currentUser.nombre && `${currentUser.nombre} ${currentUser.apellido}`} 
+                  {currentUser.nombre &&
+                    `${currentUser.nombre} ${currentUser.apellido}`}
                   {currentUser.nombre && <LockIcon />}
                 </h1>
               </nav>
@@ -172,21 +185,24 @@ export default function Chat({ history, location }) {
               </button>
             </div>
           </div>
-        </div>        
-        <div className="chatMember"> 
-          <div className="chatMemberWrapper">
-            <nav className="chatGroupNameWrapper">
-              <h1 className="chatGroupMemberBox">{currentGroup?.name}</h1>
+        </div>
+        <div className='chatMember'>
+          <div className='chatMemberWrapper'>
+            <nav className='chatGroupNameWrapper'>
+              <h1 className='chatGroupMemberBox'>{currentGroup?.name}</h1>
             </nav>
-            {
-              currentGroup._id ?
+            {currentGroup._id ? (
               currentMembers.map((m) => (
-                <div className="chatMemberRender" onClick={() => handleMemberClick(m)}>
-                  <Member member={m}/>
+                <div
+                  className='chatMemberRender'
+                  onClick={() => handleMemberClick(m)}
+                >
+                  <Member member={m} />
                 </div>
-            )) 
-            : 
-            <span> Seleccione un grupo </span> }
+              ))
+            ) : (
+              <span> Seleccione un grupo </span>
+            )}
           </div>
         </div>
       </div>
@@ -226,6 +242,8 @@ export default function Chat({ history, location }) {
           </Grid>
         )}
       </Modal>
+      <AddGroupDialog open={addGroup} handleClose={onCloseAddGroups} />
+      <AssignRoleDialog open={assignRoles} handleClose={onCloseAssignRoles} />
     </>
   );
 }
