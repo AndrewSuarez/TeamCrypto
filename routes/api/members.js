@@ -15,10 +15,13 @@ router.post('/', async (req, res) =>{
 })
 
 //Get
-router.get('/:groupId', async(req, res)=>{
+router.get('/:groupId/:userId?', async(req, res)=>{
     try{
-        const members = await Member.find({
+        const allMembers = await Member.find({
             groupId: req.params.groupId
+        })
+        const members = allMembers.filter((member) => {
+            return member.userId !== req.params.userId
         })
         res.status(200).json(members)
         }catch(err){
@@ -28,7 +31,7 @@ router.get('/:groupId', async(req, res)=>{
 
 
 //Todos los grupos de un usuario
-router.get('/user/:userId', async(req, res) => {
+router.get('/groups/user/:userId', async(req, res) => {
     try{
         const currentUser = await User.findById(req.params.userId)
         const memberGroups = await Member.find({userId: currentUser._id});
