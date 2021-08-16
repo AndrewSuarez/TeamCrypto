@@ -57,5 +57,5 @@
 }
 
 .role:hover {
-  cursor: default;
+  cursor: pointer;
 }

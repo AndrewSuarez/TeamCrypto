@@ -34,7 +34,7 @@ function Member({ member, handleMemberClick }) {
   useEffect(() => {
     fetch('https://picsum.photos/v2/list?page=2&limit=100').then((res) => {
       return res.json().then((data) => {
-        console.log(data);
+        // console.log(data);
         setUserDocuments(data);
       });
     });

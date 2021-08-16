@@ -30,6 +30,10 @@ import AddGroupDialog from '../../components/AddGroupDialog';
 import AssignRoleDialog from '../../components/AssignRoleDialog';
 
 export default function Chat({ history, location }) {
+
+  // variable temporal!!!
+  const sessionId = '6105c08d1fbf991ef816593a'
+
   // const {user} = useContext(AuthContext)
   const classes = useStyles();
   const [openWorks, setOpenWorks] = useState(false);
@@ -41,10 +45,13 @@ export default function Chat({ history, location }) {
   const [currentMembers, setCurrentMembers] = useState([]);
   const [currentGroup, setCurrentGroup] = useState([]);
   const [currentUser, setCurrentUser] = useState([]);
+  const [conversation, setConversation] = useState([])
+  const [messages, setMessages] = useState([])
+  const [newMessage, setNewMessage] = useState([])
 
   useEffect(() => {
     const fetchGroups = async () => {
-      const res = await axios.get('/api/members/user/6105c08d1fbf991ef816593a');
+      const res = await axios.get('/api/members/groups/user/' + sessionId);
       setGroups(res.data);
     };
     fetchGroups();
@@ -53,8 +60,8 @@ export default function Chat({ history, location }) {
   useEffect(() => {
     try {
       const fetchMembers = async () => {
-        const res = await axios.get('/api/members/' + currentGroup._id);
-        setCurrentMembers(res.data);
+        const res = await axios.get(`/api/members/${currentGroup._id}/${sessionId}` )
+        setCurrentMembers(res.data)
       };
       fetchMembers();
     } catch (err) {
@@ -63,8 +70,39 @@ export default function Chat({ history, location }) {
   }, [currentGroup]);
 
   useEffect(() => {
-    console.log(currentUser);
+    try {
+      if(currentUser._id){
+        const fetchConversacion = async () => {
+          const res = await axios.get(`/api/conversation/${currentGroup._id}/${sessionId}/${currentUser._id}`)
+          if(res.data){
+            setConversation(res.data)
+          }else{
+            const nuevaConversacion = await axios.post(`/api/conversation/${currentGroup._id}`,
+            {
+              senderId: sessionId,
+              receiverId: currentUser._id
+            })
+            setConversation(nuevaConversacion.data)
+          }
+        }
+        fetchConversacion()
+      }
+    }catch(err){
+      console.log(err)
+    };
   }, [currentUser]);
+
+  useEffect(() => {
+    try{
+      const fetchMensajes = async () => {
+        const res = await axios.get(`/api/messages/${conversation._id}`)
+        setMessages(res.data)
+      }
+      fetchMensajes() 
+    }catch(err){
+      console.log(err)
+    }
+  }, [conversation])
 
   const handleAddWorks = () => {
     setOpenWorks(true);
@@ -98,11 +136,15 @@ export default function Chat({ history, location }) {
   };
 
   const handleGroupClick = (group) => {
+    setMessages([])
+    setConversation([])
     setCurrentUser([]);
+    setCurrentMembers([])
     setCurrentGroup(group);
   };
 
   const handleMemberClick = (member) => {
+    setMessages([])
     const fetchUser = async () => {
       try {
         const res = await axios.get('/api/users/' + member.userId);
@@ -113,6 +155,23 @@ export default function Chat({ history, location }) {
     };
     fetchUser();
   };
+
+  const handleSendClick = async (e) => {
+    e.preventDefault();
+    const message = {
+      conversationId: conversation._id,
+      sender: sessionId,
+      text: newMessage
+    }
+
+    try{
+      const res = await axios.post('/api/messages', message)
+      setMessages([...messages, res.data])
+    }catch(err){
+      console.log(err)
+    }
+    document.getElementById('messagebox').value= ""
+  }
 
   const workItems = ['Tareas', 'Crear Tareas'];
 
@@ -174,16 +233,24 @@ export default function Chat({ history, location }) {
                   {currentUser.nombre && <LockIcon />}
                 </h1>
               </nav>
+              {messages.map((m) => (
+                <div>
+                  <Message message={m} own={m.sender === sessionId}/>
+                </div>
+              ))}
             </div>
             <div className='chatBoxBottom'>
-              <textarea
+              <textarea 
+                id= 'messagebox'
                 className='chatMessageInput'
                 placeholder='Escriba algo...'
+                onChange={(e) => setNewMessage(e.target.value)}
+                value={newMessage}
               ></textarea>
               <div className='attachFile'>
                 <AttachFileIcon />
               </div>
-              <button className='chatSubmitButton'>
+              <button className='chatSubmitButton' onClick={handleSendClick}>
                 <SendIcon />
               </button>
             </div>

@@ -7,7 +7,6 @@ router.post('/:groupId', async(req, res)=>{
         groupId: req.params.groupId,
         members: [req.body.senderId, req.body.receiverId],
     })
-
     try{
         const savedConversation = await newConversation.save();
         res.status(200).json(savedConversation);
@@ -17,11 +16,11 @@ router.post('/:groupId', async(req, res)=>{
 })
 
 //get conversacion
-router.get('/:groupId', async(req, res)=> {
+router.get('/:groupId/:userId/:memberId', async(req, res)=> {
     try{
-        const conversation = await Conversation.find({
+        const conversation = await Conversation.findOne({
             groupId: req.params.groupId,
-            members: {$in: [req.body.userId]},
+            members: {$all: [req.params.userId, req.params.memberId]},
         });
         res.status(200).json(conversation)
     }catch(err){
