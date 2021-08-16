@@ -34,7 +34,7 @@ export default function Chat({ history, location }) {
   const classes = useStyles();
   const [openWorks, setOpenWorks] = useState(false);
   const [addGroup, setAddGroup] = useState(false);
-  const [assignRoles, setAssignRoles] = useState(true);
+  const [assignRoles, setAssignRoles] = useState(false);
   const [switchWorkItems, setSwitchWorkItems] = useState(0);
 
   const [groups, setGroups] = useState([]);
@@ -71,6 +71,9 @@ export default function Chat({ history, location }) {
   };
   const handleAddGroups = () => {
     setAddGroup(true);
+  };
+  const handleAssignRoles = () => {
+    setAssignRoles(true);
   };
 
   const navOptions = [
@@ -197,7 +200,7 @@ export default function Chat({ history, location }) {
                   className='chatMemberRender'
                   onClick={() => handleMemberClick(m)}
                 >
-                  <Member member={m} />
+                  <Member member={m} handleMemberClick={handleAssignRoles} />
                 </div>
               ))
             ) : (
