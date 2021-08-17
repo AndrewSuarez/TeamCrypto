@@ -28,11 +28,11 @@ import ElementsList from '../../components/ElementsList';
 import CustomTabs from '../../components/CustomTabs';
 import AddGroupDialog from '../../components/AddGroupDialog';
 import AssignRoleDialog from '../../components/AssignRoleDialog';
+import ContactsDialog from '../../components/ContactsDialog';
 
 export default function Chat({ history, location }) {
-
   // variable temporal!!!
-  const sessionId = '6105c08d1fbf991ef816593a'
+  const sessionId = '6105c08d1fbf991ef816593a';
 
   // const {user} = useContext(AuthContext)
   const classes = useStyles();
@@ -40,14 +40,15 @@ export default function Chat({ history, location }) {
   const [addGroup, setAddGroup] = useState(false);
   const [assignRoles, setAssignRoles] = useState(false);
   const [switchWorkItems, setSwitchWorkItems] = useState(0);
+  const [seeContacts, setSeeContacts] = useState(false);
 
   const [groups, setGroups] = useState([]);
   const [currentMembers, setCurrentMembers] = useState([]);
   const [currentGroup, setCurrentGroup] = useState([]);
   const [currentUser, setCurrentUser] = useState([]);
-  const [conversation, setConversation] = useState([])
-  const [messages, setMessages] = useState([])
-  const [newMessage, setNewMessage] = useState([])
+  const [conversation, setConversation] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState([]);
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -60,8 +61,10 @@ export default function Chat({ history, location }) {
   useEffect(() => {
     try {
       const fetchMembers = async () => {
-        const res = await axios.get(`/api/members/${currentGroup._id}/${sessionId}` )
-        setCurrentMembers(res.data)
+        const res = await axios.get(
+          `/api/members/${currentGroup._id}/${sessionId}`
+        );
+        setCurrentMembers(res.data);
       };
       fetchMembers();
     } catch (err) {
@@ -71,38 +74,42 @@ export default function Chat({ history, location }) {
 
   useEffect(() => {
     try {
-      if(currentUser._id){
+      if (currentUser._id) {
         const fetchConversacion = async () => {
-          const res = await axios.get(`/api/conversation/${currentGroup._id}/${sessionId}/${currentUser._id}`)
-          if(res.data){
-            setConversation(res.data)
-          }else{
-            const nuevaConversacion = await axios.post(`/api/conversation/${currentGroup._id}`,
-            {
-              senderId: sessionId,
-              receiverId: currentUser._id
-            })
-            setConversation(nuevaConversacion.data)
+          const res = await axios.get(
+            `/api/conversation/${currentGroup._id}/${sessionId}/${currentUser._id}`
+          );
+          if (res.data) {
+            setConversation(res.data);
+          } else {
+            const nuevaConversacion = await axios.post(
+              `/api/conversation/${currentGroup._id}`,
+              {
+                senderId: sessionId,
+                receiverId: currentUser._id,
+              }
+            );
+            setConversation(nuevaConversacion.data);
           }
-        }
-        fetchConversacion()
+        };
+        fetchConversacion();
       }
-    }catch(err){
-      console.log(err)
-    };
+    } catch (err) {
+      console.log(err);
+    }
   }, [currentUser]);
 
   useEffect(() => {
-    try{
+    try {
       const fetchMensajes = async () => {
-        const res = await axios.get(`/api/messages/${conversation._id}`)
-        setMessages(res.data)
-      }
-      fetchMensajes() 
-    }catch(err){
-      console.log(err)
+        const res = await axios.get(`/api/messages/${conversation._id}`);
+        setMessages(res.data);
+      };
+      fetchMensajes();
+    } catch (err) {
+      console.log(err);
     }
-  }, [conversation])
+  }, [conversation]);
 
   const handleAddWorks = () => {
     setOpenWorks(true);
@@ -113,6 +120,9 @@ export default function Chat({ history, location }) {
   const handleAssignRoles = () => {
     setAssignRoles(true);
   };
+  const handleSeeContacts = () => {
+    setSeeContacts(true);
+  };
 
   const navOptions = [
     { label: 'Chat', direction: '/chat' },
@@ -120,7 +130,7 @@ export default function Chat({ history, location }) {
       label: <span onClick={currentGroup._id && handleAddWorks}>Tareas</span>,
       direction: '#',
     },
-    { label: 'Contactos', direction: '#' },
+    { label: <span onClick={handleSeeContacts}>Contactos</span> },
     { label: 'Ajustes', direction: '/settings' },
     { label: 'Cerrar Sesion', direction: '/' },
   ];
@@ -134,17 +144,20 @@ export default function Chat({ history, location }) {
   const onCloseAssignRoles = () => {
     setAssignRoles(false);
   };
+  const onCloseSeeContacts = () => {
+    setSeeContacts(false);
+  };
 
   const handleGroupClick = (group) => {
-    setMessages([])
-    setConversation([])
+    setMessages([]);
+    setConversation([]);
     setCurrentUser([]);
-    setCurrentMembers([])
+    setCurrentMembers([]);
     setCurrentGroup(group);
   };
 
   const handleMemberClick = (member) => {
-    setMessages([])
+    setMessages([]);
     const fetchUser = async () => {
       try {
         const res = await axios.get('/api/users/' + member.userId);
@@ -161,17 +174,17 @@ export default function Chat({ history, location }) {
     const message = {
       conversationId: conversation._id,
       sender: sessionId,
-      text: newMessage
-    }
+      text: newMessage,
+    };
 
-    try{
-      const res = await axios.post('/api/messages', message)
-      setMessages([...messages, res.data])
-    }catch(err){
-      console.log(err)
+    try {
+      const res = await axios.post('/api/messages', message);
+      setMessages([...messages, res.data]);
+    } catch (err) {
+      console.log(err);
     }
-    document.getElementById('messagebox').value= ""
-  }
+    document.getElementById('messagebox').value = '';
+  };
 
   const workItems = ['Tareas', 'Crear Tareas'];
 
@@ -235,13 +248,13 @@ export default function Chat({ history, location }) {
               </nav>
               {messages.map((m) => (
                 <div>
-                  <Message message={m} own={m.sender === sessionId}/>
+                  <Message message={m} own={m.sender === sessionId} />
                 </div>
               ))}
             </div>
             <div className='chatBoxBottom'>
-              <textarea 
-                id= 'messagebox'
+              <textarea
+                id='messagebox'
                 className='chatMessageInput'
                 placeholder='Escriba algo...'
                 onChange={(e) => setNewMessage(e.target.value)}
@@ -314,6 +327,7 @@ export default function Chat({ history, location }) {
       </Modal>
       <AddGroupDialog open={addGroup} handleClose={onCloseAddGroups} />
       <AssignRoleDialog open={assignRoles} handleClose={onCloseAssignRoles} />
+      <ContactsDialog open={seeContacts} handleClose={onCloseSeeContacts} />
     </>
   );
 }

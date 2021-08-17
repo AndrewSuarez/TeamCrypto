@@ -17,7 +17,7 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import useStyles from './style';
 
-const ElementsList = ({ items }) => {
+const ElementsList = ({ items, controlItem }) => {
   const classes = useStyles();
 
   return (
@@ -25,11 +25,25 @@ const ElementsList = ({ items }) => {
       {items.map((i) => {
         return (
           <ListItem dense button>
+            {i.avatar ? (
+              <ListItemAvatar>
+                <Avatar
+                  src={i.avatar ? i.avatar.download_url : null}
+                  alt={i.author}
+                />
+              </ListItemAvatar>
+            ) : (
+              <></>
+            )}
             <ListItemText primary={i.title} secondary={i.description} />
             <ListItemSecondaryAction>
-              <IconButton edge='end' aria-label='comments'>
-                {i.children}
-              </IconButton>
+              {i.children ? (
+                <IconButton edge='end' aria-label='comments'>
+                  {i.children}
+                </IconButton>
+              ) : (
+                controlItem
+              )}
             </ListItemSecondaryAction>
           </ListItem>
         );
