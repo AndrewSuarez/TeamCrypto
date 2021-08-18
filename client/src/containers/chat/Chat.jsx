@@ -47,6 +47,7 @@ export default function Chat({ history, location }) {
   const [currentGroup, setCurrentGroup] = useState([]);
   const [currentUser, setCurrentUser] = useState([]);
   const [conversation, setConversation] = useState([]);
+  const [chatGroup, setChatGroup] = useState(false)
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState([]);
 
@@ -70,6 +71,9 @@ export default function Chat({ history, location }) {
     } catch (err) {
       console.log(err);
     }
+
+    groupSetFunction()
+
   }, [currentGroup]);
 
   useEffect(() => {
@@ -100,14 +104,16 @@ export default function Chat({ history, location }) {
   }, [currentUser]);
 
   useEffect(() => {
-    try {
-      const fetchMensajes = async () => {
-        const res = await axios.get(`/api/messages/${conversation._id}`);
-        setMessages(res.data);
-      };
-      fetchMensajes();
-    } catch (err) {
-      console.log(err);
+    if(conversation){
+      try {
+        const fetchMensajes = async () => {
+          const res = await axios.get(`/api/messages/${conversation._id}`);
+          setMessages(res.data);
+        };
+        fetchMensajes();
+      } catch (err) {
+        console.log(err);
+      }
     }
   }, [conversation]);
 
@@ -152,12 +158,30 @@ export default function Chat({ history, location }) {
     setMessages([]);
     setConversation([]);
     setCurrentUser([]);
-    setCurrentMembers([]);
-    setCurrentGroup(group);
+    if(group === currentGroup){
+      groupSetFunction()
+    }else{
+      setCurrentGroup(group);
+    }
   };
+
+  const groupSetFunction = () => {
+    setChatGroup(true)
+    try{
+      const fetchConverGrupal = async () => {
+        const res = await axios.get(`/api/conversation/${currentGroup._id}`);
+        setConversation(res.data)
+      }
+      fetchConverGrupal()
+    }catch(err){
+      console.log(err)
+    }
+    
+  }
 
   const handleMemberClick = (member) => {
     setMessages([]);
+    setChatGroup(false)
     const fetchUser = async () => {
       try {
         const res = await axios.get('/api/users/' + member.userId);
@@ -241,7 +265,9 @@ export default function Chat({ history, location }) {
             <div className='chatBoxTop'>
               <nav className='chatNameWrapper'>
                 <h1 className='chatName'>
-                  {currentUser.nombre &&
+                  {chatGroup ? currentGroup.name 
+                  :
+                  currentUser.nombre &&
                     `${currentUser.nombre} ${currentUser.apellido}`}
                   {currentUser.nombre && <LockIcon />}
                 </h1>
