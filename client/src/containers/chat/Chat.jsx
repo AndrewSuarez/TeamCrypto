@@ -29,6 +29,7 @@ import CustomTabs from '../../components/CustomTabs';
 import AddGroupDialog from '../../components/AddGroupDialog';
 import AssignRoleDialog from '../../components/AssignRoleDialog';
 import ContactsDialog from '../../components/ContactsDialog';
+import SettingsDialog from '../../components/SettingsDialog';
 
 export default function Chat({ history, location }) {
   // variable temporal!!!
@@ -39,6 +40,7 @@ export default function Chat({ history, location }) {
   const [openWorks, setOpenWorks] = useState(false);
   const [addGroup, setAddGroup] = useState(false);
   const [assignRoles, setAssignRoles] = useState(false);
+  const [openSettings, setOpenSettings] = useState(false);
   const [switchWorkItems, setSwitchWorkItems] = useState(0);
   const [seeContacts, setSeeContacts] = useState(false);
 
@@ -47,7 +49,7 @@ export default function Chat({ history, location }) {
   const [currentGroup, setCurrentGroup] = useState([]);
   const [currentUser, setCurrentUser] = useState([]);
   const [conversation, setConversation] = useState([]);
-  const [chatGroup, setChatGroup] = useState(false)
+  const [chatGroup, setChatGroup] = useState(false);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState([]);
 
@@ -72,8 +74,7 @@ export default function Chat({ history, location }) {
       console.log(err);
     }
 
-    groupSetFunction()
-
+    groupSetFunction();
   }, [currentGroup]);
 
   useEffect(() => {
@@ -104,7 +105,7 @@ export default function Chat({ history, location }) {
   }, [currentUser]);
 
   useEffect(() => {
-    if(conversation){
+    if (conversation) {
       try {
         const fetchMensajes = async () => {
           const res = await axios.get(`/api/messages/${conversation._id}`);
@@ -129,6 +130,9 @@ export default function Chat({ history, location }) {
   const handleSeeContacts = () => {
     setSeeContacts(true);
   };
+  const handleOpenSettings = () => {
+    setOpenSettings(true);
+  };
 
   const navOptions = [
     { label: 'Chat', direction: '/chat' },
@@ -137,7 +141,7 @@ export default function Chat({ history, location }) {
       direction: '#',
     },
     { label: <span onClick={handleSeeContacts}>Contactos</span> },
-    { label: 'Ajustes', direction: '/settings' },
+    { label: <span onClick={handleOpenSettings}>Ajustes</span> },
     { label: 'Cerrar Sesion', direction: '/' },
   ];
 
@@ -153,35 +157,37 @@ export default function Chat({ history, location }) {
   const onCloseSeeContacts = () => {
     setSeeContacts(false);
   };
+  const onCloseSettings = () => {
+    setOpenSettings(false);
+  };
 
   const handleGroupClick = (group) => {
     setMessages([]);
     setConversation([]);
     setCurrentUser([]);
-    if(group === currentGroup){
-      groupSetFunction()
-    }else{
+    if (group === currentGroup) {
+      groupSetFunction();
+    } else {
       setCurrentGroup(group);
     }
   };
 
   const groupSetFunction = () => {
-    setChatGroup(true)
-    try{
+    setChatGroup(true);
+    try {
       const fetchConverGrupal = async () => {
         const res = await axios.get(`/api/conversation/${currentGroup._id}`);
-        setConversation(res.data)
-      }
-      fetchConverGrupal()
-    }catch(err){
-      console.log(err)
+        setConversation(res.data);
+      };
+      fetchConverGrupal();
+    } catch (err) {
+      console.log(err);
     }
-    
-  }
+  };
 
   const handleMemberClick = (member) => {
     setMessages([]);
-    setChatGroup(false)
+    setChatGroup(false);
     const fetchUser = async () => {
       try {
         const res = await axios.get('/api/users/' + member.userId);
@@ -265,10 +271,10 @@ export default function Chat({ history, location }) {
             <div className='chatBoxTop'>
               <nav className='chatNameWrapper'>
                 <h1 className='chatName'>
-                  {chatGroup ? currentGroup.name 
-                  :
-                  currentUser.nombre &&
-                    `${currentUser.nombre} ${currentUser.apellido}`}
+                  {chatGroup
+                    ? currentGroup.name
+                    : currentUser.nombre &&
+                      `${currentUser.nombre} ${currentUser.apellido}`}
                   {currentUser.nombre && <LockIcon />}
                 </h1>
               </nav>
@@ -354,6 +360,7 @@ export default function Chat({ history, location }) {
       <AddGroupDialog open={addGroup} handleClose={onCloseAddGroups} />
       <AssignRoleDialog open={assignRoles} handleClose={onCloseAssignRoles} />
       <ContactsDialog open={seeContacts} handleClose={onCloseSeeContacts} />
+      <SettingsDialog open={openSettings} handleClose={onCloseSettings} />
     </>
   );
 }

@@ -31,15 +31,23 @@ const Modal = ({
         maxWidth={maxWidth}
         aria-labelledby='form-dialog-title'
       >
-        <DialogTitle id='form-dialog-title' className={titleStyles} >{title}</DialogTitle>
+        {title && (
+          <DialogTitle id='form-dialog-title' className={titleStyles}>
+            {title}
+          </DialogTitle>
+        )}
         <DialogContent className={classes.root}>{children}</DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color='primary'>
-            {closeText}
-          </Button>
-          <Button onClick={onAccept} color='primary'>
-            {acceptText}
-          </Button>
+          {closeText && (
+            <Button onClick={handleClose} color='primary'>
+              {closeText}
+            </Button>
+          )}
+          {acceptText && (
+            <Button onClick={onAccept} color='primary'>
+              {acceptText}
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
     </div>

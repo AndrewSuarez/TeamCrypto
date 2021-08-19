@@ -2,7 +2,12 @@ import React, { useState, useEffect } from 'react';
 
 import Modal from '../../modal';
 // import useStyles from './styles';
-import ElementsList from '../../ElementsList';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Input from '@material-ui/core/Input';
 import PropTypes from 'prop-types';
@@ -22,18 +27,22 @@ const AddContactsDialog = ({ open, handleClose }) => {
   const [selectedValue, setSelectedValue] = useState([]);
   const [originalUsers, setOriginalUsers] = useState([
     {
+      id: 1,
       avatar: userAvatar[0],
       title: 'Andres Suarez',
     },
     {
+      id: 2,
       avatar: userAvatar[1],
       title: 'Marielys Brijaldo',
     },
     {
+      id: 3,
       avatar: userAvatar[2],
       title: 'Eduardo Lopez',
     },
     {
+      id: 4,
       avatar: userAvatar[3],
       title: 'Eduardo Leon',
     },
@@ -93,25 +102,30 @@ const AddContactsDialog = ({ open, handleClose }) => {
             </InputAdornment>
           }
         />
-        <ElementsList
-          items={users}
-          controlItem={
-            <Radio
-              onClick={selectItems}
-              checked={users.filter((user) => {
-                return user == selectedValue;
-              })}
-            />
-          }
-        />
+        {users.map((user) => {
+          return (
+            <List className={classes.root}>
+              <ListItem dense button>
+                <ListItemText primary={user.title} />
+                <ListItemSecondaryAction>
+                  <Radio
+                    value={user.id}
+                    onClick={selectItems}
+                    checked={user.id == selectedValue}
+                  />
+                </ListItemSecondaryAction>
+              </ListItem>
+            </List>
+          );
+        })}
       </form>
     </Modal>
   );
 };
 
 AddContactsDialog.propTypes = {
-  items: PropTypes.array,
-  avatars: PropTypes.array,
+  open: PropTypes.any.isRequired,
+  handleClose: PropTypes.any.isRequired,
 };
 
 export default AddContactsDialog;
