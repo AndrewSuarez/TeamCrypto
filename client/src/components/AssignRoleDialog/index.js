@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Button from '@material-ui/core/Button';
 import Modal from '../modal';
@@ -7,34 +7,51 @@ import TextField from '@material-ui/core/TextField';
 import useStyles from './styles';
 import TransferList from '../TransferList';
 import AccordionList from '../AccordionList';
+import axios from 'axios';
 
-const AssignRoleDialog = ({ open, handleClose }) => {
+const AssignRoleDialog = ({ open, handleClose, userRole, memberId, groupId, fetchMembers }) => {
+ 
   const classes = useStyles();
+
+  const [selectedRole, setSelectedRole] = useState('')
+  
+  const handleAccept = (userRole, memberId, groupId ) => {
+    if(userRole === 'A'){
+      const assignRole =  async () => {
+        await axios.put(`/api/members/${groupId}`, {groupId: groupId, userId: memberId, role: selectedRole})
+        .then(fetchMembers())
+      }
+      assignRole();
+    }else{
+      console.log('Usted no tiene permisos para asignar roles')
+    }
+    handleClose()
+  }
 
   const roles = [
     {
       label: 'Administrador',
       description:
         'Este rol tiene control total del equipo, puede crear tareas, asignarlas eliminarlas, agregar nuevos miembros a equipos, etc',
-      id: 1,
+      id: 'A',
     },
     {
       label: 'Supervisor',
       description:
         'Este rol tiene control parcial del equipo, puede ver las tareas, reasignarlas, no puede eliminarlas y puede asignar roles a otros miembros.',
-      id: 2,
+      id: 'SP',
     },
     {
       label: 'Asistente',
       description:
         'Este rol tiene control solo en la seccion de tareas del equipo, puede crear tareas, eliminarlas, asignarlas y editarlas',
-      id: 3,
+      id: 'ST',
     },
     {
       label: 'Manager',
       description:
         'Este rol puede crear un tipo especial de tareas, las reuniones o tareas que envian notificaciones a los usuarios involucrados',
-      id: 4,
+      id: 'MG',
     },
   ];
 
@@ -45,10 +62,11 @@ const AssignRoleDialog = ({ open, handleClose }) => {
       closeText='Cerrar'
       acceptText='Asignar'
       handleClose={handleClose}
+      onAccept={() => handleAccept(userRole, memberId, groupId)}
       maxWidth='sm'
     >
       <form className={classes.root} noValidate autoComplete='off'>
-        <AccordionList options={roles} />
+        <AccordionList options={roles} setSelectedRole={setSelectedRole} />
       </form>
     </Modal>
   );

@@ -45,9 +45,10 @@ export default function Chat({ history, location }) {
   const [seeContacts, setSeeContacts] = useState(false);
 
   const [groups, setGroups] = useState([]);
-  const [currentMembers, setCurrentMembers] = useState([]);
+  const [groupMembers, setGroupMembers] = useState([]);
+  const [loggeduserGroupMember, setoggedUserGroupMember] = useState([])
   const [currentGroup, setCurrentGroup] = useState([]);
-  const [currentUser, setCurrentUser] = useState([]);
+  const [selectedUser, setSelectedUser] = useState([]);
   const [conversation, setConversation] = useState([]);
   const [chatGroup, setChatGroup] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -62,27 +63,30 @@ export default function Chat({ history, location }) {
   }, []);
 
   useEffect(() => {
-    try {
-      const fetchMembers = async () => {
+
+    try{
+      const fecthGroupMember = async () => {
         const res = await axios.get(
-          `/api/members/${currentGroup._id}/${sessionId}`
+          `/api/members/group/user/${currentGroup._id}/${sessionId}`
         );
-        setCurrentMembers(res.data);
-      };
-      fetchMembers();
-    } catch (err) {
-      console.log(err);
+        setoggedUserGroupMember(res.data)
+      }
+      fecthGroupMember()
+    }catch(err){
+      console.log(err)
     }
 
+    fetchMembers();
+    
     groupSetFunction();
   }, [currentGroup]);
 
   useEffect(() => {
     try {
-      if (currentUser._id) {
+      if (selectedUser._id) {
         const fetchConversacion = async () => {
           const res = await axios.get(
-            `/api/conversation/${currentGroup._id}/${sessionId}/${currentUser._id}`
+            `/api/conversation/${currentGroup._id}/${sessionId}/${selectedUser._id}`
           );
           if (res.data) {
             setConversation(res.data);
@@ -91,7 +95,7 @@ export default function Chat({ history, location }) {
               `/api/conversation/${currentGroup._id}`,
               {
                 senderId: sessionId,
-                receiverId: currentUser._id,
+                receiverId: selectedUser._id,
               }
             );
             setConversation(nuevaConversacion.data);
@@ -102,7 +106,7 @@ export default function Chat({ history, location }) {
     } catch (err) {
       console.log(err);
     }
-  }, [currentUser]);
+  }, [selectedUser]);
 
   useEffect(() => {
     if (conversation) {
@@ -162,13 +166,13 @@ export default function Chat({ history, location }) {
   };
 
   const handleGroupClick = (group) => {
-    setMessages([]);
-    setConversation([]);
-    setCurrentUser([]);
+    setSelectedUser([]);
     if (group === currentGroup) {
       groupSetFunction();
     } else {
       setCurrentGroup(group);
+      setMessages([]);
+      setConversation([]);
     }
   };
 
@@ -185,18 +189,34 @@ export default function Chat({ history, location }) {
     }
   };
 
+  const fetchMembers = async () => {
+    try {
+      const res = await axios.get(
+        `/api/members/${currentGroup._id}/${sessionId}`
+      );
+      res.data.map((m) => {
+        console.log(m.role)
+      })
+      setGroupMembers(res.data);
+    }catch (err) {
+      console.log(err);
+    }
+  };
+
   const handleMemberClick = (member) => {
-    setMessages([]);
-    setChatGroup(false);
-    const fetchUser = async () => {
-      try {
-        const res = await axios.get('/api/users/' + member.userId);
-        setCurrentUser(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchUser();
+    if (selectedUser._id !== member.userId){
+      setMessages([]);
+      setChatGroup(false);
+      const fetchUser = async () => {
+        try {
+          const res = await axios.get('/api/users/' + member.userId);
+          setSelectedUser(res.data);
+        } catch (err) {
+          console.log(err);
+        }
+      };
+      fetchUser();
+    }
   };
 
   const handleSendClick = async (e) => {
@@ -273,9 +293,9 @@ export default function Chat({ history, location }) {
                 <h1 className='chatName'>
                   {chatGroup
                     ? currentGroup.name
-                    : currentUser.nombre &&
-                      `${currentUser.nombre} ${currentUser.apellido}`}
-                  {currentUser.nombre && <LockIcon />}
+                    : selectedUser.nombre &&
+                      `${selectedUser.nombre} ${selectedUser.apellido}`}
+                  {selectedUser.nombre && <LockIcon />}
                 </h1>
               </nav>
               {messages.map((m) => (
@@ -307,7 +327,7 @@ export default function Chat({ history, location }) {
               <h1 className='chatGroupMemberBox'>{currentGroup?.name}</h1>
             </nav>
             {currentGroup._id ? (
-              currentMembers.map((m) => (
+              groupMembers.map((m) => (
                 <div
                   className='chatMemberRender'
                   onClick={() => handleMemberClick(m)}
@@ -358,7 +378,11 @@ export default function Chat({ history, location }) {
         )}
       </Modal>
       <AddGroupDialog open={addGroup} handleClose={onCloseAddGroups} />
-      <AssignRoleDialog open={assignRoles} handleClose={onCloseAssignRoles} />
+
+      <AssignRoleDialog 
+      open={assignRoles} handleClose={onCloseAssignRoles} 
+      userRole={loggeduserGroupMember?.role} memberId={selectedUser._id} groupId={currentGroup._id} fetchMembers={fetchMembers} />
+
       <ContactsDialog open={seeContacts} handleClose={onCloseSeeContacts} />
       <SettingsDialog open={openSettings} handleClose={onCloseSettings} />
     </>
