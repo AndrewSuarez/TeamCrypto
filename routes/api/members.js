@@ -29,6 +29,19 @@ router.get('/:groupId/:userId?', async(req, res)=>{
     }
 })
 
+//get current group user
+router.get('/group/user/:groupId/:userId', async(req, res) => {
+    try{
+        const member = await Member.findOne({
+            groupId: req.params.groupId,
+            userId: req.params.userId
+        })
+        res.status(200).json(member)
+    }catch(err){
+        res.status(500).json(err)
+    }
+}) 
+
 
 //Todos los grupos de un usuario
 router.get('/groups/user/:userId', async(req, res) => {
@@ -51,13 +64,21 @@ router.get('/groups/user/:userId', async(req, res) => {
 router.put('/:groupId', async(req,res)=> {
     if(req.body.groupId === req.params.groupId){
             try{
-                const members = await Member.findOneAndUpdate({
-                    groupId: req.body.groupId,
-                    userId: req.body.userId
-                }, 
-                    {role: req.body.role,
-                    $push: {tareas: req.body.tareas}}
-                )
+                if(req.body.role){
+                    const members = await Member.findOneAndUpdate({
+                        groupId: req.body.groupId,
+                        userId: req.body.userId
+                    }, 
+                        {role: req.body.role,}
+                    )
+                }else if(req.body.tareas){
+                    const members = await Member.findOneAndUpdate({
+                        groupId: req.body.groupId,
+                        userId: req.body.userId
+                    }, 
+                        {$push: {tareas: req.body.tareas}}
+                    )
+                }
                 res.status(200).json('Cuenta actualizada')
             }catch(err){
                 return res.status(500).json(err)

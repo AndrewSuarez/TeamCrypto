@@ -49,7 +49,7 @@ function Member({ member, handleMemberClick }) {
         </div>
         <div className='groupMemberName'>{`${currentUser?.nombre} ${currentUser?.apellido}`}</div>
         <div className='role' onClick={handleMemberClick}>
-          PM
+          {member.role}
         </div>
         <div className='memberFileIcon'>
           <FolderIcon onClick={handleOpenDocuments} />

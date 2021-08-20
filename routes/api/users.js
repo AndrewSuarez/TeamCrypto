@@ -1,32 +1,32 @@
 const User = require('../../models/User');
 const router = require('express').Router();
-const bcrypt = require('bcrypt')
+// const bcrypt = require('bcrypt')
 
 //Update
-router.put('/:id', async(req,res)=> {
-    if(req.body.userId === req.params.id){
-        if(req.body.password){
-            try{
-                const salt = await bcrypt.genSalt(8)
-                req.body.password = await bcrypt.hash(req.body.password, salt)
-            }catch(err){
-                return res.status(500).json(err)
-            }
-        }
+// router.put('/:id', async(req,res)=> {
+//     if(req.body.userId === req.params.id){
+//         if(req.body.password){
+//             try{
+//                 const salt = await bcrypt.genSalt(8)
+//                 req.body.password = await bcrypt.hash(req.body.password, salt)
+//             }catch(err){
+//                 return res.status(500).json(err)
+//             }
+//         }
         
-        try{
-            const user = await User.findByIdAndUpdate(req.params.id, {
-                $set: req.body
-            });
-            res.status(200).json('Cuenta actualizada')
-        }catch(err){
-            return res.status(500).json(err)
-        }
+//         try{
+//             const user = await User.findByIdAndUpdate(req.params.id, {
+//                 $set: req.body
+//             });
+//             res.status(200).json('Cuenta actualizada')
+//         }catch(err){
+//             return res.status(500).json(err)
+//         }
 
-    }else {
-        return res.status(403).json('Solo puedes modificar tu cuenta')
-    }
-});
+//     }else {
+//         return res.status(403).json('Solo puedes modificar tu cuenta')
+//     }
+// });
 
 //Delete
 router.delete('/:id', async(req,res)=> {

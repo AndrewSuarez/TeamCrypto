@@ -10,13 +10,14 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import PropTypes from 'prop-types';
 
-const AccordionList = ({ options }) => {
+const AccordionList = ({ options, setSelectedRole }) => {
   const classes = useStyles();
 
-  const [selectedValue, setSelectedValue] = useState(0);
+  const [selectedValue, setSelectedValue] = useState('');
 
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
+    setSelectedRole(event.target.value)
   };
 
   const CustomRadio = withStyles({
@@ -70,6 +71,7 @@ const AccordionList = ({ options }) => {
 
 AccordionList.propTypes = {
   options: PropTypes.array,
+  setSelectedRole: PropTypes.func
 };
 
 export default AccordionList;
