@@ -2,6 +2,8 @@ import './chat.css';
 import useStyles from './styles';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import Session from 'react-session-api';
+import UserProfile from '../../objects/user';
 
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import AddBoxIcon from '@material-ui/icons/AddBox';
@@ -22,8 +24,6 @@ import Message from './Message';
 
 import Modal from '../../components/modal';
 import NavBar from '../../components/navbar';
-import Session from 'react-session-api';
-import UserProfile from '../../objects/user';
 import ElementsList from '../../components/ElementsList';
 import CustomTabs from '../../components/CustomTabs';
 import AddGroupDialog from '../../components/AddGroupDialog';
@@ -55,26 +55,11 @@ export default function Chat({ history, location }) {
   const [newMessage, setNewMessage] = useState([]);
 
   useEffect(() => {
-    const fetchGroups = async () => {
-      const res = await axios.get('/api/members/groups/user/' + sessionId);
-      setGroups(res.data);
-    };
     fetchGroups();
   }, []);
 
   useEffect(() => {
-
-    try{
-      const fecthGroupMember = async () => {
-        const res = await axios.get(
-          `/api/members/group/user/${currentGroup._id}/${sessionId}`
-        );
-        setoggedUserGroupMember(res.data)
-      }
-      fecthGroupMember()
-    }catch(err){
-      console.log(err)
-    }
+    fecthGroupMember()
 
     fetchMembers();
     
@@ -82,45 +67,94 @@ export default function Chat({ history, location }) {
   }, [currentGroup]);
 
   useEffect(() => {
-    try {
-      if (selectedUser._id) {
-        const fetchConversacion = async () => {
-          const res = await axios.get(
-            `/api/conversation/${currentGroup._id}/${sessionId}/${selectedUser._id}`
-          );
-          if (res.data) {
-            setConversation(res.data);
-          } else {
-            const nuevaConversacion = await axios.post(
-              `/api/conversation/${currentGroup._id}`,
-              {
-                senderId: sessionId,
-                receiverId: selectedUser._id,
-              }
-            );
-            setConversation(nuevaConversacion.data);
-          }
-        };
-        fetchConversacion();
-      }
-    } catch (err) {
-      console.log(err);
-    }
+    fetchConversacion();
   }, [selectedUser]);
 
   useEffect(() => {
     if (conversation) {
-      try {
-        const fetchMensajes = async () => {
-          const res = await axios.get(`/api/messages/${conversation._id}`);
-          setMessages(res.data);
-        };
-        fetchMensajes();
-      } catch (err) {
-        console.log(err);
-      }
+      fetchMensajes();
     }
   }, [conversation]);
+
+  const fetchConversacion = async () => {
+    try {
+      if (selectedUser._id) {
+        const res = await axios.get(
+          `/api/conversation/${currentGroup._id}/${sessionId}/${selectedUser._id}`
+        );
+        if (res.data) {
+          setConversation(res.data);
+        } else {
+          const nuevaConversacion = await axios.post(
+            `/api/conversation/${currentGroup._id}`,
+            {
+              senderId: sessionId,
+              receiverId: selectedUser._id,
+            }
+          );
+          setConversation(nuevaConversacion.data);
+        }
+      };
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  const fetchConverGrupal = async () => {
+    try {
+      setChatGroup(true);
+        const res = await axios.get(`/api/conversation/${currentGroup._id}`);
+        setConversation(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const fecthGroupMember = async () => {
+    try{
+      const res = await axios.get(
+        `/api/members/group/user/${currentGroup._id}/${sessionId}`
+      );
+      setoggedUserGroupMember(res.data)
+    }catch(err){
+      console.log(err)
+    }
+  }
+
+  const fetchGroups = async () => {
+    const res = await axios.get('/api/members/groups/user/' + sessionId);
+    setGroups(res.data);
+  };
+
+  const fetchMensajes = async () => {
+    try {
+      const res = await axios.get(`/api/messages/${conversation._id}`);
+      setMessages(res.data);
+    } catch (err) {
+      console.log(err);
+    };
+  }
+
+  const fetchMembers = async () => {
+    setGroupMembers([])
+    try {
+      const res = await axios.get(
+        `/api/members/${currentGroup._id}/${sessionId}`
+      );
+      setGroupMembers(res.data);
+    }catch (err) {
+      console.log(err);
+    }
+  };
+
+  const fetchUser = async (member) => {
+    try {
+      const res = await axios.get('/api/users/' + member.userId);
+      setSelectedUser(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const handleAddWorks = () => {
     setOpenWorks(true);
@@ -164,42 +198,19 @@ export default function Chat({ history, location }) {
   const onCloseSettings = () => {
     setOpenSettings(false);
   };
+  
+  const groupSetFunction = () => {
+    fetchConverGrupal();
+  };
 
   const handleGroupClick = (group) => {
     setSelectedUser([]);
     if (group === currentGroup) {
       groupSetFunction();
     } else {
-      setCurrentGroup(group);
-      setMessages([]);
       setConversation([]);
-    }
-  };
-
-  const groupSetFunction = () => {
-    setChatGroup(true);
-    try {
-      const fetchConverGrupal = async () => {
-        const res = await axios.get(`/api/conversation/${currentGroup._id}`);
-        setConversation(res.data);
-      };
-      fetchConverGrupal();
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const fetchMembers = async () => {
-    try {
-      const res = await axios.get(
-        `/api/members/${currentGroup._id}/${sessionId}`
-      );
-      res.data.map((m) => {
-        console.log(m.role)
-      })
-      setGroupMembers(res.data);
-    }catch (err) {
-      console.log(err);
+      setMessages([]);
+      setCurrentGroup(group);
     }
   };
 
@@ -207,15 +218,7 @@ export default function Chat({ history, location }) {
     if (selectedUser._id !== member.userId){
       setMessages([]);
       setChatGroup(false);
-      const fetchUser = async () => {
-        try {
-          const res = await axios.get('/api/users/' + member.userId);
-          setSelectedUser(res.data);
-        } catch (err) {
-          console.log(err);
-        }
-      };
-      fetchUser();
+      fetchUser(member);
     }
   };
 
@@ -235,13 +238,14 @@ export default function Chat({ history, location }) {
     }
     document.getElementById('messagebox').value = '';
   };
-
-  const workItems = ['Tareas', 'Crear Tareas'];
-
+  
   const handleTabClick = (value) => {
     console.log(value);
     setSwitchWorkItems(value);
   };
+  
+  const workItems = ['Tareas', 'Crear Tareas'];
+
 
   const itemsForWorks = [
     {
