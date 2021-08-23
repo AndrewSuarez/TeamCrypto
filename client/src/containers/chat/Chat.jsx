@@ -46,7 +46,7 @@ export default function Chat({ history, location }) {
 
   const [groups, setGroups] = useState([]);
   const [groupMembers, setGroupMembers] = useState([]);
-  const [loggeduserGroupMember, setoggedUserGroupMember] = useState([])
+  const [loggeduserGroupMember, setoggedUserGroupMember] = useState([]);
   const [currentGroup, setCurrentGroup] = useState([]);
   const [selectedUser, setSelectedUser] = useState([]);
   const [conversation, setConversation] = useState([]);
@@ -59,10 +59,10 @@ export default function Chat({ history, location }) {
   }, []);
 
   useEffect(() => {
-    fecthGroupMember()
+    fecthGroupMember();
 
     fetchMembers();
-    
+
     groupSetFunction();
   }, [currentGroup]);
 
@@ -94,32 +94,32 @@ export default function Chat({ history, location }) {
           );
           setConversation(nuevaConversacion.data);
         }
-      };
+      }
     } catch (err) {
       console.log(err);
     }
-  }
+  };
 
   const fetchConverGrupal = async () => {
     try {
       setChatGroup(true);
-        const res = await axios.get(`/api/conversation/${currentGroup._id}`);
-        setConversation(res.data);
+      const res = await axios.get(`/api/conversation/${currentGroup._id}`);
+      setConversation(res.data);
     } catch (err) {
       console.log(err);
     }
   };
 
   const fecthGroupMember = async () => {
-    try{
+    try {
       const res = await axios.get(
         `/api/members/group/user/${currentGroup._id}/${sessionId}`
       );
-      setoggedUserGroupMember(res.data)
-    }catch(err){
-      console.log(err)
+      setoggedUserGroupMember(res.data);
+    } catch (err) {
+      console.log(err);
     }
-  }
+  };
 
   const fetchGroups = async () => {
     const res = await axios.get('/api/members/groups/user/' + sessionId);
@@ -132,17 +132,17 @@ export default function Chat({ history, location }) {
       setMessages(res.data);
     } catch (err) {
       console.log(err);
-    };
-  }
+    }
+  };
 
   const fetchMembers = async () => {
-    setGroupMembers([])
+    setGroupMembers([]);
     try {
       const res = await axios.get(
         `/api/members/${currentGroup._id}/${sessionId}`
       );
       setGroupMembers(res.data);
-    }catch (err) {
+    } catch (err) {
       console.log(err);
     }
   };
@@ -198,7 +198,7 @@ export default function Chat({ history, location }) {
   const onCloseSettings = () => {
     setOpenSettings(false);
   };
-  
+
   const groupSetFunction = () => {
     fetchConverGrupal();
   };
@@ -215,7 +215,7 @@ export default function Chat({ history, location }) {
   };
 
   const handleMemberClick = (member) => {
-    if (selectedUser._id !== member.userId){
+    if (selectedUser._id !== member.userId) {
       setMessages([]);
       setChatGroup(false);
       fetchUser(member);
@@ -238,14 +238,13 @@ export default function Chat({ history, location }) {
     }
     document.getElementById('messagebox').value = '';
   };
-  
+
   const handleTabClick = (value) => {
     console.log(value);
     setSwitchWorkItems(value);
   };
-  
-  const workItems = ['Tareas', 'Crear Tareas'];
 
+  const workItems = ['Tareas', 'Crear Tareas'];
 
   const itemsForWorks = [
     {
@@ -371,9 +370,11 @@ export default function Chat({ history, location }) {
                 <Grid item>
                   <InputLabel className={classes.label}>Asignar a:</InputLabel>
                   <Select className={classes.assign}>
-                    <MenuItem value={10}>Andres</MenuItem>
-                    <MenuItem value={20}>Byron</MenuItem>
-                    <MenuItem value={30}>Marielys</MenuItem>
+                    {groupMembers.map((m) => (
+                      <MenuItem value={10}>
+                        {m.nombre + ' ' + m.apellido}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </Grid>
               </form>
@@ -383,9 +384,14 @@ export default function Chat({ history, location }) {
       </Modal>
       <AddGroupDialog open={addGroup} handleClose={onCloseAddGroups} />
 
-      <AssignRoleDialog 
-      open={assignRoles} handleClose={onCloseAssignRoles} 
-      userRole={loggeduserGroupMember?.role} memberId={selectedUser._id} groupId={currentGroup._id} fetchMembers={fetchMembers} />
+      <AssignRoleDialog
+        open={assignRoles}
+        handleClose={onCloseAssignRoles}
+        userRole={loggeduserGroupMember?.role}
+        memberId={selectedUser._id}
+        groupId={currentGroup._id}
+        fetchMembers={fetchMembers}
+      />
 
       <ContactsDialog open={seeContacts} handleClose={onCloseSeeContacts} />
       <SettingsDialog open={openSettings} handleClose={onCloseSettings} />
