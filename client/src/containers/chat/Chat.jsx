@@ -32,8 +32,22 @@ import ContactsDialog from '../../components/ContactsDialog';
 import SettingsDialog from '../../components/SettingsDialog';
 
 export default function Chat({ history, location }) {
-  // variable temporal!!!
-  const sessionId = '6105c08d1fbf991ef816593a';
+  // funciones y estado temporal!!! Se remplaza por el Session del log in
+  const [sessionTemp, setSessionTemp] = useState([])
+  
+  useEffect(() => {
+    fetchGroups()
+  }, [sessionTemp])
+
+  const fetchUser = async () => {
+    try {
+      const res = await axios.get('/api/users/6105c08d1fbf991ef816593a');
+      setSessionTemp(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
 
   // const {user} = useContext(AuthContext)
   const classes = useStyles();
@@ -53,8 +67,10 @@ export default function Chat({ history, location }) {
   const [chatGroup, setChatGroup] = useState(false);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState([]);
-
+  
+  //cambiar fetchUser por fetchGroups una vez se habilite el log in 
   useEffect(() => {
+    fetchUser()
     fetchGroups();
   }, []);
 
@@ -78,9 +94,9 @@ export default function Chat({ history, location }) {
 
   const fetchConversacion = async () => {
     try {
-      if (selectedUser._id) {
+      if (selectedUser.userId) {
         const res = await axios.get(
-          `/api/conversation/${currentGroup._id}/${sessionId}/${selectedUser._id}`
+          `/api/conversation/${currentGroup._id}/${sessionTemp._id}/${selectedUser.userId._id}`
         );
         if (res.data) {
           setConversation(res.data);
@@ -88,8 +104,8 @@ export default function Chat({ history, location }) {
           const nuevaConversacion = await axios.post(
             `/api/conversation/${currentGroup._id}`,
             {
-              senderId: sessionId,
-              receiverId: selectedUser._id,
+              senderId: sessionTemp._id,
+              receiverId: selectedUser.userId._id,
             }
           );
           setConversation(nuevaConversacion.data);
@@ -113,7 +129,7 @@ export default function Chat({ history, location }) {
   const fecthGroupMember = async () => {
     try {
       const res = await axios.get(
-        `/api/members/group/user/${currentGroup._id}/${sessionId}`
+        `/api/members/group/user/${currentGroup._id}/${sessionTemp._id}`
       );
       setoggedUserGroupMember(res.data);
     } catch (err) {
@@ -122,7 +138,7 @@ export default function Chat({ history, location }) {
   };
 
   const fetchGroups = async () => {
-    const res = await axios.get('/api/members/groups/user/' + sessionId);
+    const res = await axios.get('/api/members/groups/user/' + sessionTemp._id);
     setGroups(res.data);
   };
 
@@ -139,18 +155,9 @@ export default function Chat({ history, location }) {
     setGroupMembers([]);
     try {
       const res = await axios.get(
-        `/api/members/${currentGroup._id}/${sessionId}`
+        `/api/members/${currentGroup._id}/${sessionTemp._id}`
       );
       setGroupMembers(res.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const fetchUser = async (member) => {
-    try {
-      const res = await axios.get('/api/users/' + member.userId);
-      setSelectedUser(res.data);
     } catch (err) {
       console.log(err);
     }
@@ -215,10 +222,10 @@ export default function Chat({ history, location }) {
   };
 
   const handleMemberClick = (member) => {
-    if (selectedUser._id !== member.userId) {
+    if (selectedUser.userId !== member.userId) {
       setMessages([]);
       setChatGroup(false);
-      fetchUser(member);
+      setSelectedUser(member);
     }
   };
 
@@ -226,7 +233,7 @@ export default function Chat({ history, location }) {
     e.preventDefault();
     const message = {
       conversationId: conversation._id,
-      sender: sessionId,
+      sender: sessionTemp._id,
       text: newMessage,
     };
 
@@ -296,14 +303,14 @@ export default function Chat({ history, location }) {
                 <h1 className='chatName'>
                   {chatGroup
                     ? currentGroup.name
-                    : selectedUser.nombre &&
-                      `${selectedUser.nombre} ${selectedUser.apellido}`}
-                  {selectedUser.nombre && <LockIcon />}
+                    : selectedUser.userId &&
+                      `${selectedUser.userId.nombre} ${selectedUser.userId.apellido}`}
+                  {selectedUser.userId && <LockIcon />}
                 </h1>
               </nav>
               {messages.map((m) => (
                 <div>
-                  <Message message={m} own={m.sender === sessionId} />
+                  <Message message={m} own={m.sender._id === sessionTemp._id || m.sender === sessionTemp._id} />
                 </div>
               ))}
             </div>
@@ -335,7 +342,7 @@ export default function Chat({ history, location }) {
                   className='chatMemberRender'
                   onClick={() => handleMemberClick(m)}
                 >
-                  <Member member={m} handleMemberClick={handleAssignRoles} />
+                  <Member member={m} handleMemberClick={handleAssignRoles} selectedUser={selectedUser} />
                 </div>
               ))
             ) : (
@@ -388,7 +395,7 @@ export default function Chat({ history, location }) {
         open={assignRoles}
         handleClose={onCloseAssignRoles}
         userRole={loggeduserGroupMember?.role}
-        memberId={selectedUser._id}
+        member={selectedUser.userId}
         groupId={currentGroup._id}
         fetchMembers={fetchMembers}
       />

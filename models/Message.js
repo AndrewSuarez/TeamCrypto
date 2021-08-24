@@ -1,11 +1,13 @@
 const mongoose = require('mongoose')
+const Schema = mongoose.Schema;
+const User = mongoose.model('User')
 
-const MessageSchema = new mongoose.Schema({
+const MessageSchema = new Schema({
     conversationId:{
         type:String
     },
-    sender: {
-        type: String
+    sender: { 
+        type: Schema.ObjectId, ref: 'User' 
     },
     text: {
         type: String

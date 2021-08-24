@@ -47,52 +47,52 @@ router.delete('/:id', async(req,res)=> {
 router.get('/:id', async(req, res)=>{
     try{
         const user = await User.findById(req.params.id);
-        const {password, updatedAt, createdAt, privateKey, ...other} = user._doc
+        const {password, updatedAt, createdAt, privateKey, solicitudes, ...other} = user._doc
         res.status(200).json(other)
     }catch(err){
         res.status(500).json(err)
     }
 })
 
-//Friend a User
-router.put('/:id/friend', async(req, res) => {
+//Agregar contacto
+router.put('/:id/contacto', async(req, res) => {
     if(req.body.userId !== req.params.id) {
         try{
             const user = await User.findById(req.params.id);
             const currentUser = await User.findById(req.body.userId);
-            if (!user.friends.includes(req.body.userId)){
-                await user.updateOne({ $push: {friends: req.body.userId}})
-                await currentUser.updateOne({ $push: {friends: req.params.id}})
-                res.status(200).json('Han sido agregados como amigos')
+            if (!user.contactos.includes(req.body.userId)){
+                await user.updateOne({ $push: {contactos: req.body.userId}})
+                await currentUser.updateOne({ $push: {contactos: req.params.id}})
+                res.status(200).json('Han sido agregados como contactos')
             }else {
-                res.status(403).json('Ya son amigos');
+                res.status(403).json('Este usuario ya esta agregado como contacto');
             }
         }catch(err){
             res.status(500).json(err)
         }
     }else{
-        res.status(403).json("No puedes añadirte a ti mismo como amigo")
+        res.status(403).json("No puedes añadirte a ti mismo como contacto")
     }
 })
 
-//Unfriend a User
-router.put('/:id/unfriend', async(req, res) => {
+//Borrar Contacto
+router.put('/:id/delete', async(req, res) => {
     if(req.body.userId !== req.params.id) {
         try{
             const user = await User.findById(req.params.id);
             const currentUser = await User.findById(req.body.userId);
-            if (user.friends.includes(req.body.userId)){
-                await user.updateOne({ $pull: {friends: req.body.userId}})
-                await currentUser.updateOne({ $pull: {friends: req.params.id}})
-                res.status(200).json('Han sido eliminados como amigos')
+            if (user.contactos.includes(req.body.userId)){
+                await user.updateOne({ $pull: {contactos: req.body.userId}})
+                await currentUser.updateOne({ $pull: {contactos: req.params.id}})
+                res.status(200).json('Han sido eliminados como contactos')
             }else {
-                res.status(403).json('Los usuarios no son amigos');
+                res.status(403).json('Los usuarios no son contactos');
             }
         }catch(err){
             res.status(500).json(err)
         }
     }else{
-        res.status(403).json("No puedes borrarte a ti mismo como amigo")
+        res.status(403).json("No puedes borrarte a ti mismo como contacto")
     }
 })
 

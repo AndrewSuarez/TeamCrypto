@@ -9,16 +9,16 @@ import TransferList from '../TransferList';
 import AccordionList from '../AccordionList';
 import axios from 'axios';
 
-const AssignRoleDialog = ({ open, handleClose, userRole, memberId, groupId, fetchMembers }) => {
+const AssignRoleDialog = ({ open, handleClose, userRole, member, groupId, fetchMembers }) => {
  
   const classes = useStyles();
 
   const [selectedRole, setSelectedRole] = useState('')
   
-  const handleAccept = (userRole, memberId, groupId ) => {
+  const handleAccept = (userRole, member, groupId ) => {
     if(userRole === 'A'){
       const assignRole =  async () => {
-        await axios.put(`/api/members/${groupId}`, {groupId: groupId, userId: memberId, role: selectedRole})
+        await axios.put(`/api/members/${groupId}`, {groupId: groupId, userId: member._id, role: selectedRole})
         .then(fetchMembers())
       }
       assignRole();
@@ -62,7 +62,7 @@ const AssignRoleDialog = ({ open, handleClose, userRole, memberId, groupId, fetc
       closeText='Cerrar'
       acceptText='Asignar'
       handleClose={handleClose}
-      onAccept={() => handleAccept(userRole, memberId, groupId)}
+      onAccept={() => handleAccept(userRole, member, groupId)}
       maxWidth='sm'
     >
       <form className={classes.root} noValidate autoComplete='off'>

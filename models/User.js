@@ -27,11 +27,6 @@ const UserSchema = new mongoose.Schema({
         default:''
     },
 
-    coverPicture:{
-        type:String,
-        default:''
-    },
-
     nombre:{
         type: String,
         require: true
@@ -42,7 +37,12 @@ const UserSchema = new mongoose.Schema({
         require: true
     },
 
-    friends:{
+    contactos:{
+        type: Array,
+        default: []
+    },
+
+    solicitudes:{
         type: Array,
         default: []
     },
