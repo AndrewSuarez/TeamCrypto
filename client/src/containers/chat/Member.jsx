@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 
 import FolderIcon from '@material-ui/icons/Folder';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import DocumentsDialog from '../../components/DocumentsDialog';
 
 function Member({ member, handleMemberClick }) {
-  const [currentUser, setCurrentUser] = useState([]);
+  // const [currentUser, setCurrentUser] = useState([]);
   const [openDocuments, setOpenDocuments] = useState(false);
   const [userDocuments, setUserDocuments] = useState([]);
 
@@ -19,17 +19,17 @@ function Member({ member, handleMemberClick }) {
     setOpenDocuments(false);
   };
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await axios.get('/api/users/' + member.userId);
-        setCurrentUser(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchUser();
-  }, [member.userId]);
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     try {
+  //       const res = await axios.get('/api/users/' + member.userId);
+  //       setCurrentUser(res.data);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
+  //   fetchUser();
+  // }, [member.userId]);
 
   useEffect(() => {
     fetch('https://picsum.photos/v2/list?page=2&limit=100').then((res) => {
@@ -47,7 +47,7 @@ function Member({ member, handleMemberClick }) {
           <img className='groupMemberImage' src={userIcon} alt='' />
           <div className='groupMemberOnlineBadge'></div>
         </div>
-        <div className='groupMemberName'>{`${currentUser?.nombre} ${currentUser?.apellido}`}</div>
+        <div className='groupMemberName'>{`${member.userId?.nombre} ${member.userId?.apellido}`}</div>
         <div className='role' onClick={handleMemberClick}>
           {member.role}
         </div>

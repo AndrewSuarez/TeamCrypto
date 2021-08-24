@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const Message = require('../../models/Message');
+const User = require('../../models/User')
 
 //nuevo mensaje
 router.post('/', async (req, res) =>{
@@ -13,16 +14,24 @@ router.post('/', async (req, res) =>{
     }
 })
 
-//get
-router.get('/:conversationId', async(req, res)=> {
-    try{
-        const messages = await Message.find({
-            conversationId:req.params.conversationId,
-        })
-        res.status(200).json(messages);
-    }catch(err){
-        res.status(500).json(err)
-    }
-})
+// //get
+// router.get('/:conversationId', async(req, res)=> {
+//     try{
+//         const messages = await Message.find({
+//             conversationId:req.params.conversationId,
+//         })
+//         res.status(200).json(messages);
+//     }catch(err){
+//         res.status(500).json(err)
+//     }
+// })
 
+router.get('/:conversationId', async (req, res) => {
+    Message.find({ conversationId: req.params.conversationId }, (err, message) => {
+      User.populate(message, { path: 'sender' }, function (err, message) {
+        res.status(200).send(message);
+      });
+    });
+  });
+  
 module.exports = router 

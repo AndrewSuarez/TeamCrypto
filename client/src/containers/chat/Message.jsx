@@ -8,23 +8,9 @@ import { format } from 'timeago.js';
 
 export default function Message({ message, own, file }) {
 
-  const [sender, setSender] = useState([])
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await axios.get('/api/users/' + message.sender);
-        setSender(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchUser();
-  }, [])
-
   return (
     <div className={own ? 'message own' : 'message'}>
-      {!own && <div className="senderName">{sender.nombre}</div> }
+      {!own && <div className="senderName">{message.sender.nombre}</div> }
       <div className='messageTop'>
         <img className={!own && 'messageImg'} src={!own && userIcon} alt='' />
         <div className='messageBubble'>

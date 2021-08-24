@@ -15,7 +15,7 @@ router.post('/', async (req, res) => {
 });
 
 //Get all members for a group
-router.get('/prueba/:groupId/:except?', function (req, res) {
+router.get('/:groupId/:except?', function (req, res) {
   Member.find({ groupId: req.params.groupId }, (err, member) => {
     User.populate(member, { path: 'userId' }, function (err, member) {
       const members = member.filter((m) => {
@@ -24,21 +24,6 @@ router.get('/prueba/:groupId/:except?', function (req, res) {
       res.status(200).send(members);
     });
   });
-});
-
-//Get
-router.get('/:groupId/:userId?', async (req, res) => {
-  try {
-    const allMembers = await Member.find({
-      groupId: req.params.groupId,
-    });
-    const members = allMembers.filter((member) => {
-      return member.userId !== req.params.userId;
-    });
-    res.status(200).json(members);
-  } catch (err) {
-    res.status(500).json(err);
-  }
 });
 
 //get current group user
@@ -57,9 +42,7 @@ router.get('/group/user/:groupId/:userId', async (req, res) => {
 //Todos los grupos de un usuario
 router.get('/groups/user/:userId', async (req, res) => {
   try {
-    const currentUser = await User.findById(req.params.userId);
-    const memberGroups = await Member.find({ userId: currentUser._id });
-    // const {groupId} = memberGroups._doc
+    const memberGroups = await Member.find({ userId: req.params.userId });
     const userGroups = await Promise.all(
       memberGroups.map((members) => {
         return Group.findById(members.groupId);
