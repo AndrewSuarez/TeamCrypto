@@ -89,6 +89,7 @@ router.put('/:id/agregar', async(req, res) => {
                 await otherUser.updateOne({ $push: {contactos: req.params.id}})
                 res.status(200).json('Han sido agregados como contactos')
             }else {
+                await user.update({$pull: {solicitudes: req.body.userId}})
                 res.status(403).json('Este usuario ya esta agregado como contacto');
             }
         }catch(err){

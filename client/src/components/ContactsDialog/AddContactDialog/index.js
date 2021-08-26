@@ -18,49 +18,28 @@ import SearchIcon from '@material-ui/icons/Search';
 import useStyles from './styles';
 import Search from '@material-ui/icons/Search';
 
-const AddContactsDialog = ({ open, handleClose }) => {
+const AddContactsDialog = ({ open, handleClose, handleAccept, noContacts, selectedUser, setSelectedUser }) => {
   const classes = useStyles();
 
-  const [userAvatar, setUserAvatar] = useState([]);
   const [keyword, setKeyword] = useState('');
   const [users, setUsers] = useState([]);
   const [selectedValue, setSelectedValue] = useState([]);
-  const [originalUsers, setOriginalUsers] = useState([
+  
+  const originalUsers = noContacts.map(usuario => (
     {
-      id: 1,
-      avatar: userAvatar[0],
-      title: 'Andres Suarez',
-    },
-    {
-      id: 2,
-      avatar: userAvatar[1],
-      title: 'Marielys Brijaldo',
-    },
-    {
-      id: 3,
-      avatar: userAvatar[2],
-      title: 'Eduardo Lopez',
-    },
-    {
-      id: 4,
-      avatar: userAvatar[3],
-      title: 'Eduardo Leon',
-    },
-  ]);
+      id: usuario._id, 
+      avatar: usuario.profilePicture,
+      title: `${usuario.nombre} ${usuario.apellido}` 
+    }
+  ))
 
   useEffect(() => {
-    fetch('https://picsum.photos/v2/list?page=2&limit=4').then((res) => {
-      return res.json().then((data) => {
-        // console.log(data);
-        setUserAvatar(data);
         setUsers(originalUsers);
-      });
-    });
   }, []);
 
   const selectItems = (e) => {
     setSelectedValue(e.target.value);
-    console.log(e.target);
+    setSelectedUser(e.target.value)
   };
 
   const handleSearch = (key) => {
@@ -86,6 +65,7 @@ const AddContactsDialog = ({ open, handleClose }) => {
       closeText='Cerrar'
       acceptText='Agregar'
       handleClose={handleClose}
+      onAccept={handleAccept}
       maxWidth='xs'
     >
       <form noValidate autoComplete='off' className={classes.root}>
