@@ -23,7 +23,6 @@ const AddContactsDialog = ({ open, handleClose, handleAccept, noContacts, select
 
   const [keyword, setKeyword] = useState('');
   const [users, setUsers] = useState([]);
-  const [selectedValue, setSelectedValue] = useState([]);
   
   const originalUsers = noContacts.map(usuario => (
     {
@@ -38,7 +37,6 @@ const AddContactsDialog = ({ open, handleClose, handleAccept, noContacts, select
   }, []);
 
   const selectItems = (e) => {
-    setSelectedValue(e.target.value);
     setSelectedUser(e.target.value)
   };
 
@@ -91,7 +89,7 @@ const AddContactsDialog = ({ open, handleClose, handleAccept, noContacts, select
                   <Radio
                     value={user.id}
                     onClick={selectItems}
-                    checked={user.id == selectedValue}
+                    checked={user.id == selectedUser}
                   />
                 </ListItemSecondaryAction>
               </ListItem>

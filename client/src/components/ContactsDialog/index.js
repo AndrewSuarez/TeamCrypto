@@ -8,24 +8,15 @@ import PropTypes from 'prop-types';
 import AddContactsDialog from './AddContactDialog';
 import axios from 'axios';
 
-const ContactsDialog = ({ open, handleClose, usuario, avatars }) => {
+const ContactsDialog = ({ open, handleClose, usuario, nonContacts, avatars }) => {
   //   const classes = useStyles();
 
   const [userAvatar, setUserAvatar] = useState([]);
   const [addContact, setAddContact] = useState(false);
-  const [nonContacts, setNonContacts] = useState([])
   const [selectedUser, setSelectedUser] = useState([])
 
   useEffect(() => {
-    try{
-      const fetchNonContacts = async () => {
-        const res = await axios.get('/api/users/noContacts/' + usuario._id)
-        setNonContacts(res.data)
-      }
-      fetchNonContacts()
-    }catch(err){
-      console.log(err)
-    }
+   
   }, []);
 
   const handleAddContact = () => {
@@ -39,13 +30,13 @@ const ContactsDialog = ({ open, handleClose, usuario, avatars }) => {
     try{
       const res = await axios.put(`/api/users/${usuario._id}/solicitud`, {userId: selectedUser})
       console.log(res.data)
-      handleClose()
+      handleCloseAddContact()
     }catch(err){
       console.log(err)
     }
   }
 
-  const items = usuario.contactos.map(contacto => (
+  const items = usuario.contactos?.map(contacto => (
     {
       avatar: contacto.profilePicture,
       title: `${contacto.nombre} ${contacto.apellido}`,
