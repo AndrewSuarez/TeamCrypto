@@ -33,11 +33,11 @@ import SettingsDialog from '../../components/SettingsDialog';
 
 export default function Chat({ history, location }) {
   // funciones y estado temporal!!! Se remplaza por el Session del log in
-  const [sessionTemp, setSessionTemp] = useState([])
-  
+  const [sessionTemp, setSessionTemp] = useState([]);
+
   useEffect(() => {
-    fetchGroups()
-  }, [sessionTemp])
+    fetchGroups();
+  }, [sessionTemp]);
 
   const fetchUser = async () => {
     try {
@@ -47,7 +47,6 @@ export default function Chat({ history, location }) {
       console.log(err);
     }
   };
-
 
   // const {user} = useContext(AuthContext)
   const classes = useStyles();
@@ -67,10 +66,12 @@ export default function Chat({ history, location }) {
   const [chatGroup, setChatGroup] = useState(false);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState([]);
-  
-  //cambiar fetchUser por fetchGroups una vez se habilite el log in 
+  const [workTitle, setWorkTitle] = useState('');
+  const [memberToWork, setMemberToWork] = useState('');
+
+  //cambiar fetchUser por fetchGroups una vez se habilite el log in
   useEffect(() => {
-    fetchUser()
+    fetchUser();
     fetchGroups();
   }, []);
 
@@ -250,6 +251,12 @@ export default function Chat({ history, location }) {
     console.log(value);
     setSwitchWorkItems(value);
   };
+  const handleChangeWorkTitle = (e) => {
+    setWorkTitle(e.target.value);
+  };
+  const handleChangeAssignWork = (e) => {
+    setMemberToWork(e.target.value);
+  };
 
   const workItems = ['Tareas', 'Crear Tareas'];
 
@@ -310,7 +317,13 @@ export default function Chat({ history, location }) {
               </nav>
               {messages.map((m) => (
                 <div>
-                  <Message message={m} own={m.sender._id === sessionTemp._id || m.sender === sessionTemp._id} />
+                  <Message
+                    message={m}
+                    own={
+                      m.sender._id === sessionTemp._id ||
+                      m.sender === sessionTemp._id
+                    }
+                  />
                 </div>
               ))}
             </div>
@@ -342,7 +355,11 @@ export default function Chat({ history, location }) {
                   className='chatMemberRender'
                   onClick={() => handleMemberClick(m)}
                 >
-                  <Member member={m} handleMemberClick={handleAssignRoles} selectedUser={selectedUser} />
+                  <Member
+                    member={m}
+                    handleMemberClick={handleAssignRoles}
+                    selectedUser={selectedUser}
+                  />
                 </div>
               ))
             ) : (
@@ -364,28 +381,31 @@ export default function Chat({ history, location }) {
         {switchWorkItems === 0 ? (
           <ElementsList items={itemsForWorks} />
         ) : (
-          <Grid container xs={12}>
-            <Paper className={classes.container}>
-              <form className={classes.root} noValidate autoComplete='off'>
-                <Grid item>
-                  <TextField
-                    id='outlined-basic'
-                    label='Titulo'
-                    variant='outlined'
-                  />
-                </Grid>
-                <Grid item>
-                  <InputLabel className={classes.label}>Asignar a:</InputLabel>
-                  <Select className={classes.assign}>
-                    {groupMembers.map((m) => (
-                      <MenuItem value={10}>
-                        {m.nombre + ' ' + m.apellido}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </Grid>
-              </form>
-            </Paper>
+          <Grid container spacing={2} className={classes.container}>
+            <form className={classes.root} noValidate autoComplete='off'>
+              <Grid item xs={12}>
+                <TextField
+                  id='outlined-basic'
+                  className={classes.input}
+                  label='Titulo'
+                  variant='outlined'
+                  onChange={handleChangeWorkTitle}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <InputLabel className={classes.label}>Asignar a:</InputLabel>
+                <Select
+                  className={classes.assign}
+                  onChange={handleChangeAssignWork}
+                >
+                  {groupMembers.map((m) => (
+                    <MenuItem value={m.userId._id}>
+                      {m.userId.nombre + ' ' + m.userId.apellido}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Grid>
+            </form>
           </Grid>
         )}
       </Modal>
