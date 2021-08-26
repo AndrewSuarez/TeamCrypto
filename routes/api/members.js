@@ -18,10 +18,14 @@ router.post('/', async (req, res) => {
 router.get('/:groupId/:except?', function (req, res) {
   Member.find({ groupId: req.params.groupId }, (err, member) => {
     User.populate(member, { path: 'userId' }, function (err, member) {
-      const members = member.filter((m) => {
-        return m.userId._id != req.params.except;
-      });
-      res.status(200).send(members);
+      try {
+        const members = member.filter((m) => {
+          return m.userId._id != req.params.except;
+        });
+        res.status(200).send(members);
+      } catch (err) {
+        res.status(500).send(err);
+      }
     });
   });
 });
@@ -51,6 +55,25 @@ router.get('/groups/user/:userId', async (req, res) => {
     res.status(200).json(userGroups);
   } catch (err) {
     res.status(500).json(err);
+  }
+});
+
+//Update a member
+router.put('/works/:memberId', async (req, res) => {
+  try {
+    if (req.body.tareas) {
+      console.log(req.body.tareas);
+      console.log(req.params.memberId);
+      Member.findOneAndUpdate(
+        {
+          memberId: req.params.memberId,
+        },
+        { $push: { tareas: req.body.tareas } }
+      );
+    }
+    res.status(200).json('Cuenta actualizada');
+  } catch (err) {
+    return res.status(500).json(err);
   }
 });
 
