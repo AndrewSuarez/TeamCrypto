@@ -10,6 +10,7 @@ import AddBoxIcon from '@material-ui/icons/AddBox';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SendIcon from '@material-ui/icons/Send';
 import LockIcon from '@material-ui/icons/Lock';
+import NotificationImportantIcon from '@material-ui/icons/NotificationImportant';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
@@ -30,6 +31,7 @@ import AddGroupDialog from '../../components/AddGroupDialog';
 import AssignRoleDialog from '../../components/AssignRoleDialog';
 import ContactsDialog from '../../components/ContactsDialog';
 import SettingsDialog from '../../components/SettingsDialog';
+import NotificationsDialog from '../../components/NotificationsDialog';
 
 export default function Chat({ history, location }) {
   // funciones y estado temporal!!! Se remplaza por el Session del log in
@@ -40,6 +42,9 @@ export default function Chat({ history, location }) {
       fetchGroups();
       fetchNonContacts()
     }
+    if(sessionTemp.solicitudes?.length === 0){
+      setShowNotifications(false)
+    }else setShowNotifications(true)
   }, [sessionTemp]);
 
   const fetchUser = async () => {
@@ -59,6 +64,8 @@ export default function Chat({ history, location }) {
   const [openSettings, setOpenSettings] = useState(false);
   const [switchWorkItems, setSwitchWorkItems] = useState(0);
   const [seeContacts, setSeeContacts] = useState(false);
+  const [openNotifications, setOpenNotifications] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
 
   const [groups, setGroups] = useState([]);
   const [groupMembers, setGroupMembers] = useState([]);
@@ -77,7 +84,7 @@ export default function Chat({ history, location }) {
   //cambiar fetchUser por fetchGroups una vez se habilite el log in
   useEffect(() => {
     fetchUser();
-    fetchGroups();
+    // fetchGroups();
   }, []);
 
   useEffect(() => {
@@ -178,6 +185,17 @@ export default function Chat({ history, location }) {
     }
   }
 
+  const acceptSolicitud = async (userId) => {
+    try{
+      const res = await axios.put(`/api/users/${sessionTemp._id}/agregar`, {userId: userId})
+      console.log(res.data)
+      onCloseNotifications()
+      fetchUser()
+    }catch(err){
+      console.log(err)
+    }
+  }
+
   const handleAddWorks = () => {
     setOpenWorks(true);
   };
@@ -193,6 +211,9 @@ export default function Chat({ history, location }) {
   const handleOpenSettings = () => {
     setOpenSettings(true);
   };
+  const handleOpenNotifications = () =>{
+    setOpenNotifications(true)
+  }
 
   const navOptions = [
     { label: 'Chat', direction: '/chat' },
@@ -203,6 +224,7 @@ export default function Chat({ history, location }) {
     { label: <span onClick={handleSeeContacts}>Contactos</span> },
     { label: <span onClick={handleOpenSettings}>Ajustes</span> },
     { label: 'Cerrar Sesion', direction: '/' },
+    showNotifications && { label: <div className="notificacion" onClick={handleOpenNotifications}> <NotificationImportantIcon /> </div> }
   ];
 
   const onCloseAddWorks = () => {
@@ -220,6 +242,9 @@ export default function Chat({ history, location }) {
   const onCloseSettings = () => {
     setOpenSettings(false);
   };
+  const onCloseNotifications = () => {
+    setOpenNotifications(false)
+  }
 
   const groupSetFunction = () => {
     fetchConverGrupal();
@@ -435,6 +460,7 @@ export default function Chat({ history, location }) {
 
       <ContactsDialog open={seeContacts} handleClose={onCloseSeeContacts} usuario={sessionTemp} nonContacts={nonContacts}/>
       <SettingsDialog open={openSettings} handleClose={onCloseSettings} />
+      <NotificationsDialog open={openNotifications} handleClose={onCloseNotifications} usuario={sessionTemp} aceptarSolicitud={acceptSolicitud}/>
     </>
   );
 }
