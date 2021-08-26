@@ -58,42 +58,20 @@ router.get('/groups/user/:userId', async (req, res) => {
   }
 });
 
-//Update a member
-router.put('/works/:memberId', async (req, res) => {
-  try {
-    if (req.body.tareas) {
-      console.log(req.body.tareas);
-      console.log(req.params.memberId);
-      Member.findOneAndUpdate(
-        {
-          memberId: req.params.memberId,
-        },
-        { $push: { tareas: req.body.tareas } }
-      );
-    }
-    res.status(200).json('Cuenta actualizada');
-  } catch (err) {
-    return res.status(500).json(err);
-  }
-});
-
 //Update
-router.put('/:groupId', async (req, res) => {
-  if (req.body.groupId === req.params.groupId) {
+router.put('/update/:memberId', async (req, res) => {
     try {
       if (req.body.role) {
-        const members = await Member.findOneAndUpdate(
+        await Member.findOneAndUpdate(
           {
-            groupId: req.body.groupId,
-            userId: req.body.userId,
+            _id: req.params.memberId
           },
           { role: req.body.role }
         );
       } else if (req.body.tareas) {
         const members = await Member.findOneAndUpdate(
           {
-            groupId: req.body.groupId,
-            userId: req.body.userId,
+            _id: req.params.memberId
           },
           { $push: { tareas: req.body.tareas } }
         );
@@ -102,9 +80,6 @@ router.put('/:groupId', async (req, res) => {
     } catch (err) {
       return res.status(500).json(err);
     }
-  } else {
-    return res.status(403).json('Solo puedes modificar tu grupo');
-  }
 });
 
 //borrar tareas

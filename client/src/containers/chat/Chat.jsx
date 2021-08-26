@@ -36,7 +36,10 @@ export default function Chat({ history, location }) {
   const [sessionTemp, setSessionTemp] = useState([]);
 
   useEffect(() => {
-    fetchGroups();
+    if(sessionTemp._id){
+      fetchGroups();
+      fetchNonContacts()
+    }
   }, [sessionTemp]);
 
   const fetchUser = async () => {
@@ -66,6 +69,8 @@ export default function Chat({ history, location }) {
   const [chatGroup, setChatGroup] = useState(false);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState([]);
+  const [nonContacts, setNonContacts] = useState([])
+
   const [workTitle, setWorkTitle] = useState('');
   const [memberToWork, setMemberToWork] = useState('');
 
@@ -76,11 +81,11 @@ export default function Chat({ history, location }) {
   }, []);
 
   useEffect(() => {
-    fecthGroupMember();
-
-    fetchMembers();
-
-    groupSetFunction();
+    if(currentGroup._id){
+      fecthGroupMember();
+      fetchMembers();
+      groupSetFunction();
+    }
   }, [currentGroup]);
 
   useEffect(() => {
@@ -163,6 +168,15 @@ export default function Chat({ history, location }) {
       console.log(err);
     }
   };
+
+  const fetchNonContacts = async () => {
+    try{
+      const res = await axios.get('/api/users/noContacts/' + sessionTemp._id)
+      setNonContacts(res.data)
+    }catch(err){
+      console.log(err)
+    }
+  }
 
   const handleAddWorks = () => {
     setOpenWorks(true);
@@ -415,12 +429,11 @@ export default function Chat({ history, location }) {
         open={assignRoles}
         handleClose={onCloseAssignRoles}
         userRole={loggeduserGroupMember?.role}
-        member={selectedUser.userId}
-        groupId={currentGroup._id}
+        memberId={selectedUser._id}
         fetchMembers={fetchMembers}
       />
 
-      <ContactsDialog open={seeContacts} handleClose={onCloseSeeContacts} usuario={sessionTemp}/>
+      <ContactsDialog open={seeContacts} handleClose={onCloseSeeContacts} usuario={sessionTemp} nonContacts={nonContacts}/>
       <SettingsDialog open={openSettings} handleClose={onCloseSettings} />
     </>
   );
