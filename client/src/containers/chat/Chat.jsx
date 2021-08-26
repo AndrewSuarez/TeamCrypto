@@ -400,7 +400,7 @@ export default function Chat({ history, location }) {
         fetchMembers={fetchMembers}
       />
 
-      <ContactsDialog open={seeContacts} handleClose={onCloseSeeContacts} />
+      <ContactsDialog open={seeContacts} handleClose={onCloseSeeContacts} usuario={sessionTemp}/>
       <SettingsDialog open={openSettings} handleClose={onCloseSettings} />
     </>
   );
