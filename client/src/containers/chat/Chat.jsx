@@ -38,13 +38,13 @@ export default function Chat({ history, location }) {
   const [sessionTemp, setSessionTemp] = useState([]);
 
   useEffect(() => {
-    if(sessionTemp._id){
+    if (sessionTemp._id) {
       fetchGroups();
-      fetchNonContacts()
+      fetchNonContacts();
     }
-    if(sessionTemp.solicitudes?.length === 0){
-      setShowNotifications(false)
-    }else setShowNotifications(true)
+    if (sessionTemp.solicitudes?.length === 0) {
+      setShowNotifications(false);
+    } else setShowNotifications(true);
   }, [sessionTemp]);
 
   const fetchUser = async () => {
@@ -64,8 +64,8 @@ export default function Chat({ history, location }) {
   const [openSettings, setOpenSettings] = useState(false);
   const [switchWorkItems, setSwitchWorkItems] = useState(0);
   const [seeContacts, setSeeContacts] = useState(false);
-  const [openNotifications, setOpenNotifications] = useState(false)
-  const [showNotifications, setShowNotifications] = useState(false)
+  const [openNotifications, setOpenNotifications] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const [groups, setGroups] = useState([]);
   const [groupMembers, setGroupMembers] = useState([]);
@@ -76,7 +76,7 @@ export default function Chat({ history, location }) {
   const [chatGroup, setChatGroup] = useState(false);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState([]);
-  const [nonContacts, setNonContacts] = useState([])
+  const [nonContacts, setNonContacts] = useState([]);
 
   const [workTitle, setWorkTitle] = useState('');
   const [memberToWork, setMemberToWork] = useState('');
@@ -88,7 +88,7 @@ export default function Chat({ history, location }) {
   }, []);
 
   useEffect(() => {
-    if(currentGroup._id){
+    if (currentGroup._id) {
       fecthGroupMember();
       fetchMembers();
       groupSetFunction();
@@ -176,48 +176,69 @@ export default function Chat({ history, location }) {
     }
   };
 
+  const assignWork = async (memberId, works) => {
+    await axios
+      .put(`/api/members/works/${memberId}`, { tareas: works })
+      .then((res) => {
+        console.log(res.data);
+        fetchMembers();
+      });
+  };
+
+  const deleteWork = async (memberId, work) => {
+    await axios
+      .put(`/api/members/${memberId}/tarea`, { tareas: work })
+      .then((res) => {
+        console.log(res.data);
+        fetchMembers();
+      });
+  };
+
   const fetchNonContacts = async () => {
-    try{
-      const res = await axios.get('/api/users/noContacts/' + sessionTemp._id)
-      setNonContacts(res.data)
-    }catch(err){
-      console.log(err)
+    try {
+      const res = await axios.get('/api/users/noContacts/' + sessionTemp._id);
+      setNonContacts(res.data);
+    } catch (err) {
+      console.log(err);
     }
-  }
+  };
 
   const acceptSolicitud = async (userId) => {
-    try{
-      const res = await axios.put(`/api/users/${sessionTemp._id}/agregar`, {userId: userId})
-      console.log(res.data)
-      onCloseNotifications()
-      fetchUser()
-    }catch(err){
-      console.log(err)
+    try {
+      const res = await axios.put(`/api/users/${sessionTemp._id}/agregar`, {
+        userId: userId,
+      });
+      console.log(res.data);
+      onCloseNotifications();
+      fetchUser();
+    } catch (err) {
+      console.log(err);
     }
-  }
+  };
 
   const handleCrearGrupo = async (usuario, miembros, nombreGrupo) => {
-    try{
-      const res = await axios.post('/api/groups', {name: nombreGrupo})
-      const newMembers = [{
-        groupId: res.data._id,
-        userId: usuario._id,
-        role: "A"
-      }].concat(miembros.map(miembro => (
-          {
-            groupId: res.data._id,
-            userId: miembro._id
-          }
-        ))
-      )
+    try {
+      const res = await axios.post('/api/groups', { name: nombreGrupo });
+      const newMembers = [
+        {
+          groupId: res.data._id,
+          userId: usuario._id,
+          role: 'A',
+        },
+      ].concat(
+        miembros.map((miembro) => ({
+          groupId: res.data._id,
+          userId: miembro._id,
+        }))
+      );
       axios.post('/api/members', newMembers).then(() => {
         onCloseAddGroups();
         fetchGroups();
-      })
-    }catch(err){
-      console.log(err)
+      });
+    } catch (err) {
+      console.log(err);
     }
-  }
+  };
 
   const handleAddWorks = () => {
     setOpenWorks(true);
@@ -234,9 +255,13 @@ export default function Chat({ history, location }) {
   const handleOpenSettings = () => {
     setOpenSettings(true);
   };
-  const handleOpenNotifications = () =>{
-    setOpenNotifications(true)
-  }
+  const handleAssignWork = () => {
+    assignWork(memberToWork, workTitle);
+    setOpenWorks(false);
+  };
+  const handleOpenNotifications = () => {
+    setOpenNotifications(true);
+  };
 
   const navOptions = [
     { label: 'Chat', direction: '/chat' },
@@ -247,7 +272,14 @@ export default function Chat({ history, location }) {
     { label: <span onClick={handleSeeContacts}>Contactos</span> },
     { label: <span onClick={handleOpenSettings}>Ajustes</span> },
     { label: 'Cerrar Sesion', direction: '/' },
-    showNotifications && { label: <div className="notificacion" onClick={handleOpenNotifications}> <NotificationImportantIcon /> </div> }
+    showNotifications && {
+      label: (
+        <div className='notificacion' onClick={handleOpenNotifications}>
+          {' '}
+          <NotificationImportantIcon />{' '}
+        </div>
+      ),
+    },
   ];
 
   const onCloseAddWorks = () => {
@@ -266,8 +298,8 @@ export default function Chat({ history, location }) {
     setOpenSettings(false);
   };
   const onCloseNotifications = () => {
-    setOpenNotifications(false)
-  }
+    setOpenNotifications(false);
+  };
 
   const groupSetFunction = () => {
     fetchConverGrupal();
@@ -322,28 +354,22 @@ export default function Chat({ history, location }) {
 
   const workItems = ['Tareas', 'Crear Tareas'];
 
-  const itemsForWorks = [
-    {
-      title: 'Crear dialog de grupos',
-      description: 'Asignado a: Andres Suarez.',
-      children: <DeleteIcon />,
-    },
-    {
-      title: 'Crear dialog de contactos',
-      description: 'Asignado a: Andres Suarez.',
-      children: <DeleteIcon />,
-    },
-    {
-      title: 'Crear dialog de roles',
-      description: 'Asignado a: Byron Miranda.',
-      children: <DeleteIcon />,
-    },
-    {
-      title: 'Crear dialog de Informacion',
-      description: 'Asignado a: Byron Miranda.',
-      children: <DeleteIcon />,
-    },
-  ];
+  const mapWorkItems = (groupMembers) => {
+    const workList = [];
+    groupMembers.map((member) => {
+      member.tareas.map((tarea) => {
+        workList.push({
+          title: tarea,
+          description:
+            'Asignada a:' + member.userId.nombre + ' ' + member.userId.apellido,
+          children: (
+            <DeleteIcon onClick={() => deleteWork(member._id, tarea)} />
+          ),
+        });
+      });
+    });
+    return workList;
+  };
 
   return (
     <>
@@ -435,15 +461,16 @@ export default function Chat({ history, location }) {
         open={openWorks}
         title={`Tareas de ${currentGroup?.name}`}
         closeText='Cerrar'
-        acceptText={'Aceptar'}
+        acceptText={switchWorkItems == 1 && 'Aceptar'}
         handleClose={onCloseAddWorks}
+        onAccept={handleAssignWork}
         maxWidth={'xs'}
       >
         <CustomTabs options={workItems} handleClick={handleTabClick} />
         {switchWorkItems === 0 ? (
-          <ElementsList items={itemsForWorks} />
+          <ElementsList items={mapWorkItems(groupMembers)} />
         ) : (
-          <Grid container spacing={2} className={classes.container}>
+          <Grid container className={classes.container}>
             <form className={classes.root} noValidate autoComplete='off'>
               <Grid item xs={12}>
                 <TextField
@@ -461,7 +488,7 @@ export default function Chat({ history, location }) {
                   onChange={handleChangeAssignWork}
                 >
                   {groupMembers.map((m) => (
-                    <MenuItem value={m.userId._id}>
+                    <MenuItem value={m._id}>
                       {m.userId.nombre + ' ' + m.userId.apellido}
                     </MenuItem>
                   ))}
@@ -471,7 +498,12 @@ export default function Chat({ history, location }) {
           </Grid>
         )}
       </Modal>
-      <AddGroupDialog open={addGroup} handleClose={onCloseAddGroups} usuario={sessionTemp} handleCrearGrupo={handleCrearGrupo} />
+      <AddGroupDialog
+        open={addGroup}
+        handleClose={onCloseAddGroups}
+        usuario={sessionTemp}
+        handleCrearGrupo={handleCrearGrupo}
+      />
 
       <AssignRoleDialog
         open={assignRoles}
@@ -481,9 +513,19 @@ export default function Chat({ history, location }) {
         fetchMembers={fetchMembers}
       />
 
-      <ContactsDialog open={seeContacts} handleClose={onCloseSeeContacts} usuario={sessionTemp} nonContacts={nonContacts}/>
+      <ContactsDialog
+        open={seeContacts}
+        handleClose={onCloseSeeContacts}
+        usuario={sessionTemp}
+        nonContacts={nonContacts}
+      />
       <SettingsDialog open={openSettings} handleClose={onCloseSettings} />
-      <NotificationsDialog open={openNotifications} handleClose={onCloseNotifications} usuario={sessionTemp} aceptarSolicitud={acceptSolicitud}/>
+      <NotificationsDialog
+        open={openNotifications}
+        handleClose={onCloseNotifications}
+        usuario={sessionTemp}
+        aceptarSolicitud={acceptSolicitud}
+      />
     </>
   );
 }
