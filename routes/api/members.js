@@ -6,10 +6,18 @@ var ObjectId = require('mongodb').ObjectId;
 
 //Nuevo miembro
 router.post('/', async (req, res) => {
-  const newMember = new Member(req.body);
   try {
-    const savedMember = await newMember.save();
-    res.status(200).json(savedMember);
+    if (req.body instanceof Array) {
+      const newMember = req.body;
+      const savedMember = await Member.insertMany(newMember, {
+        ordered: false,
+      });
+      res.status(201).json(savedMember);
+    } else {
+      const newMember = new Member(req.body);
+      const savedMember = await newMember.save();
+      res.status(201).json(savedMember);
+    }
   } catch (err) {
     res.status(500).json(err);
   }
@@ -77,32 +85,26 @@ router.put('/works/:memberId', async (req, res) => {
 });
 
 //Update
-router.put('/:groupId', async (req, res) => {
-  if (req.body.groupId === req.params.groupId) {
-    try {
-      if (req.body.role) {
-        const members = await Member.findOneAndUpdate(
-          {
-            groupId: req.body.groupId,
-            userId: req.body.userId,
-          },
-          { role: req.body.role }
-        );
-      } else if (req.body.tareas) {
-        const members = await Member.findOneAndUpdate(
-          {
-            groupId: req.body.groupId,
-            userId: req.body.userId,
-          },
-          { $push: { tareas: req.body.tareas } }
-        );
-      }
-      res.status(200).json('Cuenta actualizada');
-    } catch (err) {
-      return res.status(500).json(err);
+router.put('/update/:memberId', async (req, res) => {
+  try {
+    if (req.body.role) {
+      await Member.findOneAndUpdate(
+        {
+          _id: req.params.memberId,
+        },
+        { role: req.body.role }
+      );
+    } else if (req.body.tareas) {
+      const members = await Member.findOneAndUpdate(
+        {
+          _id: req.params.memberId,
+        },
+        { $push: { tareas: req.body.tareas } }
+      );
     }
-  } else {
-    return res.status(403).json('Solo puedes modificar tu grupo');
+    res.status(200).json('Cuenta actualizada');
+  } catch (err) {
+    return res.status(500).json(err);
   }
 });
 

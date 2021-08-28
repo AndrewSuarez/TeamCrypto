@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import useStyles from './styles';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
@@ -25,11 +25,11 @@ function union(a, b) {
   return [...a, ...not(b, a)];
 }
 
-function TransferList(listStyles) {
+function TransferList({listStyles, contactos, setMiembros}) {
   const classes = useStyles();
   const [checked, setChecked] = React.useState([]);
-  const [left, setLeft] = React.useState([0, 1, 2, 3]);
-  const [right, setRight] = React.useState([4, 5, 6, 7]);
+  const [left, setLeft] = React.useState(contactos);
+  const [right, setRight] = React.useState([]);
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
@@ -69,6 +69,10 @@ function TransferList(listStyles) {
     setChecked(not(checked, rightChecked));
   };
 
+  useEffect(() => {
+    setMiembros(right)
+  }, [right]);
+
   const customList = (title, items) => (
     <Card>
       <CardHeader
@@ -92,25 +96,25 @@ function TransferList(listStyles) {
       />
       <Divider />
       <List className={classes.list} dense component='div' role='list'>
-        {items.map((value) => {
-          const labelId = `transfer-list-all-item-${value}-label`;
+        {items.map((item) => {
+          const labelId = item._id;
 
           return (
             <ListItem
-              key={value}
+              key={item._id}
               role='listitem'
               button
-              onClick={handleToggle(value)}
+              onClick={handleToggle(item)}
             >
               <ListItemIcon>
                 <Checkbox
-                  checked={checked.indexOf(value) !== -1}
+                  checked={checked.indexOf(item) !== -1}
                   tabIndex={-1}
                   disableRipple
                   inputProps={{ 'aria-labelledby': labelId }}
                 />
               </ListItemIcon>
-              <ListItemText id={labelId} primary={`List item ${value + 1}`} />
+              <ListItemText id={labelId} primary={`${item.nombre} ${item.apellido}`} />
             </ListItem>
           );
         })}
@@ -127,7 +131,7 @@ function TransferList(listStyles) {
       alignItems='center'
       className={clsx(classes.root, listStyles)}
     >
-      <Grid item>{customList('Choices', left)}</Grid>
+      <Grid item>{customList('Contactos', left)}</Grid>
       <Grid item>
         <Grid container direction='column' alignItems='center'>
           <Button
@@ -152,7 +156,7 @@ function TransferList(listStyles) {
           </Button>
         </Grid>
       </Grid>
-      <Grid item>{customList('Chosen', right)}</Grid>
+      <Grid item>{customList('Agregar Miembros', right)}</Grid>
     </Grid>
   );
 }

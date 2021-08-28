@@ -10,6 +10,7 @@ import AddBoxIcon from '@material-ui/icons/AddBox';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SendIcon from '@material-ui/icons/Send';
 import LockIcon from '@material-ui/icons/Lock';
+import NotificationImportantIcon from '@material-ui/icons/NotificationImportant';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
@@ -30,13 +31,20 @@ import AddGroupDialog from '../../components/AddGroupDialog';
 import AssignRoleDialog from '../../components/AssignRoleDialog';
 import ContactsDialog from '../../components/ContactsDialog';
 import SettingsDialog from '../../components/SettingsDialog';
+import NotificationsDialog from '../../components/NotificationsDialog';
 
 export default function Chat({ history, location }) {
   // funciones y estado temporal!!! Se remplaza por el Session del log in
   const [sessionTemp, setSessionTemp] = useState([]);
 
   useEffect(() => {
-    fetchGroups();
+    if (sessionTemp._id) {
+      fetchGroups();
+      fetchNonContacts();
+    }
+    if (sessionTemp.solicitudes?.length === 0) {
+      setShowNotifications(false);
+    } else setShowNotifications(true);
   }, [sessionTemp]);
 
   const fetchUser = async () => {
@@ -56,6 +64,8 @@ export default function Chat({ history, location }) {
   const [openSettings, setOpenSettings] = useState(false);
   const [switchWorkItems, setSwitchWorkItems] = useState(0);
   const [seeContacts, setSeeContacts] = useState(false);
+  const [openNotifications, setOpenNotifications] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const [groups, setGroups] = useState([]);
   const [groupMembers, setGroupMembers] = useState([]);
@@ -66,21 +76,23 @@ export default function Chat({ history, location }) {
   const [chatGroup, setChatGroup] = useState(false);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState([]);
+  const [nonContacts, setNonContacts] = useState([]);
+
   const [workTitle, setWorkTitle] = useState('');
   const [memberToWork, setMemberToWork] = useState('');
 
   //cambiar fetchUser por fetchGroups una vez se habilite el log in
   useEffect(() => {
     fetchUser();
-    fetchGroups();
+    // fetchGroups();
   }, []);
 
   useEffect(() => {
-    fecthGroupMember();
-
-    fetchMembers();
-
-    groupSetFunction();
+    if (currentGroup._id) {
+      fecthGroupMember();
+      fetchMembers();
+      groupSetFunction();
+    }
   }, [currentGroup]);
 
   useEffect(() => {
@@ -172,6 +184,7 @@ export default function Chat({ history, location }) {
         fetchMembers();
       });
   };
+
   const deleteWork = async (memberId, work) => {
     await axios
       .put(`/api/members/${memberId}/tarea`, { tareas: work })
@@ -179,6 +192,52 @@ export default function Chat({ history, location }) {
         console.log(res.data);
         fetchMembers();
       });
+  };
+
+  const fetchNonContacts = async () => {
+    try {
+      const res = await axios.get('/api/users/noContacts/' + sessionTemp._id);
+      setNonContacts(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const acceptSolicitud = async (userId) => {
+    try {
+      const res = await axios.put(`/api/users/${sessionTemp._id}/agregar`, {
+        userId: userId,
+      });
+      console.log(res.data);
+      onCloseNotifications();
+      fetchUser();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleCrearGrupo = async (usuario, miembros, nombreGrupo) => {
+    try {
+      const res = await axios.post('/api/groups', { name: nombreGrupo });
+      const newMembers = [
+        {
+          groupId: res.data._id,
+          userId: usuario._id,
+          role: 'A',
+        },
+      ].concat(
+        miembros.map((miembro) => ({
+          groupId: res.data._id,
+          userId: miembro._id,
+        }))
+      );
+      axios.post('/api/members', newMembers).then(() => {
+        onCloseAddGroups();
+        fetchGroups();
+      });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handleAddWorks = () => {
@@ -200,6 +259,9 @@ export default function Chat({ history, location }) {
     assignWork(memberToWork, workTitle);
     setOpenWorks(false);
   };
+  const handleOpenNotifications = () => {
+    setOpenNotifications(true);
+  };
 
   const navOptions = [
     { label: 'Chat', direction: '/chat' },
@@ -210,6 +272,14 @@ export default function Chat({ history, location }) {
     { label: <span onClick={handleSeeContacts}>Contactos</span> },
     { label: <span onClick={handleOpenSettings}>Ajustes</span> },
     { label: 'Cerrar Sesion', direction: '/' },
+    showNotifications && {
+      label: (
+        <div className='notificacion' onClick={handleOpenNotifications}>
+          {' '}
+          <NotificationImportantIcon />{' '}
+        </div>
+      ),
+    },
   ];
 
   const onCloseAddWorks = () => {
@@ -226,6 +296,9 @@ export default function Chat({ history, location }) {
   };
   const onCloseSettings = () => {
     setOpenSettings(false);
+  };
+  const onCloseNotifications = () => {
+    setOpenNotifications(false);
   };
 
   const groupSetFunction = () => {
@@ -425,19 +498,34 @@ export default function Chat({ history, location }) {
           </Grid>
         )}
       </Modal>
-      <AddGroupDialog open={addGroup} handleClose={onCloseAddGroups} />
+      <AddGroupDialog
+        open={addGroup}
+        handleClose={onCloseAddGroups}
+        usuario={sessionTemp}
+        handleCrearGrupo={handleCrearGrupo}
+      />
 
       <AssignRoleDialog
         open={assignRoles}
         handleClose={onCloseAssignRoles}
         userRole={loggeduserGroupMember?.role}
-        member={selectedUser.userId}
-        groupId={currentGroup._id}
+        memberId={selectedUser._id}
         fetchMembers={fetchMembers}
       />
 
-      <ContactsDialog open={seeContacts} handleClose={onCloseSeeContacts} />
+      <ContactsDialog
+        open={seeContacts}
+        handleClose={onCloseSeeContacts}
+        usuario={sessionTemp}
+        nonContacts={nonContacts}
+      />
       <SettingsDialog open={openSettings} handleClose={onCloseSettings} />
+      <NotificationsDialog
+        open={openNotifications}
+        handleClose={onCloseNotifications}
+        usuario={sessionTemp}
+        aceptarSolicitud={acceptSolicitud}
+      />
     </>
   );
 }

@@ -6,20 +6,17 @@ import ElementsList from '../ElementsList';
 import DeleteIcon from '@material-ui/icons/Delete';
 import PropTypes from 'prop-types';
 import AddContactsDialog from './AddContactDialog';
+import axios from 'axios';
 
-const ContactsDialog = ({ open, handleClose, avatars }) => {
+const ContactsDialog = ({ open, handleClose, usuario, nonContacts, avatars }) => {
   //   const classes = useStyles();
 
   const [userAvatar, setUserAvatar] = useState([]);
   const [addContact, setAddContact] = useState(false);
+  const [selectedUser, setSelectedUser] = useState([])
 
   useEffect(() => {
-    fetch('https://picsum.photos/v2/list?page=2&limit=4').then((res) => {
-      return res.json().then((data) => {
-        // console.log(data);
-        setUserAvatar(data);
-      });
-    });
+   
   }, []);
 
   const handleAddContact = () => {
@@ -29,28 +26,44 @@ const ContactsDialog = ({ open, handleClose, avatars }) => {
     setAddContact(false);
   };
 
-  const items = [
+  const handleSolicitud = async (selectedUser) => {
+    try{
+      const res = await axios.put(`/api/users/${usuario._id}/solicitud`, {userId: selectedUser})
+      console.log(res.data)
+      handleCloseAddContact()
+    }catch(err){
+      console.log(err)
+    }
+  }
+
+  const items = usuario.contactos?.map(contacto => (
     {
-      avatar: userAvatar[0],
-      title: 'Andres Suarez',
-      children: <DeleteIcon />,
-    },
-    {
-      avatar: userAvatar[1],
-      title: 'Marielys Brijaldo',
-      children: <DeleteIcon />,
-    },
-    {
-      avatar: userAvatar[2],
-      title: 'Eduardo Lopez',
-      children: <DeleteIcon />,
-    },
-    {
-      avatar: userAvatar[3],
-      title: 'Eduardo Leon',
-      children: <DeleteIcon />,
-    },
-  ];
+      avatar: contacto.profilePicture,
+      title: `${contacto.nombre} ${contacto.apellido}`,
+      children: <DeleteIcon />
+    }
+  ))
+    // {
+    //   avatar: userAvatar[0],
+    //   title: 'Andres Suarez',
+    //   children: <DeleteIcon />,
+    // },
+    // {
+    //   avatar: userAvatar[1],
+    //   title: 'Marielys Brijaldo',
+    //   children: <DeleteIcon />,
+    // },
+    // {
+    //   avatar: userAvatar[2],
+    //   title: 'Eduardo Lopez',
+    //   children: <DeleteIcon />,
+    // },
+    // {
+    //   avatar: userAvatar[3],
+    //   title: 'Eduardo Leon',
+    //   children: <DeleteIcon />,
+    // },
+  
 
   return (
     <Modal
@@ -66,6 +79,10 @@ const ContactsDialog = ({ open, handleClose, avatars }) => {
       <AddContactsDialog
         open={addContact}
         handleClose={handleCloseAddContact}
+        handleAccept={() => handleSolicitud(selectedUser)}
+        noContacts={nonContacts}
+        selectedUser={selectedUser}
+        setSelectedUser={setSelectedUser}
       />
     </Modal>
   );

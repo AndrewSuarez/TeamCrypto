@@ -43,28 +43,53 @@ router.delete('/:id', async(req,res)=> {
     }
 });
 
-//Get User
-router.get('/:id', async(req, res)=>{
+//Get User (temporal mientras se habilita el log in)
+router.get('/:id', function (req, res) {
+    User.findById(req.params.id, (err, user) => {
+            User.populate(user, { path: 'contactos', select: '_id nombre apellido username email profilePicture publicKey'}, function (err, user) {
+                if (err) res.status(500).json(err)
+                User.populate(user, {path: 'solicitudes', select: '_id nombre apellido username email profilePicture publicKey'}, function (err, user) {
+                    if (err) res.status(500).json(err)
+                    res.status(200).send(user);
+                })
+            });
+    });
+  });
+
+// router.get('/:id', async(req, res)=>{
+//     try{
+//         const user = await User.findById(req.params.id);
+//         const {password, updatedAt, createdAt, privateKey, ...other} = user._doc
+//         res.status(200).json(other)
+//     }catch(err){
+//         res.status(500).json(err)
+//     }
+// })
+
+//-------------------------CONTACTOS-------------------------// 
+// //get all non contacts
+router.get('/noContacts/:id', async (req, res) => {
     try{
         const user = await User.findById(req.params.id);
-        const {password, updatedAt, createdAt, privateKey, solicitudes, ...other} = user._doc
-        res.status(200).json(other)
+        const allUsers = await User.find({_id: {$nin: user.contactos, $ne: req.params.id}})
+        res.status(200).json(allUsers)
     }catch(err){
         res.status(500).json(err)
     }
-})
+});
 
 //Agregar contacto
-router.put('/:id/contacto', async(req, res) => {
+router.put('/:id/agregar', async(req, res) => {
     if(req.body.userId !== req.params.id) {
         try{
             const user = await User.findById(req.params.id);
-            const currentUser = await User.findById(req.body.userId);
+            const otherUser = await User.findById(req.body.userId);
             if (!user.contactos.includes(req.body.userId)){
-                await user.updateOne({ $push: {contactos: req.body.userId}})
-                await currentUser.updateOne({ $push: {contactos: req.params.id}})
+                await user.update({ $push: {contactos: req.body.userId}, $pull: {solicitudes: req.body.userId}})
+                await otherUser.updateOne({ $push: {contactos: req.params.id}})
                 res.status(200).json('Han sido agregados como contactos')
             }else {
+                await user.update({$pull: {solicitudes: req.body.userId}})
                 res.status(403).json('Este usuario ya esta agregado como contacto');
             }
         }catch(err){
@@ -93,6 +118,45 @@ router.put('/:id/delete', async(req, res) => {
         }
     }else{
         res.status(403).json("No puedes borrarte a ti mismo como contacto")
+    }
+})
+
+//Enviar solicitud
+router.put('/:id/solicitud', async(req, res) => {
+    if(req.body.userId !== req.params.id) {
+        try{
+            const user = await User.findById(req.params.id);
+            const otherUser = await User.findById(req.body.userId);
+            if (!otherUser.solicitudes.includes(req.params.id)){
+                await otherUser.updateOne({ $push: {solicitudes: req.params.id}})
+                res.status(200).json('Se ha enviado una solicitud')
+            }else {
+                res.status(403).json('Este usuario ya tiene una solicitud pendiente');
+            }
+        }catch(err){
+            res.status(500).json(err)
+        }
+    }else{
+        res.status(403).json("No puedes enviarte una solicitud a ti mismo")
+    }
+})
+
+//borrar Solicitud
+router.put('/:id/solicitud/delete', async(req, res) => {
+    if(req.body.userId !== req.params.id) {
+        try{
+            const user = await User.findById(req.params.id);
+            if (user.solicitudes.includes(req.body.userId)){
+                await user.updateOne({ $pull: {solicitudes: req.body.userId}})
+                res.status(200).json('Has negado la solicitud')
+            }else {
+                res.status(403).json('No tienes una solicitud de este usuario');
+            }
+        }catch(err){
+            res.status(500).json(err)
+        }
+    }else{
+        res.status(403).json("No puedes borrar una solicitud de ti mismo")
     }
 })
 
