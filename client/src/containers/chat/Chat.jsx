@@ -196,6 +196,29 @@ export default function Chat({ history, location }) {
     }
   }
 
+  const handleCrearGrupo = async (usuario, miembros, nombreGrupo) => {
+    try{
+      const res = await axios.post('/api/groups', {name: nombreGrupo})
+      const newMembers = [{
+        groupId: res.data._id,
+        userId: usuario._id,
+        role: "A"
+      }].concat(miembros.map(miembro => (
+          {
+            groupId: res.data._id,
+            userId: miembro._id
+          }
+        ))
+      )
+      axios.post('/api/members', newMembers).then(() => {
+        onCloseAddGroups();
+        fetchGroups();
+      })
+    }catch(err){
+      console.log(err)
+    }
+  }
+
   const handleAddWorks = () => {
     setOpenWorks(true);
   };
@@ -448,7 +471,7 @@ export default function Chat({ history, location }) {
           </Grid>
         )}
       </Modal>
-      <AddGroupDialog open={addGroup} handleClose={onCloseAddGroups} />
+      <AddGroupDialog open={addGroup} handleClose={onCloseAddGroups} usuario={sessionTemp} handleCrearGrupo={handleCrearGrupo} />
 
       <AssignRoleDialog
         open={assignRoles}
