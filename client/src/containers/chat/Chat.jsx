@@ -164,6 +164,23 @@ export default function Chat({ history, location }) {
     }
   };
 
+  const assignWork = async (memberId, works) => {
+    await axios
+      .put(`/api/members/works/${memberId}`, { tareas: works })
+      .then((res) => {
+        console.log(res.data);
+        fetchMembers();
+      });
+  };
+  const deleteWork = async (memberId, work) => {
+    await axios
+      .put(`/api/members/${memberId}/tarea`, { tareas: work })
+      .then((res) => {
+        console.log(res.data);
+        fetchMembers();
+      });
+  };
+
   const handleAddWorks = () => {
     setOpenWorks(true);
   };
@@ -178,6 +195,10 @@ export default function Chat({ history, location }) {
   };
   const handleOpenSettings = () => {
     setOpenSettings(true);
+  };
+  const handleAssignWork = () => {
+    assignWork(memberToWork, workTitle);
+    setOpenWorks(false);
   };
 
   const navOptions = [
@@ -260,28 +281,22 @@ export default function Chat({ history, location }) {
 
   const workItems = ['Tareas', 'Crear Tareas'];
 
-  const itemsForWorks = [
-    {
-      title: 'Crear dialog de grupos',
-      description: 'Asignado a: Andres Suarez.',
-      children: <DeleteIcon />,
-    },
-    {
-      title: 'Crear dialog de contactos',
-      description: 'Asignado a: Andres Suarez.',
-      children: <DeleteIcon />,
-    },
-    {
-      title: 'Crear dialog de roles',
-      description: 'Asignado a: Byron Miranda.',
-      children: <DeleteIcon />,
-    },
-    {
-      title: 'Crear dialog de Informacion',
-      description: 'Asignado a: Byron Miranda.',
-      children: <DeleteIcon />,
-    },
-  ];
+  const mapWorkItems = (groupMembers) => {
+    const workList = [];
+    groupMembers.map((member) => {
+      member.tareas.map((tarea) => {
+        workList.push({
+          title: tarea,
+          description:
+            'Asignada a:' + member.userId.nombre + ' ' + member.userId.apellido,
+          children: (
+            <DeleteIcon onClick={() => deleteWork(member._id, tarea)} />
+          ),
+        });
+      });
+    });
+    return workList;
+  };
 
   return (
     <>
@@ -373,15 +388,16 @@ export default function Chat({ history, location }) {
         open={openWorks}
         title={`Tareas de ${currentGroup?.name}`}
         closeText='Cerrar'
-        acceptText={'Aceptar'}
+        acceptText={switchWorkItems == 1 && 'Aceptar'}
         handleClose={onCloseAddWorks}
+        onAccept={handleAssignWork}
         maxWidth={'xs'}
       >
         <CustomTabs options={workItems} handleClick={handleTabClick} />
         {switchWorkItems === 0 ? (
-          <ElementsList items={itemsForWorks} />
+          <ElementsList items={mapWorkItems(groupMembers)} />
         ) : (
-          <Grid container spacing={2} className={classes.container}>
+          <Grid container className={classes.container}>
             <form className={classes.root} noValidate autoComplete='off'>
               <Grid item xs={12}>
                 <TextField
@@ -399,7 +415,7 @@ export default function Chat({ history, location }) {
                   onChange={handleChangeAssignWork}
                 >
                   {groupMembers.map((m) => (
-                    <MenuItem value={m.userId._id}>
+                    <MenuItem value={m._id}>
                       {m.userId.nombre + ' ' + m.userId.apellido}
                     </MenuItem>
                   ))}

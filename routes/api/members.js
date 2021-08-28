@@ -2,6 +2,7 @@ const router = require('express').Router();
 const Member = require('../../models/Member');
 const User = require('../../models/User');
 const Group = require('../../models/Group');
+var ObjectId = require('mongodb').ObjectId;
 
 //Nuevo miembro
 router.post('/', async (req, res) => {
@@ -62,11 +63,9 @@ router.get('/groups/user/:userId', async (req, res) => {
 router.put('/works/:memberId', async (req, res) => {
   try {
     if (req.body.tareas) {
-      console.log(req.body.tareas);
-      console.log(req.params.memberId);
-      Member.findOneAndUpdate(
+      await Member.findOneAndUpdate(
         {
-          memberId: req.params.memberId,
+          _id: req.params.memberId,
         },
         { $push: { tareas: req.body.tareas } }
       );
@@ -108,24 +107,19 @@ router.put('/:groupId', async (req, res) => {
 });
 
 //borrar tareas
-router.put('/:groupId/tarea', async (req, res) => {
-  if (req.body.groupId === req.params.groupId) {
-    try {
-      const members = await Member.findOne({
-        groupId: req.body.groupId,
-        userId: req.body.userId,
-      });
-      if (members.tareas.includes(req.body.tareas)) {
-        await members.updateOne({ $pull: { tareas: req.body.tareas } });
-        res.status(200).json('Tarea Eliminada');
-      } else {
-        res.status(404).json('Este usuario no tiene esta tarea pendiente');
-      }
-    } catch (err) {
-      res.status(500).json(err);
+router.put('/:memberId/tarea', async (req, res) => {
+  try {
+    const members = await Member.findOne({
+      _id: req.params.memberId,
+    });
+    if (members.tareas.includes(req.body.tareas)) {
+      await members.updateOne({ $pull: { tareas: req.body.tareas } });
+      res.status(200).json('Tarea Eliminada');
+    } else {
+      res.status(404).json('Este usuario no tiene esta tarea pendiente');
     }
-  } else {
-    return res.status(403).json('Solo puedes modificar tu grupo');
+  } catch (err) {
+    res.status(500).json(err);
   }
 });
 
