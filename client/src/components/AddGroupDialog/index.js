@@ -7,8 +7,12 @@ import TextField from '@material-ui/core/TextField';
 import useStyles from './styles';
 import TransferList from '../TransferList';
 
-const AddGroupDialog = ({ open, handleClose }) => {
+const AddGroupDialog = ({ open, handleClose, usuario, handleCrearGrupo }) => {
   const classes = useStyles();
+
+  const [miembros, setMiembros] = useState([])
+  const [nombreGrupo, setNombreGrupo] = useState([])
+
   return (
     <Modal
       open={open}
@@ -17,11 +21,12 @@ const AddGroupDialog = ({ open, handleClose }) => {
       titleStyles={classes.title}
       acceptText='Crear'
       handleClose={handleClose}
+      onAccept={() => handleCrearGrupo(usuario, miembros, nombreGrupo)}
       maxWidth='md'
     >
       <form className={classes.root} noValidate autoComplete='off'>
-        <TextField label='Titulo del grupo' className={classes.groupTitle} />
-        <TransferList listStles={classes.members} />
+        <TextField label='Titulo del grupo' className={classes.groupTitle} onChange={(e) => setNombreGrupo(e.target.value)} />
+        <TransferList listStles={classes.members} contactos={usuario.contactos} setMiembros={setMiembros} />
       </form>
     </Modal>
   );
