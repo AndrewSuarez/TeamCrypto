@@ -18,6 +18,7 @@ const Modal = ({
   closeText,
   acceptText,
   onAccept,
+  disableBtn,
   titleStyles,
   maxWidth,
 }) => {
@@ -44,7 +45,7 @@ const Modal = ({
             </Button>
           )}
           {acceptText && (
-            <Button onClick={onAccept} color='primary'>
+            <Button onClick={onAccept} disabled={disableBtn} color='primary'>
               {acceptText}
             </Button>
           )}
@@ -61,6 +62,7 @@ Modal.propTypes = {
   titleStyles: PropTypes.any.isRequired,
   closeText: PropTypes.string.isRequired,
   acceptText: PropTypes.string.isRequired,
+  disableBtn: PropTypes.bool,
   onAccept: PropTypes.func,
   maxWidth: PropTypes.string,
 };

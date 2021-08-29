@@ -10,8 +10,8 @@ import TransferList from '../TransferList';
 const AddGroupDialog = ({ open, handleClose, usuario, handleCrearGrupo }) => {
   const classes = useStyles();
 
-  const [miembros, setMiembros] = useState([])
-  const [nombreGrupo, setNombreGrupo] = useState([])
+  const [miembros, setMiembros] = useState([]);
+  const [nombreGrupo, setNombreGrupo] = useState([]);
 
   return (
     <Modal
@@ -19,14 +19,24 @@ const AddGroupDialog = ({ open, handleClose, usuario, handleCrearGrupo }) => {
       title='Crear un grupo'
       closeText='Cerrar'
       titleStyles={classes.title}
+      disableBtn={miembros.length < 1 && true}
       acceptText='Crear'
       handleClose={handleClose}
       onAccept={() => handleCrearGrupo(usuario, miembros, nombreGrupo)}
       maxWidth='md'
     >
       <form className={classes.root} noValidate autoComplete='off'>
-        <TextField label='Titulo del grupo' className={classes.groupTitle} onChange={(e) => setNombreGrupo(e.target.value)} />
-        <TransferList listStles={classes.members} contactos={usuario.contactos} setMiembros={setMiembros} />
+        <TextField
+          label='Titulo del grupo'
+          className={classes.groupTitle}
+          onChange={(e) => setNombreGrupo(e.target.value)}
+          required
+        />
+        <TransferList
+          listStles={classes.members}
+          contactos={usuario.contactos}
+          setMiembros={setMiembros}
+        />
       </form>
     </Modal>
   );
