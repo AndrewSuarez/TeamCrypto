@@ -26,6 +26,15 @@ router.get('/:groupId', async(req, res)=>{
     }
 })
 
+router.put('/:groupId', async(req, res)=> {
+    try{
+        await Group.findByIdAndUpdate(req.params.groupId, {$set: {name: req.body.name}})
+        res.status(200).json("Grupo actualizado")
+    }catch(err){
+        res.status(500).json(err)
+    }
+} )
+
 
 
 module.exports = router 

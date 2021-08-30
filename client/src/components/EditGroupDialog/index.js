@@ -7,11 +7,11 @@ import TextField from '@material-ui/core/TextField';
 import useStyles from './styles';
 import TransferList from '../TransferList';
 
-const AddGroupDialog = ({ open, handleClose, usuario, handleCrearGrupo }) => {
+const EditGroupDialog = ({ open, handleClose, items, acceptEditarGrupo}) => {
   const classes = useStyles();
 
   const [miembros, setMiembros] = useState([]);
-  const [nombreGrupo, setNombreGrupo] = useState([]);
+  const [nombreGrupo, setNombreGrupo] = useState('');
 
   return (
     <Modal
@@ -19,10 +19,10 @@ const AddGroupDialog = ({ open, handleClose, usuario, handleCrearGrupo }) => {
       title='Crear un grupo'
       closeText='Cerrar'
       titleStyles={classes.title}
-      disableBtn={!(miembros.length >= 1 && nombreGrupo.length >= 3)}
+      disableBtn={miembros.length < 1 && nombreGrupo.length < 3}
       acceptText='Crear'
       handleClose={handleClose}
-      onAccept={() => handleCrearGrupo(usuario, miembros, nombreGrupo)}
+      onAccept={() => acceptEditarGrupo(miembros, nombreGrupo)}
       maxWidth='md'
     >
       <form className={classes.root} noValidate autoComplete='off'>
@@ -34,7 +34,7 @@ const AddGroupDialog = ({ open, handleClose, usuario, handleCrearGrupo }) => {
         />
         <TransferList
           listStles={classes.members}
-          contactos={usuario.contactos}
+          contactos={items}
           setMiembros={setMiembros}
         />
       </form>
@@ -42,9 +42,10 @@ const AddGroupDialog = ({ open, handleClose, usuario, handleCrearGrupo }) => {
   );
 };
 
-AddGroupDialog.propTypes = {
+EditGroupDialog.propTypes = {
   open: PropTypes.any,
   handleClose: PropTypes.func,
+  acceptEditarGrupo: PropTypes.func
 };
 
-export default AddGroupDialog;
+export default EditGroupDialog;
