@@ -25,7 +25,7 @@ function union(a, b) {
   return [...a, ...not(b, a)];
 }
 
-function TransferList({listStyles, contactos, setMiembros}) {
+function TransferList({listStyles, contactos, setMiembros, titulos}) {
   const classes = useStyles();
   const [checked, setChecked] = React.useState([]);
   const [left, setLeft] = React.useState(contactos);
@@ -131,7 +131,7 @@ function TransferList({listStyles, contactos, setMiembros}) {
       alignItems='center'
       className={clsx(classes.root, listStyles)}
     >
-      <Grid item>{customList('Contactos', left)}</Grid>
+      <Grid item>{customList(titulos.izquierda, left)}</Grid>
       <Grid item>
         <Grid container direction='column' alignItems='center'>
           <Button
@@ -156,7 +156,7 @@ function TransferList({listStyles, contactos, setMiembros}) {
           </Button>
         </Grid>
       </Grid>
-      <Grid item>{customList('Agregar Miembros', right)}</Grid>
+      <Grid item>{customList(titulos.derecha, right)}</Grid>
     </Grid>
   );
 }

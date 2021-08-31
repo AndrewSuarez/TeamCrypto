@@ -6,7 +6,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import EditGroupDialog from '../../components/EditGroupDialog';
 
-export default function Group({ group, usuario, miembros, role, acceptEditarGrupo }) {
+export default function Group({ group, usuario, miembros, role, acceptEditarGrupo, acceptDeleteMembers }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [editarOpen, setEditarOpen] = useState(false)
   const [eliminarOpen, setEliminarOpen] = useState(false)
@@ -41,6 +41,17 @@ export default function Group({ group, usuario, miembros, role, acceptEditarGrup
   const handleEliminarClose = () => {
     setEliminarOpen(false)
   }
+  
+  const handleAcceptEditar = (contactos, nombreGrupo) => {
+    acceptEditarGrupo(contactos, nombreGrupo)
+    handleEditarClose()
+  }
+
+  const handleAcceptBorrar = (miembros) => {
+    acceptDeleteMembers(miembros)
+    handleEliminarClose()
+  }
+
 
   return (
     <div className='group'>
@@ -63,14 +74,17 @@ export default function Group({ group, usuario, miembros, role, acceptEditarGrup
       <EditGroupDialog 
       open={editarOpen} 
       handleClose={handleEditarClose} 
-      items={filter} 
-      acceptEditarGrupo={acceptEditarGrupo}
+      items={filter}
+      borrar={false} 
+      handleAccept={handleAcceptEditar}
       />
 
       <EditGroupDialog 
       open={eliminarOpen} 
-      handleClose={handleEliminarClose} 
-      items={groupMembers} 
+      handleClose={handleEliminarClose}
+      items={groupMembers}
+      borrar={true}
+      handleAccept={handleAcceptBorrar}
       />
     </div>
   );

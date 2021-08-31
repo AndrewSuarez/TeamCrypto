@@ -208,6 +208,11 @@ export default function Chat({ history, location }) {
       onCloseAddGroups();
     });
   }
+  
+  const deleteMembers = async (idArray) => {
+    const query = {groupId: currentGroup._id, userId: idArray}
+    await axios.post('/api/members/deleteMany', query)
+  }
 
   const changeGroupName = async (name) => {
     try{
@@ -263,8 +268,20 @@ export default function Chat({ history, location }) {
           userId: miembro._id
         }))
         addMembers(newMembers)
-        fetchGroups()
+        fetchMembers()
       }
+    }catch(err){
+      console.log(err)
+    }
+  }
+
+  const handleDeleteMembers = async (selectedMembers) => {
+    try{
+      const idArray = selectedMembers.map(member => {
+        return member._id
+      })
+      deleteMembers(idArray)
+      fetchMembers()
     }catch(err){
       console.log(err)
     }
@@ -420,6 +437,7 @@ export default function Chat({ history, location }) {
                 miembros={groupMembers} 
                 role={loggeduserGroupMember?.role} 
                 acceptEditarGrupo={handleAddMembers}
+                acceptDeleteMembers={handleDeleteMembers}
                 />
               </div>
             ))}

@@ -142,4 +142,13 @@ router.delete('/:groupId', async (req, res) => {
   }
 });
 
+router.post('/deleteMany', async(req, res) => {
+  try{
+      const respuesta = await Member.remove({userId: {$in: req.body.userId}, groupId: req.body.groupId})
+      res.status(200).json(respuesta)
+  }catch(err){1
+    res.status(500).json(err)
+  }
+})
+
 module.exports = router;
