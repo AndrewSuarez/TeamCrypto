@@ -7,11 +7,12 @@ import TextField from '@material-ui/core/TextField';
 import useStyles from './styles';
 import TransferList from '../TransferList';
 
-const EditGroupDialog = ({ open, handleClose, items, acceptEditarGrupo}) => {
+const EditGroupDialog = ({ open, handleClose, items, borrar, handleAccept}) => {
   const classes = useStyles();
 
   const [miembros, setMiembros] = useState([]);
   const [nombreGrupo, setNombreGrupo] = useState('');
+  const titulos = borrar ? {izquierda: "Miembros", derecha: "Borrar"} : {izquierda: "Contactos", derecha: "Nuevos Miembros"}
 
   return (
     <Modal
@@ -19,23 +20,25 @@ const EditGroupDialog = ({ open, handleClose, items, acceptEditarGrupo}) => {
       title='Crear un grupo'
       closeText='Cerrar'
       titleStyles={classes.title}
-      disableBtn={miembros.length < 1 && nombreGrupo.length < 3}
-      acceptText='Crear'
+      disableBtn={miembros.length < 1 && (nombreGrupo.length < 3 || borrar)}
+      acceptText = {borrar ? 'Eliminar' : 'Añadir'}
       handleClose={handleClose}
-      onAccept={() => acceptEditarGrupo(miembros, nombreGrupo)}
+      onAccept={() => handleAccept(miembros, nombreGrupo)}
       maxWidth='md'
     >
       <form className={classes.root} noValidate autoComplete='off'>
+        {!borrar && 
         <TextField
           label='Titulo del grupo'
           className={classes.groupTitle}
           onChange={(e) => setNombreGrupo(e.target.value)}
           required
-        />
+        />}
         <TransferList
           listStles={classes.members}
           contactos={items}
           setMiembros={setMiembros}
+          titulos={titulos}
         />
       </form>
     </Modal>

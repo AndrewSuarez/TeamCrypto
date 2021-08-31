@@ -8,7 +8,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import EditGroupDialog from '../../components/EditGroupDialog';
 
-export default function Group({ group, usuario, miembros, role, acceptEditarGrupo }) {
+export default function Group({ group, usuario, miembros, role, acceptEditarGrupo, acceptDeleteMembers }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [editarOpen, setEditarOpen] = useState(false)
   const [eliminarOpen, setEliminarOpen] = useState(false)
@@ -44,15 +44,11 @@ export default function Group({ group, usuario, miembros, role, acceptEditarGrup
   const handleClose = () => {
     setAnchorEl(null);
   };
-<<<<<<< HEAD
-  const handleEdit = () => {
-    setAnchorEl(null);
-  };
+
   const handleDelete = () => {
     deleteGroup(group._id);
     setAnchorEl(null);
   };
-=======
 
   const handleEditarClose = () => {
     setEditarOpen(false)
@@ -61,8 +57,18 @@ export default function Group({ group, usuario, miembros, role, acceptEditarGrup
   const handleEliminarClose = () => {
     setEliminarOpen(false)
   }
+  
+  const handleAcceptEditar = (contactos, nombreGrupo) => {
+    acceptEditarGrupo(contactos, nombreGrupo)
+    handleEditarClose()
+  }
 
->>>>>>> dev
+  const handleAcceptBorrar = (miembros) => {
+    acceptDeleteMembers(miembros)
+    handleEliminarClose()
+  }
+
+
   return (
     <div className='group'>
       <img className='groupImg' src={reactLogo} alt='' />
@@ -76,27 +82,26 @@ export default function Group({ group, usuario, miembros, role, acceptEditarGrup
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-<<<<<<< HEAD
-          <MenuItem onClick={handleEdit}>Editar Grupo</MenuItem>
-          <MenuItem onClick={handleDelete}>Borrar Grupo</MenuItem>
-=======
           <MenuItem onClick={handleEditarOpen}>Editar Grupo</MenuItem>
           <MenuItem onClick={handleEliminarOpen}>Eliminar Miembros</MenuItem>
->>>>>>> dev
+          <MenuItem onClick={handleDelete}>Borrar Grupo</MenuItem>
         </Menu>
       </div>
 
       <EditGroupDialog 
       open={editarOpen} 
       handleClose={handleEditarClose} 
-      items={filter} 
-      acceptEditarGrupo={acceptEditarGrupo}
+      items={filter}
+      borrar={false} 
+      handleAccept={handleAcceptEditar}
       />
 
       <EditGroupDialog 
       open={eliminarOpen} 
-      handleClose={handleEliminarClose} 
-      items={groupMembers} 
+      handleClose={handleEliminarClose}
+      items={groupMembers}
+      borrar={true}
+      handleAccept={handleAcceptBorrar}
       />
     </div>
   );
