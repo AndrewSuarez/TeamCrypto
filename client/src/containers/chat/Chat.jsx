@@ -57,7 +57,6 @@ export default function Chat({ history, location }) {
     }
   };
 
-  // const {user} = useContext(AuthContext)
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const [openWorks, setOpenWorks] = useState(false);
@@ -205,6 +204,20 @@ export default function Chat({ history, location }) {
     }
   };
 
+  const addMembers = async (newMembers) => {
+    axios.post('/api/members', newMembers).then(() => {
+      onCloseAddGroups();
+    });
+  };
+
+  const changeGroupName = async (name) => {
+    try {
+      await axios.put(`/api/groups/${currentGroup._id}`, { name: name });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const acceptSolicitud = async (userId) => {
     try {
       const res = await axios.put(`/api/users/${sessionTemp._id}/agregar`, {
@@ -233,10 +246,26 @@ export default function Chat({ history, location }) {
           userId: miembro._id,
         }))
       );
-      axios.post('/api/members', newMembers).then(() => {
-        onCloseAddGroups();
+      addMembers(newMembers);
+      fetchGroups();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleAddMembers = async (members, nameGroup) => {
+    try {
+      if (nameGroup.length >= 3) {
+        changeGroupName(nameGroup);
+      }
+      if (members.length >= 1) {
+        const newMembers = members.map((miembro) => ({
+          groupId: currentGroup._id,
+          userId: miembro._id,
+        }));
+        addMembers(newMembers);
         fetchGroups();
-      });
+      }
     } catch (err) {
       console.log(err);
     }
@@ -388,7 +417,13 @@ export default function Chat({ history, location }) {
             </div>
             {groups.map((g) => (
               <div onClick={() => handleGroupClick(g)}>
-                <Group group={g} />
+                <Group
+                  group={g}
+                  usuario={sessionTemp}
+                  miembros={groupMembers}
+                  role={loggeduserGroupMember?.role}
+                  acceptEditarGrupo={handleAddMembers}
+                />
               </div>
             ))}
           </div>
