@@ -1,7 +1,8 @@
-import React from "react"
-import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import { SnackbarProvider } from 'notistack';
 
 // Codigo de colores de la app:
 /* 
@@ -13,8 +14,8 @@ import App from "./App";
 */
 
 ReactDOM.render(
-  <>
+  <SnackbarProvider>
     <App />
-  </>,
+  </SnackbarProvider>,
   document.getElementById('root')
 );

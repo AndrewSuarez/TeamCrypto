@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useSnackbar } from 'notistack';
+import axios from 'axios';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -35,9 +37,57 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SettingsDialog = ({ open, handleClose }) => {
+const SettingsDialog = ({ open, handleClose, userId }) => {
   const classes = useStyles();
   const [changePass, setChangePass] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
+  const [username, setUsername] = useState('');
+  const [name, setName] = useState('');
+  const [apellido, setApellido] = useState('');
+  const [email, setEmail] = useState('');
+
+  const changeData = (userId, user) => {
+    axios
+      .post(`/api/users/${userId}/update`, { ...user })
+      .then(enqueueSnackbar('Datos actualizados', { variant: 'success' }));
+  };
+
+  const createUser = (username, name, apellido, email) => {
+    const user = {
+      nombre: name,
+      apellido: apellido,
+      username: username,
+      email: email,
+    };
+
+    return user;
+  };
+
+  const handleUpdateData = () => {
+    const user = createUser(username, name, apellido, email);
+    changeData(userId, user);
+  };
+
+  const handleDataChange = (e) => {
+    const target = e.target;
+
+    switch (target.name) {
+      case 'userName':
+        setUsername(e.target.value);
+        break;
+      case 'firstName':
+        setName(e.target.value);
+        break;
+      case 'lastName':
+        setApellido(e.target.value);
+        break;
+      case 'email':
+        setEmail(e.target.value);
+        break;
+      default:
+        break;
+    }
+  };
 
   const handleChangePass = () => {
     setChangePass(true);
@@ -64,9 +114,9 @@ const SettingsDialog = ({ open, handleClose }) => {
               <Grid item xs={12}>
                 <TextField
                   autoComplete='fuser'
+                  onChange={handleDataChange}
                   name='userName'
                   variant='outlined'
-                  required
                   fullWidth
                   id='userName'
                   label='Nombre de usuario'
@@ -76,9 +126,9 @@ const SettingsDialog = ({ open, handleClose }) => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   autoComplete='fname'
+                  onChange={handleDataChange}
                   name='firstName'
                   variant='outlined'
-                  required
                   fullWidth
                   id='firstName'
                   label='Nombre'
@@ -87,7 +137,7 @@ const SettingsDialog = ({ open, handleClose }) => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   variant='outlined'
-                  required
+                  onChange={handleDataChange}
                   fullWidth
                   id='lastName'
                   label='Apellido'
@@ -98,7 +148,7 @@ const SettingsDialog = ({ open, handleClose }) => {
               <Grid item xs={12}>
                 <TextField
                   variant='outlined'
-                  required
+                  onChange={handleDataChange}
                   fullWidth
                   id='email'
                   label='Direccion Email'
@@ -122,7 +172,6 @@ const SettingsDialog = ({ open, handleClose }) => {
                   <Grid item xs={12}>
                     <TextField
                       variant='outlined'
-                      required
                       fullWidth
                       name='password'
                       label='Password'
@@ -134,7 +183,6 @@ const SettingsDialog = ({ open, handleClose }) => {
                   <Grid item xs={12} sm={6}>
                     <TextField
                       variant='outlined'
-                      required
                       fullWidth
                       name='password'
                       label='Password'
@@ -146,7 +194,6 @@ const SettingsDialog = ({ open, handleClose }) => {
                   <Grid item xs={12} sm={6}>
                     <TextField
                       variant='outlined'
-                      required
                       fullWidth
                       name='password'
                       label='Password'
@@ -159,10 +206,11 @@ const SettingsDialog = ({ open, handleClose }) => {
               )}
             </Grid>
             <Button
-              type='submit'
+              type={'submit'}
               fullWidth
               variant='contained'
               color='primary'
+              onClick={handleUpdateData}
               className={classes.submit}
             >
               Guardar
