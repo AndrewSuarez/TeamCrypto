@@ -2,6 +2,7 @@ import './chat.css';
 import useStyles from './styles';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useSnackbar } from 'notistack';
 import Session from 'react-session-api';
 import UserProfile from '../../objects/user';
 
@@ -58,6 +59,7 @@ export default function Chat({ history, location }) {
 
   // const {user} = useContext(AuthContext)
   const classes = useStyles();
+  const { enqueueSnackbar } = useSnackbar();
   const [openWorks, setOpenWorks] = useState(false);
   const [addGroup, setAddGroup] = useState(false);
   const [assignRoles, setAssignRoles] = useState(false);
@@ -189,7 +191,7 @@ export default function Chat({ history, location }) {
     await axios
       .put(`/api/members/${memberId}/tarea`, { tareas: work })
       .then((res) => {
-        console.log(res.data);
+        enqueueSnackbar('Tarea eliminada con exito', { variant: 'success' });
         fetchMembers();
       });
   };
@@ -257,6 +259,7 @@ export default function Chat({ history, location }) {
   };
   const handleAssignWork = () => {
     assignWork(memberToWork, workTitle);
+    enqueueSnackbar('Tarea creada con exito', { variant: 'success' });
     setOpenWorks(false);
   };
   const handleOpenNotifications = () => {
@@ -519,7 +522,11 @@ export default function Chat({ history, location }) {
         usuario={sessionTemp}
         nonContacts={nonContacts}
       />
-      <SettingsDialog open={openSettings} handleClose={onCloseSettings} />
+      <SettingsDialog
+        open={openSettings}
+        handleClose={onCloseSettings}
+        userId={sessionTemp._id}
+      />
       <NotificationsDialog
         open={openNotifications}
         handleClose={onCloseNotifications}
