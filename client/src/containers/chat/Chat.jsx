@@ -2,6 +2,7 @@ import './chat.css';
 import useStyles from './styles';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useSnackbar } from 'notistack';
 import Session from 'react-session-api';
 import UserProfile from '../../objects/user';
 
@@ -56,8 +57,8 @@ export default function Chat({ history, location }) {
     }
   };
 
-  
   const classes = useStyles();
+  const { enqueueSnackbar } = useSnackbar();
   const [openWorks, setOpenWorks] = useState(false);
   const [addGroup, setAddGroup] = useState(false);
   const [assignRoles, setAssignRoles] = useState(false);
@@ -189,7 +190,7 @@ export default function Chat({ history, location }) {
     await axios
       .put(`/api/members/${memberId}/tarea`, { tareas: work })
       .then((res) => {
-        console.log(res.data);
+        enqueueSnackbar('Tarea eliminada con exito', { variant: 'success' });
         fetchMembers();
       });
   };
@@ -207,15 +208,15 @@ export default function Chat({ history, location }) {
     axios.post('/api/members', newMembers).then(() => {
       onCloseAddGroups();
     });
-  }
+  };
 
   const changeGroupName = async (name) => {
-    try{
-      await axios.put(`/api/groups/${currentGroup._id}`, {name: name})
-    }catch(err){
-      console.log(err)
+    try {
+      await axios.put(`/api/groups/${currentGroup._id}`, { name: name });
+    } catch (err) {
+      console.log(err);
     }
-  }
+  };
 
   const acceptSolicitud = async (userId) => {
     try {
@@ -246,29 +247,29 @@ export default function Chat({ history, location }) {
         }))
       );
       addMembers(newMembers);
-      fetchGroups()
+      fetchGroups();
     } catch (err) {
       console.log(err);
     }
   };
 
   const handleAddMembers = async (members, nameGroup) => {
-    try{
-      if(nameGroup.length >= 3){
-        changeGroupName(nameGroup)
+    try {
+      if (nameGroup.length >= 3) {
+        changeGroupName(nameGroup);
       }
-      if(members.length >= 1){
+      if (members.length >= 1) {
         const newMembers = members.map((miembro) => ({
-          groupId : currentGroup._id,
-          userId: miembro._id
-        }))
-        addMembers(newMembers)
-        fetchGroups()
+          groupId: currentGroup._id,
+          userId: miembro._id,
+        }));
+        addMembers(newMembers);
+        fetchGroups();
       }
-    }catch(err){
-      console.log(err)
+    } catch (err) {
+      console.log(err);
     }
-  }
+  };
 
   const handleAddWorks = () => {
     setOpenWorks(true);
@@ -287,6 +288,7 @@ export default function Chat({ history, location }) {
   };
   const handleAssignWork = () => {
     assignWork(memberToWork, workTitle);
+    enqueueSnackbar('Tarea creada con exito', { variant: 'success' });
     setOpenWorks(false);
   };
   const handleOpenNotifications = () => {
@@ -415,11 +417,12 @@ export default function Chat({ history, location }) {
             </div>
             {groups.map((g) => (
               <div onClick={() => handleGroupClick(g)}>
-                <Group group={g} 
-                usuario={sessionTemp} 
-                miembros={groupMembers} 
-                role={loggeduserGroupMember?.role} 
-                acceptEditarGrupo={handleAddMembers}
+                <Group
+                  group={g}
+                  usuario={sessionTemp}
+                  miembros={groupMembers}
+                  role={loggeduserGroupMember?.role}
+                  acceptEditarGrupo={handleAddMembers}
                 />
               </div>
             ))}
@@ -554,7 +557,11 @@ export default function Chat({ history, location }) {
         usuario={sessionTemp}
         nonContacts={nonContacts}
       />
-      <SettingsDialog open={openSettings} handleClose={onCloseSettings} />
+      <SettingsDialog
+        open={openSettings}
+        handleClose={onCloseSettings}
+        userId={sessionTemp._id}
+      />
       <NotificationsDialog
         open={openNotifications}
         handleClose={onCloseNotifications}

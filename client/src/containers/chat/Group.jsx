@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import { useSnackbar } from 'notistack';
 import './group.css';
 import reactLogo from '../../assets/images/reactLogo.png';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -10,6 +12,15 @@ export default function Group({ group, usuario, miembros, role, acceptEditarGrup
   const [anchorEl, setAnchorEl] = useState(null);
   const [editarOpen, setEditarOpen] = useState(false)
   const [eliminarOpen, setEliminarOpen] = useState(false)
+  const { enqueueSnackbar } = useSnackbar();
+
+  const deleteGroup = (groupId) => {
+    axios.delete(`/api/groups/${groupId}/delete`).then((res) => {
+      console.log(res.data);
+      enqueueSnackbar('Grupo eliminado con exito', { variant: 'success' });
+      window.location.replace('');
+    });
+  };
 
   const filter = usuario.contactos.filter(o1 => !miembros.some(o2 => o1._id === o2.userId._id))
   const groupMembers = miembros.map(miembro => {
@@ -33,6 +44,15 @@ export default function Group({ group, usuario, miembros, role, acceptEditarGrup
   const handleClose = () => {
     setAnchorEl(null);
   };
+<<<<<<< HEAD
+  const handleEdit = () => {
+    setAnchorEl(null);
+  };
+  const handleDelete = () => {
+    deleteGroup(group._id);
+    setAnchorEl(null);
+  };
+=======
 
   const handleEditarClose = () => {
     setEditarOpen(false)
@@ -42,6 +62,7 @@ export default function Group({ group, usuario, miembros, role, acceptEditarGrup
     setEliminarOpen(false)
   }
 
+>>>>>>> dev
   return (
     <div className='group'>
       <img className='groupImg' src={reactLogo} alt='' />
@@ -55,8 +76,13 @@ export default function Group({ group, usuario, miembros, role, acceptEditarGrup
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
+<<<<<<< HEAD
+          <MenuItem onClick={handleEdit}>Editar Grupo</MenuItem>
+          <MenuItem onClick={handleDelete}>Borrar Grupo</MenuItem>
+=======
           <MenuItem onClick={handleEditarOpen}>Editar Grupo</MenuItem>
           <MenuItem onClick={handleEliminarOpen}>Eliminar Miembros</MenuItem>
+>>>>>>> dev
         </Menu>
       </div>
 
