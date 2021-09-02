@@ -15,6 +15,9 @@ const useStyles = makeStyles((theme) => ({
   assign: {
     minWidth: '90%',
   },
+  files: {
+    display: 'none',
+  },
 }));
 
 export default useStyles;

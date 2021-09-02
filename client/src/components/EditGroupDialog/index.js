@@ -7,33 +7,43 @@ import TextField from '@material-ui/core/TextField';
 import useStyles from './styles';
 import TransferList from '../TransferList';
 
-const EditGroupDialog = ({ open, handleClose, items, borrar, handleAccept}) => {
+const EditGroupDialog = ({
+  open,
+  handleClose,
+  items,
+  borrar,
+  handleAccept,
+  title,
+}) => {
   const classes = useStyles();
 
   const [miembros, setMiembros] = useState([]);
   const [nombreGrupo, setNombreGrupo] = useState('');
-  const titulos = borrar ? {izquierda: "Miembros", derecha: "Borrar"} : {izquierda: "Contactos", derecha: "Nuevos Miembros"}
+  const titulos = borrar
+    ? { izquierda: 'Miembros', derecha: 'Borrar' }
+    : { izquierda: 'Contactos', derecha: 'Nuevos Miembros' };
 
   return (
     <Modal
       open={open}
-      title='Crear un grupo'
+      title={title}
       closeText='Cerrar'
       titleStyles={classes.title}
       disableBtn={miembros.length < 1 && (nombreGrupo.length < 3 || borrar)}
-      acceptText = {borrar ? 'Eliminar' : 'Añadir'}
+      acceptText={borrar ? 'Eliminar' : 'Añadir'}
       handleClose={handleClose}
       onAccept={() => handleAccept(miembros, nombreGrupo)}
       maxWidth='md'
     >
       <form className={classes.root} noValidate autoComplete='off'>
-        {!borrar && 
-        <TextField
-          label='Titulo del grupo'
-          className={classes.groupTitle}
-          onChange={(e) => setNombreGrupo(e.target.value)}
-          required
-        />}
+        {!borrar && (
+          <TextField
+            label='Titulo del grupo'
+            className={classes.groupTitle}
+            onChange={(e) => setNombreGrupo(e.target.value)}
+            required
+          />
+        )}
         <TransferList
           listStles={classes.members}
           contactos={items}
@@ -48,7 +58,8 @@ const EditGroupDialog = ({ open, handleClose, items, borrar, handleAccept}) => {
 EditGroupDialog.propTypes = {
   open: PropTypes.any,
   handleClose: PropTypes.func,
-  acceptEditarGrupo: PropTypes.func
+  acceptEditarGrupo: PropTypes.func,
+  title: PropTypes.string.isRequired,
 };
 
 export default EditGroupDialog;
