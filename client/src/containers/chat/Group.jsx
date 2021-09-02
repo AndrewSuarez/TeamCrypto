@@ -8,10 +8,16 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import EditGroupDialog from '../../components/EditGroupDialog';
 
-export default function Group({ group, usuario, miembros, role, acceptEditarGrupo }) {
+export default function Group({
+  group,
+  usuario,
+  miembros,
+  role,
+  acceptEditarGrupo,
+}) {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [editarOpen, setEditarOpen] = useState(false)
-  const [eliminarOpen, setEliminarOpen] = useState(false)
+  const [editarOpen, setEditarOpen] = useState(false);
+  const [eliminarOpen, setEliminarOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
   const deleteGroup = (groupId) => {
@@ -22,21 +28,23 @@ export default function Group({ group, usuario, miembros, role, acceptEditarGrup
     });
   };
 
-  const filter = usuario.contactos.filter(o1 => !miembros.some(o2 => o1._id === o2.userId._id))
-  const groupMembers = miembros.map(miembro => {
-    return miembro.userId
-  })
-  
+  const filter = usuario.contactos.filter(
+    (o1) => !miembros.some((o2) => o1._id === o2.userId._id)
+  );
+  const groupMembers = miembros.map((miembro) => {
+    return miembro.userId;
+  });
+
   const handleEditarOpen = () => {
-    setEditarOpen(true)
-    setAnchorEl(null)
-  }
+    setEditarOpen(true);
+    setAnchorEl(null);
+  };
 
   const handleEliminarOpen = () => {
-    setEliminarOpen(true)
-    setAnchorEl(null)
-  }
-  
+    setEliminarOpen(true);
+    setAnchorEl(null);
+  };
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -44,7 +52,6 @@ export default function Group({ group, usuario, miembros, role, acceptEditarGrup
   const handleClose = () => {
     setAnchorEl(null);
   };
-<<<<<<< HEAD
   const handleEdit = () => {
     setAnchorEl(null);
   };
@@ -52,17 +59,15 @@ export default function Group({ group, usuario, miembros, role, acceptEditarGrup
     deleteGroup(group._id);
     setAnchorEl(null);
   };
-=======
 
   const handleEditarClose = () => {
-    setEditarOpen(false)
-  }
+    setEditarOpen(false);
+  };
 
   const handleEliminarClose = () => {
-    setEliminarOpen(false)
-  }
+    setEliminarOpen(false);
+  };
 
->>>>>>> dev
   return (
     <div className='group'>
       <img className='groupImg' src={reactLogo} alt='' />
@@ -76,27 +81,25 @@ export default function Group({ group, usuario, miembros, role, acceptEditarGrup
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-<<<<<<< HEAD
-          <MenuItem onClick={handleEdit}>Editar Grupo</MenuItem>
-          <MenuItem onClick={handleDelete}>Borrar Grupo</MenuItem>
-=======
           <MenuItem onClick={handleEditarOpen}>Editar Grupo</MenuItem>
+          <MenuItem onClick={handleDelete}>Borrar Grupo</MenuItem>
           <MenuItem onClick={handleEliminarOpen}>Eliminar Miembros</MenuItem>
->>>>>>> dev
         </Menu>
       </div>
 
-      <EditGroupDialog 
-      open={editarOpen} 
-      handleClose={handleEditarClose} 
-      items={filter} 
-      acceptEditarGrupo={acceptEditarGrupo}
+      <EditGroupDialog
+        open={editarOpen}
+        handleClose={handleEditarClose}
+        items={filter}
+        acceptEditarGrupo={acceptEditarGrupo}
+        title={'Editar Grupo'}
       />
 
-      <EditGroupDialog 
-      open={eliminarOpen} 
-      handleClose={handleEliminarClose} 
-      items={groupMembers} 
+      <EditGroupDialog
+        open={eliminarOpen}
+        handleClose={handleEliminarClose}
+        items={groupMembers}
+        title={'Eliminar Miembros'}
       />
     </div>
   );

@@ -7,7 +7,13 @@ import TextField from '@material-ui/core/TextField';
 import useStyles from './styles';
 import TransferList from '../TransferList';
 
-const EditGroupDialog = ({ open, handleClose, items, acceptEditarGrupo}) => {
+const EditGroupDialog = ({
+  open,
+  handleClose,
+  items,
+  acceptEditarGrupo,
+  title,
+}) => {
   const classes = useStyles();
 
   const [miembros, setMiembros] = useState([]);
@@ -16,7 +22,7 @@ const EditGroupDialog = ({ open, handleClose, items, acceptEditarGrupo}) => {
   return (
     <Modal
       open={open}
-      title='Crear un grupo'
+      title={title}
       closeText='Cerrar'
       titleStyles={classes.title}
       disableBtn={miembros.length < 1 && nombreGrupo.length < 3}
@@ -45,7 +51,8 @@ const EditGroupDialog = ({ open, handleClose, items, acceptEditarGrupo}) => {
 EditGroupDialog.propTypes = {
   open: PropTypes.any,
   handleClose: PropTypes.func,
-  acceptEditarGrupo: PropTypes.func
+  acceptEditarGrupo: PropTypes.func,
+  title: PropTypes.string.isRequired,
 };
 
 export default EditGroupDialog;

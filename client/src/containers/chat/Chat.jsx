@@ -6,6 +6,7 @@ import { useSnackbar } from 'notistack';
 import Session from 'react-session-api';
 import UserProfile from '../../objects/user';
 
+import IconButton from '@material-ui/core/IconButton';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -16,6 +17,7 @@ import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Typography } from '@material-ui/core';
@@ -81,6 +83,7 @@ export default function Chat({ history, location }) {
 
   const [workTitle, setWorkTitle] = useState('');
   const [memberToWork, setMemberToWork] = useState('');
+  const [file, setFile] = useState('');
 
   //cambiar fetchUser por fetchGroups una vez se habilite el log in
   useEffect(() => {
@@ -383,6 +386,10 @@ export default function Chat({ history, location }) {
   const handleChangeAssignWork = (e) => {
     setMemberToWork(e.target.value);
   };
+  const handleChangeFile = (e) => {
+    setFile(e.target.value);
+    console.log(e.target.value);
+  };
 
   const workItems = ['Tareas', 'Crear Tareas'];
 
@@ -461,9 +468,19 @@ export default function Chat({ history, location }) {
                 onChange={(e) => setNewMessage(e.target.value)}
                 value={newMessage}
               ></textarea>
-              <div className='attachFile'>
-                <AttachFileIcon />
-              </div>
+              <input
+                accept='image/*'
+                className={classes.files}
+                id='contained-button-file'
+                type='file'
+                onChange={(e) => handleChangeFile(e)}
+                value={file}
+              />
+              <label htmlFor='contained-button-file'>
+                <IconButton color='primary' component='span'>
+                  <AttachFileIcon />
+                </IconButton>
+              </label>
               <button className='chatSubmitButton' onClick={handleSendClick}>
                 <SendIcon />
               </button>
