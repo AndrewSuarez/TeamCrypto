@@ -14,6 +14,7 @@ export default function Group({
   miembros,
   role,
   acceptEditarGrupo,
+  acceptDeleteMembers,
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [editarOpen, setEditarOpen] = useState(false);
@@ -68,6 +69,16 @@ export default function Group({
     setEliminarOpen(false);
   };
 
+  const handleAcceptEditar = (contactos, nombreGrupo) => {
+    acceptEditarGrupo(contactos, nombreGrupo);
+    handleEditarClose();
+  };
+
+  const handleAcceptBorrar = (miembros) => {
+    acceptDeleteMembers(miembros);
+    handleEliminarClose();
+  };
+
   return (
     <div className='group'>
       <img className='groupImg' src={reactLogo} alt='' />
@@ -84,6 +95,7 @@ export default function Group({
           <MenuItem onClick={handleEditarOpen}>Editar Grupo</MenuItem>
           <MenuItem onClick={handleDelete}>Borrar Grupo</MenuItem>
           <MenuItem onClick={handleEliminarOpen}>Eliminar Miembros</MenuItem>
+          <MenuItem onClick={handleDelete}>Borrar Grupo</MenuItem>
         </Menu>
       </div>
 
@@ -91,7 +103,8 @@ export default function Group({
         open={editarOpen}
         handleClose={handleEditarClose}
         items={filter}
-        acceptEditarGrupo={acceptEditarGrupo}
+        borrar={false}
+        handleAccept={handleAcceptEditar}
         title={'Editar Grupo'}
       />
 
@@ -99,6 +112,8 @@ export default function Group({
         open={eliminarOpen}
         handleClose={handleEliminarClose}
         items={groupMembers}
+        borrar={true}
+        handleAccept={handleAcceptBorrar}
         title={'Eliminar Miembros'}
       />
     </div>

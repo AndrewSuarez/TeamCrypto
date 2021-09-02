@@ -12,6 +12,7 @@ const AddGroupDialog = ({ open, handleClose, usuario, handleCrearGrupo }) => {
 
   const [miembros, setMiembros] = useState([]);
   const [nombreGrupo, setNombreGrupo] = useState([]);
+  const titulos = {izquierda: "Contactos", derecha: "Agregar Miembros"}
 
   return (
     <Modal
@@ -36,6 +37,7 @@ const AddGroupDialog = ({ open, handleClose, usuario, handleCrearGrupo }) => {
           listStles={classes.members}
           contactos={usuario.contactos}
           setMiembros={setMiembros}
+          titulos={titulos}
         />
       </form>
     </Modal>

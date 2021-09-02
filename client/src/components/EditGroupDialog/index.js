@@ -11,13 +11,17 @@ const EditGroupDialog = ({
   open,
   handleClose,
   items,
-  acceptEditarGrupo,
+  borrar,
+  handleAccept,
   title,
 }) => {
   const classes = useStyles();
 
   const [miembros, setMiembros] = useState([]);
   const [nombreGrupo, setNombreGrupo] = useState('');
+  const titulos = borrar
+    ? { izquierda: 'Miembros', derecha: 'Borrar' }
+    : { izquierda: 'Contactos', derecha: 'Nuevos Miembros' };
 
   return (
     <Modal
@@ -25,23 +29,26 @@ const EditGroupDialog = ({
       title={title}
       closeText='Cerrar'
       titleStyles={classes.title}
-      disableBtn={miembros.length < 1 && nombreGrupo.length < 3}
-      acceptText='Crear'
+      disableBtn={miembros.length < 1 && (nombreGrupo.length < 3 || borrar)}
+      acceptText={borrar ? 'Eliminar' : 'Añadir'}
       handleClose={handleClose}
-      onAccept={() => acceptEditarGrupo(miembros, nombreGrupo)}
+      onAccept={() => handleAccept(miembros, nombreGrupo)}
       maxWidth='md'
     >
       <form className={classes.root} noValidate autoComplete='off'>
-        <TextField
-          label='Titulo del grupo'
-          className={classes.groupTitle}
-          onChange={(e) => setNombreGrupo(e.target.value)}
-          required
-        />
+        {!borrar && (
+          <TextField
+            label='Titulo del grupo'
+            className={classes.groupTitle}
+            onChange={(e) => setNombreGrupo(e.target.value)}
+            required
+          />
+        )}
         <TransferList
           listStles={classes.members}
           contactos={items}
           setMiembros={setMiembros}
+          titulos={titulos}
         />
       </form>
     </Modal>
