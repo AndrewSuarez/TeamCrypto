@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const User = require('../../models/User');
+const jwt = require('jsonwebtoken');
 // const bcrypt = require('bcrypt')
 
 // registro
@@ -44,6 +45,36 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     res.status(500).json(err);
   }
+});
+
+router.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+
+  User.findOne({ email }, (err, user) => {
+    if (err || !user) {
+      return res
+        .status(400)
+        .json({ error: 'No existe un usuario con este email' });
+    }
+
+    const token = jwt.sign({ _id: user._id }, null, { expiresIn: '20m' });
+    const data = {
+      from: '',
+      to: email,
+      subject: 'Cambio de contraseña',
+      html: ``,
+    };
+
+    return user.UpdateOne({ resetLink: token }, (err, success) => {
+      if (err) {
+        return res
+          .status(400)
+          .json({ error: 'No existe un usuario con este email' });
+      } else {
+        //Enviar mensajes
+      }
+    });
+  });
 });
 
 module.exports = router;
