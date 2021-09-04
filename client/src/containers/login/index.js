@@ -1,9 +1,17 @@
-import { BrowserRouter, Link, Route, useParams, withRouter } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Link,
+  Route,
+  useParams,
+  withRouter,
+} from 'react-router-dom';
 import React, { useContext, useEffect, useState } from 'react';
 
 import AppMenu from '../../components/appMenu';
+import axios from 'axios';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
+import { useSnackbar } from 'notistack';
 import Container from '@material-ui/core/Container';
 import CreateIcon from '@material-ui/icons/Create';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -22,7 +30,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import tryLogin from '../../api/login';
 
 import { loginCall } from '../../apiCalls';
-import {AuthContext} from '../../context/AuthContext'
+import { AuthContext } from '../../context/AuthContext';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -52,26 +60,54 @@ const useStyles = makeStyles((theme) => ({
 const SignIn = ({ history, location }) => {
   const classes = useStyles();
   const [access, setAccess] = useState();
+  const [dataError, setDataError] = useState(false);
   const [loginText, setLoginText] = useState('');
-  const {user, error, dispatch} = useContext(AuthContext);
+  const [checkPass, setCheckPass] = useState('');
+  const { enqueueSnackbar } = useSnackbar();
+  const { user, error, dispatch } = useContext(AuthContext);
   let { login } = useParams();
 
   document.body.style = 'background: #FFFFFF;';
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDataError(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [dataError]);
+
+  const loginCall2 = async (userCredential) => {
+    await axios
+      .post('/api/auth/login', userCredential)
+      .then((res) => {
+        console.log(res);
+        const data = res.data;
+        if (data.status == 'success') {
+          history.push('/chat');
+        } else {
+          enqueueSnackbar(data.message, { variant: 'error' });
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        setDataError(true);
+        enqueueSnackbar('Datos incorrectos', { variant: 'error' });
+      });
+  };
+
   const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log('Prueba Submit')
+    e.preventDefault();
+
+    if (checkPass != UserProfile.getPassword()) {
+      enqueueSnackbar('Las contraseñas no coinciden', { variant: 'error' });
+      return;
+    }
+
     Session.set('user', UserProfile);
-    loginCall({email:UserProfile.getEmail(), password:UserProfile.getPassword()}, dispatch)
-    .then(() => {
-      if(Session.get('usuario')){
-        history.push('/chat')
-      }else{
-        console.log('datos incorrectos')
-      }
-    })
-    
-    
+    loginCall2({
+      email: UserProfile.getEmail(),
+      password: UserProfile.getPassword(),
+    });
   };
 
   const handleAccessChange = (e) => {
@@ -83,6 +119,9 @@ const SignIn = ({ history, location }) => {
         break;
       case 'password':
         UserProfile.setPassword(target.value);
+        break;
+      case 'passwordTwo':
+        setCheckPass(e.target.value);
         break;
       default:
         break;
@@ -177,6 +216,10 @@ const SignIn = ({ history, location }) => {
             )}
             <TextField
               variant='standard'
+              type='email'
+              error={dataError}
+              label={dataError ? 'Error' : ''}
+              helperText={dataError ? 'Verifique los datos' : ''}
               margin='normal'
               required
               fullWidth
@@ -197,6 +240,9 @@ const SignIn = ({ history, location }) => {
             <TextField
               variant='standard'
               margin='normal'
+              error={dataError}
+              label={dataError ? 'Error' : ''}
+              helperText={dataError ? 'Verifique los datos' : ''}
               required
               fullWidth
               name='password'
@@ -213,6 +259,32 @@ const SignIn = ({ history, location }) => {
                 ),
               }}
             />
+            {!access ? (
+              <TextField
+                variant='standard'
+                margin='normal'
+                error={dataError}
+                label={dataError ? 'Error' : ''}
+                helperText={dataError ? 'Verifique los datos' : ''}
+                required
+                fullWidth
+                name='passwordTwo'
+                onChange={handleAccessChange}
+                placeholder='Contraseña'
+                type='password'
+                id='password'
+                autoComplete='current-password'
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      <Lock className={classes.icon} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            ) : (
+              <></>
+            )}
             <Button
               type='submit'
               fullWidth
