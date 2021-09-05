@@ -1,73 +1,78 @@
-const mongoose = require('mongoose')
-const Schema = mongoose.Schema
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const UserSchema = new Schema({
-    username:{
-        type:String,
-        require:true,
-        min: 5,
-        max: 20,
-        unique: true
-    },
-    
-    email:{
-        type:String,
-        requier:true,
-        min: 5,
-        unique:true
+const UserSchema = new Schema(
+  {
+    username: {
+      type: String,
+      require: true,
+      min: 5,
+      max: 20,
+      unique: true,
     },
 
-    password:{
-        type:String,
-        require:true,
-        min:6
+    email: {
+      type: String,
+      requier: true,
+      min: 5,
+      unique: true,
     },
 
-    profilePicture:{
-        type:String,
-        default:''
+    password: {
+      type: String,
+      require: true,
+      min: 6,
     },
 
-    nombre:{
-        type: String,
-        require: true
+    profilePicture: {
+      type: String,
+      default: '',
     },
 
-    apellido:{
-        type: String,
-        require: true
+    nombre: {
+      type: String,
+      require: true,
+    },
+
+    apellido: {
+      type: String,
+      require: true,
     },
 
     contactos: [
-        {
-            type: Schema.ObjectId, 
-            ref: 'User', 
-            default: []
-        }
+      {
+        type: Schema.ObjectId,
+        ref: 'User',
+        default: [],
+      },
     ],
 
     solicitudes: [
-        {
-            type: Schema.ObjectId,
-            ref: 'User', 
-            default: []
-        }
+      {
+        type: Schema.ObjectId,
+        ref: 'User',
+        default: [],
+      },
     ],
 
-    publicKey:{
-        type: String,
-        default: '',
-        require: true,
+    publicKey: {
+      type: String,
+      default: '',
+      require: true,
     },
 
-    privateKey:{
-        type:String,
-        default: '',
-        require:true
-    }
+    privateKey: {
+      type: String,
+      default: '',
+      require: true,
+    },
 
-},
-{timestamps:true}
+    resetLink: {
+      data: String,
+      defaul: '',
+    },
+  },
+  { timestamps: true }
 );
 
 module.exports = mongoose.model('User', UserSchema);
