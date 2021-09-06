@@ -7,38 +7,26 @@ import { useEffect, useState } from 'react';
 // import axios from 'axios';
 import DocumentsDialog from '../../components/DocumentsDialog';
 
-function Member({ member, handleMemberClick }) {
+function Member({ member, handleMemberClick, files }) {
   // const [currentUser, setCurrentUser] = useState([]);
   const [openDocuments, setOpenDocuments] = useState(false);
-  const [userDocuments, setUserDocuments] = useState([]);
 
   const handleOpenDocuments = () => {
     setOpenDocuments(true);
   };
   const handleCloseDocuments = () => {
     setOpenDocuments(false);
+
   };
 
   // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     try {
-  //       const res = await axios.get('/api/users/' + member.userId);
-  //       setCurrentUser(res.data);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  //   fetchUser();
-  // }, [member.userId]);
-
-  useEffect(() => {
-    fetch('https://picsum.photos/v2/list?page=2&limit=100').then((res) => {
-      return res.json().then((data) => {
-        // console.log(data);
-        setUserDocuments(data);
-      });
-    });
-  }, []);
+  //   fetch('https://picsum.photos/v2/list?page=2&limit=100').then((res) => {
+  //     return res.json().then((data) => {
+  //       // console.log(data);
+  //       setUserDocuments(data);
+  //     });
+  //   });
+  // }, []);
 
   return (
     <div className='member'>
@@ -58,7 +46,7 @@ function Member({ member, handleMemberClick }) {
       <DocumentsDialog
         open={openDocuments}
         handleClose={handleCloseDocuments}
-        items={userDocuments}
+        items={files}
       />
     </div>
   );
