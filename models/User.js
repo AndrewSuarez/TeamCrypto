@@ -69,7 +69,11 @@ const UserSchema = new Schema(
 
     resetLink: {
       data: String,
-      defaul: '',
+      default: '',
+    },
+    _2faEnabled: {
+      data: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

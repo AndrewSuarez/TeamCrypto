@@ -27,10 +27,6 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import UserProfile from '../../objects/user';
 import { makeStyles } from '@material-ui/core/styles';
-import tryLogin from '../../api/login';
-
-import { loginCall } from '../../apiCalls';
-import { AuthContext } from '../../context/AuthContext';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -60,11 +56,11 @@ const useStyles = makeStyles((theme) => ({
 const SignIn = ({ history, location }) => {
   const classes = useStyles();
   const [access, setAccess] = useState();
+  const [resetPass, setResetPass] = useState();
   const [dataError, setDataError] = useState(false);
   const [loginText, setLoginText] = useState('');
   const [checkPass, setCheckPass] = useState('');
   const { enqueueSnackbar } = useSnackbar();
-  const { user, error, dispatch } = useContext(AuthContext);
   let { login } = useParams();
 
   document.body.style = 'background: #FFFFFF;';
@@ -80,13 +76,25 @@ const SignIn = ({ history, location }) => {
     await axios
       .post('/api/auth/login', userCredential)
       .then((res) => {
-        console.log(res);
         const data = res.data;
-        if (data.status == 'success') {
-          history.push('/chat');
+
+        if (data._2faEnabled) {
+          enqueueSnackbar(
+            'Por favor introduzca el codigo de verificacion de su aplicacion de Google Authenticator',
+            { variant: 'info' }
+          );
+          history.push('/2fa-verification', { user: data });
         } else {
-          enqueueSnackbar(data.message, { variant: 'error' });
+          enqueueSnackbar(
+            'Usted debe habilitar primero su codigo de verificacion para iniciar sesion',
+            { variant: 'info' }
+          );
+          history.push('/activate-2fa', { user: data });
         }
+
+        // enqueueSnackbar('Inicio exitoso', { variant: 'success' });
+        // Session.set('user', UserProfile);
+        // history.push('/chat');
       })
       .catch((err) => {
         console.error(err);
@@ -95,19 +103,38 @@ const SignIn = ({ history, location }) => {
       });
   };
 
+  const resetUserPass = async (email) => {
+    await axios
+      .post('/api/auth/forgot-password', { email: email.toLowerCase() })
+      .then((res) => {
+        const data = res.data;
+        enqueueSnackbar(data.message, { variant: 'success' });
+      })
+      .catch((err) => {
+        console.log(err);
+        setDataError(true);
+        enqueueSnackbar(
+          'No existe un usuario con este email registrado, verifique',
+          { variant: 'error' }
+        );
+      });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (checkPass != UserProfile.getPassword()) {
+    if (!access && !resetPass && checkPass != UserProfile.getPassword()) {
       enqueueSnackbar('Las contraseñas no coinciden', { variant: 'error' });
       return;
     }
-
-    Session.set('user', UserProfile);
-    loginCall2({
-      email: UserProfile.getEmail(),
-      password: UserProfile.getPassword(),
-    });
+    if (access) {
+      loginCall2({
+        email: UserProfile.getEmail(),
+        password: UserProfile.getPassword(),
+      });
+    } else if (resetPass) {
+      resetUserPass(UserProfile.getEmail());
+    }
   };
 
   const handleAccessChange = (e) => {
@@ -129,14 +156,27 @@ const SignIn = ({ history, location }) => {
   };
 
   useEffect(() => {
-    if (login === 'login') {
-      setAccess(true);
-      setLoginText('Iniciar Sesión');
-      console.log(access);
-    } else {
-      setAccess(false);
-      setLoginText('Registrarse');
-      console.log(access);
+    switch (login) {
+      case 'login':
+        setAccess(true);
+        setLoginText('Iniciar Sesión');
+        setResetPass(false);
+        console.log(access);
+        break;
+      case 'signup':
+        setAccess(false);
+        setLoginText('Registrarse');
+        setResetPass(false);
+        console.log(access);
+        break;
+      case 'forgot-password':
+        setAccess(null);
+        setResetPass(true);
+        setLoginText('Recuperar contraseña');
+        console.log(resetPass);
+        break;
+      default:
+        break;
     }
   }, [login]);
 
@@ -153,7 +193,7 @@ const SignIn = ({ history, location }) => {
             {loginText}
           </Typography>
           <form className={classes.form} onSubmit={handleSubmit}>
-            {!access ? (
+            {!access && !resetPass ? (
               <TextField
                 variant='standard'
                 margin='normal'
@@ -174,7 +214,7 @@ const SignIn = ({ history, location }) => {
             ) : (
               <></>
             )}
-            {!access ? (
+            {!access && !resetPass ? (
               <TextField
                 variant='standard'
                 margin='normal'
@@ -194,7 +234,7 @@ const SignIn = ({ history, location }) => {
             ) : (
               <></>
             )}
-            {!access ? (
+            {!access && !resetPass ? (
               <TextField
                 variant='standard'
                 margin='normal'
@@ -219,7 +259,13 @@ const SignIn = ({ history, location }) => {
               type='email'
               error={dataError}
               label={dataError ? 'Error' : ''}
-              helperText={dataError ? 'Verifique los datos' : ''}
+              helperText={
+                dataError
+                  ? 'Verifique los datos'
+                  : resetPass
+                  ? 'Ingrese su email para recuperar la contraseña'
+                  : ''
+              }
               margin='normal'
               required
               fullWidth
@@ -237,29 +283,31 @@ const SignIn = ({ history, location }) => {
               }}
               autoFocus
             />
-            <TextField
-              variant='standard'
-              margin='normal'
-              error={dataError}
-              label={dataError ? 'Error' : ''}
-              helperText={dataError ? 'Verifique los datos' : ''}
-              required
-              fullWidth
-              name='password'
-              onChange={handleAccessChange}
-              placeholder='Contraseña'
-              type='password'
-              id='password'
-              autoComplete='current-password'
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position='start'>
-                    <Lock className={classes.icon} />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            {!access ? (
+            {!resetPass && (
+              <TextField
+                variant='standard'
+                margin='normal'
+                error={dataError}
+                label={dataError ? 'Error' : ''}
+                helperText={dataError ? 'Verifique los datos' : ''}
+                required
+                fullWidth
+                name='password'
+                onChange={handleAccessChange}
+                placeholder='Contraseña'
+                type='password'
+                id='password'
+                autoComplete='current-password'
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      <Lock className={classes.icon} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            )}
+            {!access && !resetPass ? (
               <TextField
                 variant='standard'
                 margin='normal'
@@ -297,23 +345,28 @@ const SignIn = ({ history, location }) => {
             <Grid container>
               {access ? (
                 <Grid item xs>
-                  <Link href='#' variant='body2'>
+                  <Link to='/access/forgot-password' variant='body2'>
                     ¿Olvidaste tu contraseña?
                   </Link>
                 </Grid>
               ) : (
-                <></>
+                <Grid item xs>
+                  <Link to='/access/login' variant='body2'>
+                    Regresar
+                  </Link>
+                </Grid>
               )}
               <Grid item>
-                {access ? (
-                  <Link to='/access/signup' variant='body2'>
-                    ¿No tienes cuenta aún? ¡Registrate!
-                  </Link>
-                ) : (
-                  <Link to='/access/login' variant='body2'>
-                    ¿Ya tienes una cuenta?
-                  </Link>
-                )}
+                {!resetPass &&
+                  (access ? (
+                    <Link to='/access/signup' variant='body2'>
+                      ¿No tienes cuenta aún? ¡Registrate!
+                    </Link>
+                  ) : (
+                    <Link to='/access/login' variant='body2'>
+                      ¿Ya tienes una cuenta?
+                    </Link>
+                  ))}
               </Grid>
             </Grid>
           </form>
