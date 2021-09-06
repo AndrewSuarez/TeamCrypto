@@ -2,6 +2,7 @@ const router = require('express').Router();
 const User = require('../../models/User');
 const jwt = require('jsonwebtoken');
 const mailgun = require('mailgun-js');
+const request = require('request');
 const _ = require('lodash');
 // const bcrypt = require('bcrypt')
 const MAILGUN_APIKEY = '033bf32c94a6507f85aaa9bd84d2972b-156db0f1-6403b70b';
@@ -41,6 +42,7 @@ router.post('/login', async (req, res) => {
     //find email
     const user = await User.findOne({ email: req.body.email });
     !user && res.status(404).json('Usuario no encontrado');
+    console.log(user);
 
     //find password
     // const validPass = await bcrypt.compare(req.body.password, user.password);
@@ -75,9 +77,9 @@ router.post('/forgot-password', async (req, res) => {
       to: email,
       subject: 'Cambio de contraseña',
       html: `
-             <h2>Por favor haz click en el enlace a continuacion para recuperar tu contraseña</h2>
-             <a href="http:/localhost:3000/forgot-password/activate/${token}">Recuperar mi acceso</a>
-             <p>token: ${token}</p>
+             <h2>Por favor copia y pega en tu navegador el enlace a continuacion para recuperar tu contraseña</h2>
+             <p>Este token tiene un tiempo de expiracion de 20min</p>
+             <p>http:/localhost:3000/reset-password/${token}</p>
       `,
     };
 
@@ -90,7 +92,7 @@ router.post('/forgot-password', async (req, res) => {
             return res.status(500).json({ error: error.message });
           }
           return res.status(200).json({
-            message: 'El email ha sido enviado, siga las instruccione',
+            message: 'El email ha sido enviado, siga las instrucciones',
           });
         });
       }
@@ -125,6 +127,7 @@ router.post('/reset-password', async (req, res) => {
               .status(400)
               .json({ error: 'Error en el link provisional' });
           } else {
+            console.log(user);
             res
               .status(200)
               .json({ message: 'La contaseña se actualizo con exito' });
@@ -135,6 +138,42 @@ router.post('/reset-password', async (req, res) => {
   } else {
     res.status(401).json({ error: 'Error de autenticacion!' });
   }
+});
+
+router.post('/activate-2fa/:userId', async (req, res) => {
+  try {
+    User.findOne({ _id: req.params.userId }, (err, user) => {
+      if (err || !user) {
+        res.status(400).json({ error: 'No existe un usuario con este ID' });
+      }
+
+      user.updateOne({ _2faEnabled: true }, (error, success) => {
+        if (error) {
+          res.status(500).json({ error: 'Error configurando el 2FA' });
+        }
+
+        res
+          .status(200)
+          .json({ message: 'Codigo de autenticacion configurado con exito' });
+      });
+    });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+router.post('/request-2fa/:pin/:secretKey', async (req, res) => {
+  const { pin, secretKey } = req.params;
+  request(
+    `https://www.authenticatorapi.com/api.asmx/ValidatePin?pin=${pin}&secretCode=${secretKey}`,
+    (err, response) => {
+      if (err) {
+        res.status(400).json({ error: response });
+      }
+      const result = response.body.includes('true') ? true : false;
+      res.status(200).json(result);
+    }
+  );
 });
 
 module.exports = router;
