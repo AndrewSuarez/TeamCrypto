@@ -11,6 +11,9 @@ const MessageSchema = new Schema({
     },
     text: {
         type: String
+    },
+    fileName: {
+        type: String
     }
 },
 {timestamps:true}

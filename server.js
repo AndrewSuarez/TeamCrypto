@@ -14,8 +14,7 @@ const conversationRoute = require('./routes/api/conversation');
 const messagesRoute = require('./routes/api/messages');
 const groupsRoute = require('./routes/api/groups');
 const membersRoute = require('./routes/api/members');
-
-
+const uploadRoute = require('./routes/api/upload')
 
 //Middleware
 app.use(express.json());
@@ -33,6 +32,8 @@ app.use('/api/conversation', conversationRoute);
 app.use('/api/messages', messagesRoute);
 app.use('/api/groups', groupsRoute);
 app.use('/api/members', membersRoute);
+app.use('/api/upload', uploadRoute);
+
 
 
 //DB config
