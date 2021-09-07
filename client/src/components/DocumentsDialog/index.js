@@ -16,7 +16,6 @@ const DocumentsDialog = ({ open, handleClose, items }) => {
       title='Documentos'
       closeText='Cerrar'
       titleStyles={classes.title}
-      acceptText='Aceptar'
       handleClose={handleClose}
       maxWidth='md'
     >

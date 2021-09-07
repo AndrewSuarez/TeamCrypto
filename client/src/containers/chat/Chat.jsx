@@ -83,7 +83,7 @@ export default function Chat({ history, location }) {
 
   const [workTitle, setWorkTitle] = useState('');
   const [memberToWork, setMemberToWork] = useState('');
-  const [file, setFile] = useState('');
+  const [files, setFiles] = useState(null);
 
   console.log(loggeduserGroupMember);
   //cambiar fetchUser por fetchGroups una vez se habilite el log in
@@ -107,6 +107,7 @@ export default function Chat({ history, location }) {
   useEffect(() => {
     if (conversation) {
       fetchMensajes();
+      fetchFiles();
     }
   }, [conversation]);
 
@@ -158,6 +159,13 @@ export default function Chat({ history, location }) {
   const fetchGroups = async () => {
     const res = await axios.get('/api/members/groups/user/' + sessionTemp._id);
     setGroups(res.data);
+  };
+
+  const fetchFiles = async () => {
+    const { data } = await axios.get(
+      `/api/messages/allFiles/${conversation._id}`
+    );
+    setFiles(data);
   };
 
   const fetchMensajes = async () => {
@@ -240,13 +248,21 @@ export default function Chat({ history, location }) {
     }
   };
 
-  const getSessionMember = async (userId) => {
+  // const getSessionMember = async (userId) => {
+  //   try {
+  //     await axios.get(`/api/members/current-member/${userId}`).then((res) => {
+  //       return res.data;
+  //     });
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // };
+  const postMessage = async (mensaje) => {
     try {
-      await axios.get(`/api/members/current-member/${userId}`).then((res) => {
-        return res.data;
-      });
-    } catch (error) {
-      throw error;
+      const res = await axios.post('/api/messages', mensaje);
+      setMessages([...messages, res.data]);
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -404,13 +420,8 @@ export default function Chat({ history, location }) {
       sender: sessionTemp._id,
       text: newMessage,
     };
-
-    try {
-      const res = await axios.post('/api/messages', message);
-      setMessages([...messages, res.data]);
-    } catch (err) {
-      console.log(err);
-    }
+    postMessage(message);
+    setNewMessage([]);
     document.getElementById('messagebox').value = '';
   };
 
@@ -424,9 +435,23 @@ export default function Chat({ history, location }) {
   const handleChangeAssignWork = (e) => {
     setMemberToWork(e.target.value);
   };
-  const handleChangeFile = (e) => {
-    setFile(e.target.value);
-    console.log(e.target.value);
+  const handleChangeFile = async (e) => {
+    if (conversation._id && e.target.files) {
+      try {
+        const data = new FormData();
+        data.append('file', e.target.files[0]);
+        const res = await axios.post('/api/upload', data);
+        const message = {
+          conversationId: conversation._id,
+          sender: sessionTemp._id,
+          text: res.data.file.originalname,
+          fileName: res.data.file.filename,
+        };
+        postMessage(message);
+      } catch (err) {
+        console.log(err);
+      }
+    }
   };
 
   const workItems = ['Tareas', 'Crear Tareas'];
@@ -501,6 +526,7 @@ export default function Chat({ history, location }) {
                       m.sender._id === sessionTemp._id ||
                       m.sender === sessionTemp._id
                     }
+                    file={m.fileName && true}
                   />
                 </div>
               ))}
@@ -517,16 +543,20 @@ export default function Chat({ history, location }) {
                 accept='image/*'
                 className={classes.files}
                 id='contained-button-file'
+                name='file'
                 type='file'
-                onChange={(e) => handleChangeFile(e)}
-                value={file}
+                onInput={(e) => handleChangeFile(e)}
               />
               <label htmlFor='contained-button-file'>
                 <IconButton color='primary' component='span'>
                   <AttachFileIcon />
                 </IconButton>
               </label>
-              <button className='chatSubmitButton' onClick={handleSendClick}>
+              <button
+                className='chatSubmitButton'
+                onClick={handleSendClick}
+                disabled={!(newMessage.length !== 0)}
+              >
                 <SendIcon />
               </button>
             </div>
@@ -546,7 +576,7 @@ export default function Chat({ history, location }) {
                   <Member
                     member={m}
                     handleMemberClick={handleAssignRoles}
-                    selectedUser={selectedUser}
+                    files={files}
                   />
                 </div>
               ))
