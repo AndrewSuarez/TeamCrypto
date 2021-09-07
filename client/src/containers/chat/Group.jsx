@@ -93,7 +93,6 @@ export default function Group({
           onClose={handleClose}
         >
           <MenuItem onClick={handleEditarOpen}>Editar Grupo</MenuItem>
-          <MenuItem onClick={handleDelete}>Borrar Grupo</MenuItem>
           <MenuItem onClick={handleEliminarOpen}>Eliminar Miembros</MenuItem>
           <MenuItem onClick={handleDelete}>Borrar Grupo</MenuItem>
         </Menu>

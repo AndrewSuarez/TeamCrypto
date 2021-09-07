@@ -85,6 +85,7 @@ export default function Chat({ history, location }) {
   const [memberToWork, setMemberToWork] = useState('');
   const [files, setFiles] = useState(null);
 
+  console.log(loggeduserGroupMember);
   //cambiar fetchUser por fetchGroups una vez se habilite el log in
   useEffect(() => {
     fetchUser();
@@ -161,9 +162,11 @@ export default function Chat({ history, location }) {
   };
 
   const fetchFiles = async () => {
-    const {data} = await axios.get(`/api/messages/allFiles/${conversation._id}`)
-    setFiles(data) 
-  }
+    const { data } = await axios.get(
+      `/api/messages/allFiles/${conversation._id}`
+    );
+    setFiles(data);
+  };
 
   const fetchMensajes = async () => {
     try {
@@ -217,12 +220,12 @@ export default function Chat({ history, location }) {
     axios.post('/api/members', newMembers).then(() => {
       onCloseAddGroups();
     });
-  }
-  
+  };
+
   const deleteMembers = async (idArray) => {
-    const query = {groupId: currentGroup._id, userId: idArray}
-    await axios.post('/api/members/deleteMany', query)
-  }
+    const query = { groupId: currentGroup._id, userId: idArray };
+    await axios.post('/api/members/deleteMany', query);
+  };
 
   const changeGroupName = async (name) => {
     try {
@@ -245,14 +248,23 @@ export default function Chat({ history, location }) {
     }
   };
 
-  const postMessage = async(mensaje) => {
+  // const getSessionMember = async (userId) => {
+  //   try {
+  //     await axios.get(`/api/members/current-member/${userId}`).then((res) => {
+  //       return res.data;
+  //     });
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // };
+  const postMessage = async (mensaje) => {
     try {
       const res = await axios.post('/api/messages', mensaje);
       setMessages([...messages, res.data]);
     } catch (err) {
       console.log(err);
     }
-  }
+  };
 
   const handleCrearGrupo = async (usuario, miembros, nombreGrupo) => {
     try {
@@ -283,11 +295,11 @@ export default function Chat({ history, location }) {
       }
       if (members.length >= 1) {
         const newMembers = members.map((miembro) => ({
-          groupId : currentGroup._id,
-          userId: miembro._id
-        }))
-        addMembers(newMembers)
-        fetchMembers()
+          groupId: currentGroup._id,
+          userId: miembro._id,
+        }));
+        addMembers(newMembers);
+        fetchMembers();
       }
     } catch (err) {
       console.log(err);
@@ -295,16 +307,16 @@ export default function Chat({ history, location }) {
   };
 
   const handleDeleteMembers = async (selectedMembers) => {
-    try{
-      const idArray = selectedMembers.map(member => {
-        return member._id
-      })
-      deleteMembers(idArray)
-      fetchMembers()
-    }catch(err){
-      console.log(err)
+    try {
+      const idArray = selectedMembers.map((member) => {
+        return member._id;
+      });
+      deleteMembers(idArray);
+      fetchMembers();
+    } catch (err) {
+      console.log(err);
     }
-  }
+  };
 
   const handleAddWorks = () => {
     setOpenWorks(true);
@@ -312,9 +324,19 @@ export default function Chat({ history, location }) {
   const handleAddGroups = () => {
     setAddGroup(true);
   };
+
   const handleAssignRoles = () => {
-    setAssignRoles(true);
+    const user = getSessionMember(sessionTemp._id);
+    if (loggeduserGroupMember.role != 'A') {
+      enqueueSnackbar(
+        'Usted no tiene permisos para asignar roles, comuniquese con el administrador',
+        { variant: 'warning' }
+      );
+    } else {
+      setAssignRoles(true);
+    }
   };
+
   const handleSeeContacts = () => {
     setSeeContacts(true);
   };
@@ -398,8 +420,8 @@ export default function Chat({ history, location }) {
       sender: sessionTemp._id,
       text: newMessage,
     };
-    postMessage(message)
-    setNewMessage([])
+    postMessage(message);
+    setNewMessage([]);
     document.getElementById('messagebox').value = '';
   };
 
@@ -414,8 +436,8 @@ export default function Chat({ history, location }) {
     setMemberToWork(e.target.value);
   };
   const handleChangeFile = async (e) => {
-    if(conversation._id && e.target.files){
-      try{
+    if (conversation._id && e.target.files) {
+      try {
         const data = new FormData();
         data.append('file', e.target.files[0]);
         const res = await axios.post('/api/upload', data);
@@ -425,9 +447,9 @@ export default function Chat({ history, location }) {
           text: res.data.file.originalname,
           fileName: res.data.file.filename,
         };
-        postMessage(message)
-      }catch(err){
-        console.log(err)
+        postMessage(message);
+      } catch (err) {
+        console.log(err);
       }
     }
   };
@@ -465,12 +487,19 @@ export default function Chat({ history, location }) {
             </div>
             {groups.map((g) => (
               <div onClick={() => handleGroupClick(g)}>
-                <Group group={g} 
-                usuario={sessionTemp} 
-                miembros={groupMembers} 
-                role={loggeduserGroupMember?.role} 
-                acceptEditarGrupo={handleAddMembers}
-                acceptDeleteMembers={handleDeleteMembers}
+                <Group
+                  group={g}
+                  usuario={sessionTemp}
+                  usuario={sessionTemp}
+                  usuario={sessionTemp}
+                  miembros={groupMembers}
+                  miembros={groupMembers}
+                  miembros={groupMembers}
+                  role={loggeduserGroupMember?.role}
+                  role={loggeduserGroupMember?.role}
+                  role={loggeduserGroupMember?.role}
+                  acceptEditarGrupo={handleAddMembers}
+                  acceptDeleteMembers={handleDeleteMembers}
                 />
               </div>
             ))}
@@ -523,7 +552,11 @@ export default function Chat({ history, location }) {
                   <AttachFileIcon />
                 </IconButton>
               </label>
-              <button className='chatSubmitButton' onClick={handleSendClick} disabled={!(newMessage.length !== 0) }>
+              <button
+                className='chatSubmitButton'
+                onClick={handleSendClick}
+                disabled={!(newMessage.length !== 0)}
+              >
                 <SendIcon />
               </button>
             </div>
