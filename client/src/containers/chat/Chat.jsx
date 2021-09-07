@@ -423,7 +423,7 @@ export default function Chat({ history, location }) {
           conversationId: conversation._id,
           sender: sessionTemp._id,
           text: res.data.file.originalname,
-          fileName: res.data.file.filename
+          fileName: res.data.file.filename,
         };
         postMessage(message)
       }catch(err){

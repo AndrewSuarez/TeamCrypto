@@ -5,6 +5,10 @@ import ImageListItem from '@material-ui/core/ImageListItem';
 import PropTypes from 'prop-types';
 import Grid from "@material-ui/core/Grid";
 import GetAppIcon from '@material-ui/icons/GetApp';
+import axios from 'axios';
+import download from 'js-file-download';
+
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,9 +40,25 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
+
 const DocumentsList = ({ itemData }) => {
   const classes = useStyles();
   const imageValidation = /(.jpe?g|.png|.gif)$/
+
+  const downloadFile = (item) => {
+    try{
+      axios.get(`/api/upload/download/${item.fileName}`, 
+      {
+       responseType:'arraybuffer'
+      }
+      )
+      .then(res => {
+        download(res.data, item.text);
+      })
+    }catch(err){
+      console.log(err)
+    }
+  }
   
   return (
     <div className={classes.root}>
@@ -47,29 +67,15 @@ const DocumentsList = ({ itemData }) => {
             <Grid item xs={4}>
               <div className={classes.imageList}>
               {imageValidation.test(item.fileName?.toLowerCase()) ? 
-                <img className={classes.img} src={`/api/upload/image/${item.fileName}`} alt={item.text} /> 
+                <img className={classes.img} src={`/api/upload/download/${item.fileName}`} alt={item.text} /> 
                 :
                 <p className={classes.text}>{item.text}</p>
               }
               </div>
-              <GetAppIcon className={classes.downloadFileIcon} />
+                <GetAppIcon className={classes.downloadFileIcon} onClick={() => downloadFile(item)}/>
             </Grid>
         ))}
       </Grid>
-
-
-      {/* <ImageList rowHeight={160} className={classes.imageList} cols={3}>
-        {itemData.map((item) => (
-          <ImageListItem key={item.fileName} cols={1}>
-            {imageValidation.test(item.fileName) ?  
-            <img src={`/api/upload/image/${item.fileName}`} alt={item.text} /> 
-            :
-            <span>{item.text}</span>
-            }
-          <GetAppIcon className={classes.downloadFileIcon}/>
-          </ImageListItem>
-        ))}
-      </ImageList> */}
     </div>
   );
 };
