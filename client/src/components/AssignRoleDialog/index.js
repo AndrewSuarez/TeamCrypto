@@ -9,24 +9,30 @@ import TransferList from '../TransferList';
 import AccordionList from '../AccordionList';
 import axios from 'axios';
 
-const AssignRoleDialog = ({ open, handleClose, userRole, memberId, fetchMembers }) => {
- 
+const AssignRoleDialog = ({
+  open,
+  handleClose,
+  userRole,
+  memberId,
+  fetchMembers,
+}) => {
   const classes = useStyles();
 
-  const [selectedRole, setSelectedRole] = useState('')
-  
-  const handleAccept = (userRole, memberId ) => {
-    if(userRole === 'A'){
-      const assignRole =  async () => {
-        await axios.put(`/api/members/update/${memberId}`, {role: selectedRole})
-        .then(fetchMembers())
-      }
+  const [selectedRole, setSelectedRole] = useState('');
+
+  const handleAccept = (userRole, memberId) => {
+    if (userRole === 'A') {
+      const assignRole = async () => {
+        await axios
+          .put(`/api/members/update/${memberId}`, { role: selectedRole })
+          .then(fetchMembers());
+      };
       assignRole();
-    }else{
-      console.log('Usted no tiene permisos para asignar roles')
+    } else {
+      console.log('Usted no tiene permisos para asignar roles');
     }
-    handleClose()
-  }
+    handleClose();
+  };
 
   const roles = [
     {
@@ -38,7 +44,7 @@ const AssignRoleDialog = ({ open, handleClose, userRole, memberId, fetchMembers 
     {
       label: 'Supervisor',
       description:
-        'Este rol tiene control parcial del equipo, puede ver las tareas, reasignarlas, no puede eliminarlas y puede asignar roles a otros miembros.',
+        'Este rol tiene control parcial del equipo, puede ver las tareas, no puede eliminarlas y puede asignar roles a otros miembros.',
       id: 'SP',
     },
     {

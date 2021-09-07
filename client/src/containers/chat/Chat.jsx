@@ -85,6 +85,7 @@ export default function Chat({ history, location }) {
   const [memberToWork, setMemberToWork] = useState('');
   const [file, setFile] = useState('');
 
+  console.log(loggeduserGroupMember);
   //cambiar fetchUser por fetchGroups una vez se habilite el log in
   useEffect(() => {
     fetchUser();
@@ -211,12 +212,12 @@ export default function Chat({ history, location }) {
     axios.post('/api/members', newMembers).then(() => {
       onCloseAddGroups();
     });
-  }
-  
+  };
+
   const deleteMembers = async (idArray) => {
-    const query = {groupId: currentGroup._id, userId: idArray}
-    await axios.post('/api/members/deleteMany', query)
-  }
+    const query = { groupId: currentGroup._id, userId: idArray };
+    await axios.post('/api/members/deleteMany', query);
+  };
 
   const changeGroupName = async (name) => {
     try {
@@ -236,6 +237,16 @@ export default function Chat({ history, location }) {
       fetchUser();
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  const getSessionMember = async (userId) => {
+    try {
+      await axios.get(`/api/members/current-member/${userId}`).then((res) => {
+        return res.data;
+      });
+    } catch (error) {
+      throw error;
     }
   };
 
@@ -268,11 +279,11 @@ export default function Chat({ history, location }) {
       }
       if (members.length >= 1) {
         const newMembers = members.map((miembro) => ({
-          groupId : currentGroup._id,
-          userId: miembro._id
-        }))
-        addMembers(newMembers)
-        fetchMembers()
+          groupId: currentGroup._id,
+          userId: miembro._id,
+        }));
+        addMembers(newMembers);
+        fetchMembers();
       }
     } catch (err) {
       console.log(err);
@@ -280,16 +291,16 @@ export default function Chat({ history, location }) {
   };
 
   const handleDeleteMembers = async (selectedMembers) => {
-    try{
-      const idArray = selectedMembers.map(member => {
-        return member._id
-      })
-      deleteMembers(idArray)
-      fetchMembers()
-    }catch(err){
-      console.log(err)
+    try {
+      const idArray = selectedMembers.map((member) => {
+        return member._id;
+      });
+      deleteMembers(idArray);
+      fetchMembers();
+    } catch (err) {
+      console.log(err);
     }
-  }
+  };
 
   const handleAddWorks = () => {
     setOpenWorks(true);
@@ -297,9 +308,19 @@ export default function Chat({ history, location }) {
   const handleAddGroups = () => {
     setAddGroup(true);
   };
+
   const handleAssignRoles = () => {
-    setAssignRoles(true);
+    const user = getSessionMember(sessionTemp._id);
+    if (loggeduserGroupMember.role != 'A') {
+      enqueueSnackbar(
+        'Usted no tiene permisos para asignar roles, comuniquese con el administrador',
+        { variant: 'warning' }
+      );
+    } else {
+      setAssignRoles(true);
+    }
   };
+
   const handleSeeContacts = () => {
     setSeeContacts(true);
   };
@@ -441,12 +462,19 @@ export default function Chat({ history, location }) {
             </div>
             {groups.map((g) => (
               <div onClick={() => handleGroupClick(g)}>
-                <Group group={g} 
-                usuario={sessionTemp} 
-                miembros={groupMembers} 
-                role={loggeduserGroupMember?.role} 
-                acceptEditarGrupo={handleAddMembers}
-                acceptDeleteMembers={handleDeleteMembers}
+                <Group
+                  group={g}
+                  usuario={sessionTemp}
+                  usuario={sessionTemp}
+                  usuario={sessionTemp}
+                  miembros={groupMembers}
+                  miembros={groupMembers}
+                  miembros={groupMembers}
+                  role={loggeduserGroupMember?.role}
+                  role={loggeduserGroupMember?.role}
+                  role={loggeduserGroupMember?.role}
+                  acceptEditarGrupo={handleAddMembers}
+                  acceptDeleteMembers={handleDeleteMembers}
                 />
               </div>
             ))}
