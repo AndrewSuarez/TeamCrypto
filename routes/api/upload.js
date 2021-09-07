@@ -64,7 +64,7 @@ router.get('/files', (req, res) => {
 })
 
 //diplay Image 
-router.get('/image/:filename', (req, res) => {
+router.get('/download/:filename', (req, res) => {
     gfs.files.findOne({filename: req.params.filename}, (err, file) => {
         //check if files exist
         if(!file || file.length === 0) {
@@ -74,15 +74,15 @@ router.get('/image/:filename', (req, res) => {
         }
 
         //check if its an image
-        if(file.contentType === 'image/jpeg' || file.contentType === 'image/png') {
+        // if(file.contentType === 'image/jpeg' || file.contentType === 'image/png') {
             //read output to browser
             const readstream = gfs.createReadStream(file.filename);
             readstream.pipe(res)
-        }else{
-            res.status(404).json({
-                err: 'Not an image'
-            })
-        }
+        // }else{
+        //     res.status(404).json({
+        //         err: 'Not an image'
+        //     })
+        // }
     })
 })
 

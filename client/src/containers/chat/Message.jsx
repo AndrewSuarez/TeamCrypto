@@ -4,11 +4,26 @@ import axios from 'axios';
 import userIcon from '../../assets/images/userIcon.png';
 import fileMessageIcon from '../../assets/images/fileMessageIcon.png';
 import { format } from 'timeago.js';
+import download from 'js-file-download';
 
 export default function Message({ message, own, file }) {
 
   const imageValidation = /jpe?g|png|gif/;
 
+  const downloadFile = () => {
+    try{
+      axios.get(`/api/upload/download/${message.fileName}`, 
+      {
+       responseType:'arraybuffer'
+      }
+      )
+      .then(res => {
+        download(res.data, message.text);
+      })
+    }catch(err){
+      console.log(err)
+    }
+  }
 
   return (
     <div className={own ? 'message own' : 'message'}>
@@ -17,13 +32,14 @@ export default function Message({ message, own, file }) {
         <img className={!own && 'messageImg'} src={!own && userIcon} alt='' />
         <div className='messageBubble'>
           {imageValidation.test(message.fileName?.toLowerCase()) ? 
-            <img className="imageInBubble" src={`/api/upload/image/${message.fileName}`} alt=''></img>
+            <img className="imageInBubble" src={`/api/upload/download/${message.fileName}`} alt=''></img>
             :
             <>
               <img
               className={file && 'fileMessageImage'}
               src={file && fileMessageIcon}
-              alt=''
+              alt='' 
+              onClick={()=> downloadFile()}
               />
               <span className='messageText'>{message.text}</span>
             </>

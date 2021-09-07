@@ -60,6 +60,7 @@
     height: 100%;
     width: 20px;
     margin-right: 10px;
+    cursor: pointer;
 }
 
 .senderName{
