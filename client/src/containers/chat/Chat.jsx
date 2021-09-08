@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import Session from 'react-session-api';
 import UserProfile from '../../objects/user';
+import ReactScrollableFeed from 'react-scrollable-feed'
 
 import IconButton from '@material-ui/core/IconButton';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
@@ -55,7 +56,7 @@ export default function Chat({ history, location }) {
       const res = await axios.get('/api/users/6105c08d1fbf991ef816593a');
       setSessionTemp(res.data);
     } catch (err) {
-      console.log(err);
+      enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
     }
   };
 
@@ -84,6 +85,8 @@ export default function Chat({ history, location }) {
   const [workTitle, setWorkTitle] = useState('');
   const [memberToWork, setMemberToWork] = useState('');
   const [files, setFiles] = useState(null);
+
+  let objDiv = document.getElementById("scrollBox");
 
   console.log(loggeduserGroupMember);
   //cambiar fetchUser por fetchGroups una vez se habilite el log in
@@ -131,7 +134,7 @@ export default function Chat({ history, location }) {
         }
       }
     } catch (err) {
-      console.log(err);
+      enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
     }
   };
 
@@ -141,7 +144,7 @@ export default function Chat({ history, location }) {
       const res = await axios.get(`/api/conversation/${currentGroup._id}`);
       setConversation(res.data);
     } catch (err) {
-      console.log(err);
+      enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
     }
   };
 
@@ -152,7 +155,7 @@ export default function Chat({ history, location }) {
       );
       setoggedUserGroupMember(res.data);
     } catch (err) {
-      console.log(err);
+      enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
     }
   };
 
@@ -167,13 +170,14 @@ export default function Chat({ history, location }) {
     );
     setFiles(data);
   };
-
+  
   const fetchMensajes = async () => {
     try {
       const res = await axios.get(`/api/messages/${conversation._id}`);
       setMessages(res.data);
+      objDiv.scrollTop = objDiv.scrollHeight;
     } catch (err) {
-      console.log(err);
+      enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
     }
   };
 
@@ -185,7 +189,7 @@ export default function Chat({ history, location }) {
       );
       setGroupMembers(res.data);
     } catch (err) {
-      console.log(err);
+      enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
     }
   };
 
@@ -212,7 +216,7 @@ export default function Chat({ history, location }) {
       const res = await axios.get('/api/users/noContacts/' + sessionTemp._id);
       setNonContacts(res.data);
     } catch (err) {
-      console.log(err);
+      enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
     }
   };
 
@@ -231,7 +235,7 @@ export default function Chat({ history, location }) {
     try {
       await axios.put(`/api/groups/${currentGroup._id}`, { name: name });
     } catch (err) {
-      console.log(err);
+      enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
     }
   };
 
@@ -244,7 +248,7 @@ export default function Chat({ history, location }) {
       onCloseNotifications();
       fetchUser();
     } catch (err) {
-      console.log(err);
+      enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
     }
   };
 
@@ -261,8 +265,9 @@ export default function Chat({ history, location }) {
     try {
       const res = await axios.post('/api/messages', mensaje);
       setMessages([...messages, res.data]);
+      objDiv.scrollTop = objDiv.scrollHeight;
     } catch (err) {
-      console.log(err);
+      enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
     }
   };
 
@@ -284,7 +289,7 @@ export default function Chat({ history, location }) {
       addMembers(newMembers);
       fetchGroups();
     } catch (err) {
-      console.log(err);
+      enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
     }
   };
 
@@ -302,7 +307,7 @@ export default function Chat({ history, location }) {
         fetchMembers();
       }
     } catch (err) {
-      console.log(err);
+      enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
     }
   };
 
@@ -314,7 +319,7 @@ export default function Chat({ history, location }) {
       deleteMembers(idArray);
       fetchMembers();
     } catch (err) {
-      console.log(err);
+      enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
     }
   };
 
@@ -326,8 +331,7 @@ export default function Chat({ history, location }) {
   };
 
   const handleAssignRoles = () => {
-    const user = getSessionMember(sessionTemp._id);
-    if (loggeduserGroupMember.role != 'A') {
+    if (loggeduserGroupMember.role !== 'A') {
       enqueueSnackbar(
         'Usted no tiene permisos para asignar roles, comuniquese con el administrador',
         { variant: 'warning' }
@@ -449,7 +453,7 @@ export default function Chat({ history, location }) {
         };
         postMessage(message);
       } catch (err) {
-        console.log(err);
+        enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
       }
     }
   };
@@ -506,9 +510,9 @@ export default function Chat({ history, location }) {
           </div>
         </div>
 
-        <div className='chatBox'>
+        <div className='chatBox' >
           <div className='chatBoxWrapper'>
-            <div className='chatBoxTop'>
+            <div className='chatBoxTop' id={"scrollBox"}>
               <nav className='chatNameWrapper'>
                 <h1 className='chatName'>
                   {chatGroup
@@ -518,18 +522,18 @@ export default function Chat({ history, location }) {
                   {selectedUser.userId && <LockIcon />}
                 </h1>
               </nav>
-              {messages.map((m) => (
-                <div>
-                  <Message
-                    message={m}
-                    own={
-                      m.sender._id === sessionTemp._id ||
-                      m.sender === sessionTemp._id
-                    }
-                    file={m.fileName && true}
-                  />
-                </div>
-              ))}
+                {messages.map((m) => (
+                  <div>
+                    <Message
+                      message={m}
+                      own={
+                        m.sender._id === sessionTemp._id ||
+                        m.sender === sessionTemp._id
+                      }
+                      file={m.fileName && true}
+                    />
+                  </div>
+                ))}
             </div>
             <div className='chatBoxBottom'>
               <textarea
