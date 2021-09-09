@@ -36,6 +36,7 @@ import AssignRoleDialog from '../../components/AssignRoleDialog';
 import ContactsDialog from '../../components/ContactsDialog';
 import SettingsDialog from '../../components/SettingsDialog';
 import NotificationsDialog from '../../components/NotificationsDialog';
+import ProgressBar from '../../components/ProgressBar';
 
 export default function Chat({ history, location }) {
   // funciones y estado temporal!!! Se remplaza por el Session del log in
@@ -57,6 +58,7 @@ export default function Chat({ history, location }) {
       setSessionTemp(res.data);
     } catch (err) {
       enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
+      console.log(err)
     }
   };
 
@@ -70,6 +72,7 @@ export default function Chat({ history, location }) {
   const [seeContacts, setSeeContacts] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [porcentajeUpload, setPorcentajeUpload] = useState(0)
 
   const [groups, setGroups] = useState([]);
   const [groupMembers, setGroupMembers] = useState([]);
@@ -88,7 +91,6 @@ export default function Chat({ history, location }) {
 
   let objDiv = document.getElementById("scrollBox");
 
-  console.log(loggeduserGroupMember);
   //cambiar fetchUser por fetchGroups una vez se habilite el log in
   useEffect(() => {
     fetchUser();
@@ -135,6 +137,7 @@ export default function Chat({ history, location }) {
       }
     } catch (err) {
       enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
+      console.log(err)
     }
   };
 
@@ -145,6 +148,7 @@ export default function Chat({ history, location }) {
       setConversation(res.data);
     } catch (err) {
       enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
+      console.log(err)
     }
   };
 
@@ -156,6 +160,7 @@ export default function Chat({ history, location }) {
       setoggedUserGroupMember(res.data);
     } catch (err) {
       enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
+      console.log(err)
     }
   };
 
@@ -175,9 +180,10 @@ export default function Chat({ history, location }) {
     try {
       const res = await axios.get(`/api/messages/${conversation._id}`);
       setMessages(res.data);
-      objDiv.scrollTop = objDiv.scrollHeight;
+      if(conversation._id) objDiv.scrollTop = objDiv.scrollHeight;
     } catch (err) {
       enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
+      console.log(err)
     }
   };
 
@@ -190,6 +196,7 @@ export default function Chat({ history, location }) {
       setGroupMembers(res.data);
     } catch (err) {
       enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
+      console.log(err)
     }
   };
 
@@ -217,6 +224,7 @@ export default function Chat({ history, location }) {
       setNonContacts(res.data);
     } catch (err) {
       enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
+      console.log(err)
     }
   };
 
@@ -236,6 +244,7 @@ export default function Chat({ history, location }) {
       await axios.put(`/api/groups/${currentGroup._id}`, { name: name });
     } catch (err) {
       enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
+      console.log(err)
     }
   };
 
@@ -246,21 +255,14 @@ export default function Chat({ history, location }) {
       });
       console.log(res.data);
       onCloseNotifications();
+      enqueueSnackbar('Contacto Agregado', { variant: 'success' });
       fetchUser();
     } catch (err) {
       enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
+      console.log(err)
     }
   };
 
-  // const getSessionMember = async (userId) => {
-  //   try {
-  //     await axios.get(`/api/members/current-member/${userId}`).then((res) => {
-  //       return res.data;
-  //     });
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // };
   const postMessage = async (mensaje) => {
     try {
       const res = await axios.post('/api/messages', mensaje);
@@ -268,6 +270,7 @@ export default function Chat({ history, location }) {
       objDiv.scrollTop = objDiv.scrollHeight;
     } catch (err) {
       enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
+      console.log(err)
     }
   };
 
@@ -287,9 +290,11 @@ export default function Chat({ history, location }) {
         }))
       );
       addMembers(newMembers);
+      enqueueSnackbar('Se ha creado un grupo exitosamente', { variant: 'success' });
       fetchGroups();
     } catch (err) {
       enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
+      console.log(err)
     }
   };
 
@@ -304,10 +309,12 @@ export default function Chat({ history, location }) {
           userId: miembro._id,
         }));
         addMembers(newMembers);
+        enqueueSnackbar('Grupo Editado', { variant: 'success' });
         fetchMembers();
       }
     } catch (err) {
       enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
+      console.log(err)
     }
   };
 
@@ -317,9 +324,11 @@ export default function Chat({ history, location }) {
         return member._id;
       });
       deleteMembers(idArray);
+      enqueueSnackbar('Se han eliminado los miembros del grupo', { variant: 'success' });
       fetchMembers();
     } catch (err) {
       enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
+      console.log(err)
     }
   };
 
@@ -331,13 +340,13 @@ export default function Chat({ history, location }) {
   };
 
   const handleAssignRoles = () => {
-    if (loggeduserGroupMember.role !== 'A') {
+    if (loggeduserGroupMember.role === 'A' || loggeduserGroupMember.role === "SP") {
+      setAssignRoles(true);
+    } else {
       enqueueSnackbar(
         'Usted no tiene permisos para asignar roles, comuniquese con el administrador',
         { variant: 'warning' }
       );
-    } else {
-      setAssignRoles(true);
     }
   };
 
@@ -356,6 +365,11 @@ export default function Chat({ history, location }) {
     setOpenNotifications(true);
   };
 
+  const handleCerrarSesion = () => {
+    enqueueSnackbar('Sesion Cerrada', {variant: 'info'})
+    history.push('/')
+  }
+
   const navOptions = [
     { label: 'Chat', direction: '/chat' },
     {
@@ -364,7 +378,7 @@ export default function Chat({ history, location }) {
     },
     { label: <span onClick={handleSeeContacts}>Contactos</span> },
     { label: <span onClick={handleOpenSettings}>Ajustes</span> },
-    { label: 'Cerrar Sesion', direction: '/' },
+    { label: <span onClick={handleCerrarSesion}>Cerrar Sesion</span> },
     showNotifications && {
       label: (
         <div className='notificacion' onClick={handleOpenNotifications}>
@@ -430,8 +444,7 @@ export default function Chat({ history, location }) {
   };
 
   const handleTabClick = (value) => {
-    console.log(value);
-    setSwitchWorkItems(value);
+      setSwitchWorkItems(value);
   };
   const handleChangeWorkTitle = (e) => {
     setWorkTitle(e.target.value);
@@ -444,7 +457,11 @@ export default function Chat({ history, location }) {
       try {
         const data = new FormData();
         data.append('file', e.target.files[0]);
-        const res = await axios.post('/api/upload', data);
+        const res = await axios.post('/api/upload', data, {
+          onUploadProgress: ProgressEvent => {
+            setPorcentajeUpload(parseInt(Math.round((ProgressEvent.loaded * 100) / ProgressEvent.total)))
+          }
+        });
         const message = {
           conversationId: conversation._id,
           sender: sessionTemp._id,
@@ -452,13 +469,16 @@ export default function Chat({ history, location }) {
           fileName: res.data.file.filename,
         };
         postMessage(message);
+        setPorcentajeUpload(0)
+        fetchFiles();
       } catch (err) {
         enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
+        console.log(err)
       }
     }
   };
 
-  const workItems = ['Tareas', 'Crear Tareas'];
+  const workItems =  ['Tareas', 'Crear Tareas'];
 
   const mapWorkItems = (groupMembers) => {
     const workList = [];
@@ -494,13 +514,7 @@ export default function Chat({ history, location }) {
                 <Group
                   group={g}
                   usuario={sessionTemp}
-                  usuario={sessionTemp}
-                  usuario={sessionTemp}
                   miembros={groupMembers}
-                  miembros={groupMembers}
-                  miembros={groupMembers}
-                  role={loggeduserGroupMember?.role}
-                  role={loggeduserGroupMember?.role}
                   role={loggeduserGroupMember?.role}
                   acceptEditarGrupo={handleAddMembers}
                   acceptDeleteMembers={handleDeleteMembers}
@@ -534,6 +548,7 @@ export default function Chat({ history, location }) {
                     />
                   </div>
                 ))}
+                {(porcentajeUpload > 0) ? <ProgressBar percentage={porcentajeUpload} /> : undefined}
             </div>
             <div className='chatBoxBottom'>
               <textarea
@@ -544,11 +559,11 @@ export default function Chat({ history, location }) {
                 value={newMessage}
               ></textarea>
               <input
-                accept='image/*'
                 className={classes.files}
                 id='contained-button-file'
                 name='file'
                 type='file'
+                disabled={porcentajeUpload !== 0 || currentGroup.length === 0}
                 onInput={(e) => handleChangeFile(e)}
               />
               <label htmlFor='contained-button-file'>
@@ -600,7 +615,8 @@ export default function Chat({ history, location }) {
         onAccept={handleAssignWork}
         maxWidth={'xs'}
       >
-        <CustomTabs options={workItems} handleClick={handleTabClick} />
+        <CustomTabs options={workItems} handleClick={handleTabClick} 
+        disabled={(loggeduserGroupMember.role === 'MG' || loggeduserGroupMember.role === '') && (switchWorkItems === 0)}/>
         {switchWorkItems === 0 ? (
           <ElementsList items={mapWorkItems(groupMembers)} />
         ) : (

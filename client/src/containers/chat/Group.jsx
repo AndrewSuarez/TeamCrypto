@@ -37,13 +37,21 @@ export default function Group({
   });
 
   const handleEditarOpen = () => {
-    setEditarOpen(true);
-    setAnchorEl(null);
+    if(role === "A" || role === "MG"){
+      setEditarOpen(true);
+      setAnchorEl(null);
+    }else{
+      enqueueSnackbar('No tiene permisos para editar el grupo', {variant: 'warning'})
+    }
   };
 
   const handleEliminarOpen = () => {
-    setEliminarOpen(true);
-    setAnchorEl(null);
+    if (role === "A" || role === "MG"){
+      setEliminarOpen(true);
+      setAnchorEl(null);
+    }else {
+      enqueueSnackbar('No tiene permisos para elimminar miembros del grupo', {variant: 'warning'})
+    }
   };
 
   const handleClick = (event) => {
@@ -53,12 +61,14 @@ export default function Group({
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const handleEdit = () => {
-    setAnchorEl(null);
-  };
+
   const handleDelete = () => {
-    deleteGroup(group._id);
-    setAnchorEl(null);
+    if (role === "A"){
+      deleteGroup(group._id);
+      setAnchorEl(null);
+    }else{
+      enqueueSnackbar('No tiene permisos para borrar el grupo', {variant: 'warning'})
+    }
   };
 
   const handleEditarClose = () => {

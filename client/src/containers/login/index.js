@@ -77,7 +77,6 @@ const SignIn = ({ history, location }) => {
       .post('/api/auth/login', userCredential)
       .then((res) => {
         const data = res.data;
-
         if (data._2faEnabled) {
           enqueueSnackbar(
             'Por favor introduzca el codigo de verificacion de su aplicacion de Google Authenticator',
@@ -91,10 +90,6 @@ const SignIn = ({ history, location }) => {
           );
           history.push('/activate-2fa', { user: data });
         }
-
-        // enqueueSnackbar('Inicio exitoso', { variant: 'success' });
-        // Session.set('user', UserProfile);
-        // history.push('/chat');
       })
       .catch((err) => {
         console.error(err);
@@ -120,6 +115,22 @@ const SignIn = ({ history, location }) => {
       });
   };
 
+  const registerCall = (newUser) => {
+    axios.post('/api/auth/register', newUser)
+    .then((res) => {
+      enqueueSnackbar(
+        'Habilite el codigo de seguridad para completar su registro',
+        { variant: 'info' }
+      );
+      history.push('/activate-2fa', { user: res.data });
+    })
+    .catch(error => {
+      if (error.response){
+        enqueueSnackbar(error.response.data , { variant: 'warning' })
+      }
+    })
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -132,6 +143,23 @@ const SignIn = ({ history, location }) => {
         email: UserProfile.getEmail(),
         password: UserProfile.getPassword(),
       });
+
+    } else if(!access && !resetPass) {
+      if(checkPass !== UserProfile.getPassword()){
+        enqueueSnackbar('Las contraseñas no coinciden', { variant: 'error' });
+        return;
+      }else{
+        const newUser = {
+          nombre: UserProfile.getName(),
+          apellido: UserProfile.getLastName(),
+          username: UserProfile.getUsername(),
+          email: UserProfile.getEmail(),
+          password: UserProfile.getPassword()
+          
+        }
+        registerCall(newUser)
+      }
+      
     } else if (resetPass) {
       resetUserPass(UserProfile.getEmail());
     }
@@ -149,6 +177,15 @@ const SignIn = ({ history, location }) => {
         break;
       case 'passwordTwo':
         setCheckPass(e.target.value);
+        break;
+      case 'username':
+        UserProfile.setUsername(target.value)
+        break;
+      case 'name':
+        UserProfile.setName(target.value)
+        break;
+      case 'lastName':
+        UserProfile.setLastName(target.value)
         break;
       default:
         break;
@@ -223,6 +260,7 @@ const SignIn = ({ history, location }) => {
                 id='name'
                 placeholder='Nombre'
                 name='name'
+                onChange={handleAccessChange}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position='start'>
@@ -243,6 +281,7 @@ const SignIn = ({ history, location }) => {
                 id='lastName'
                 placeholder='Apellido'
                 name='lastName'
+                onChange={handleAccessChange}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position='start'>

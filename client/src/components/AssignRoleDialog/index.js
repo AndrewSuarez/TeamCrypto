@@ -8,6 +8,7 @@ import useStyles from './styles';
 import TransferList from '../TransferList';
 import AccordionList from '../AccordionList';
 import axios from 'axios';
+import { useSnackbar } from 'notistack';
 
 const AssignRoleDialog = ({
   open,
@@ -17,19 +18,20 @@ const AssignRoleDialog = ({
   fetchMembers,
 }) => {
   const classes = useStyles();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [selectedRole, setSelectedRole] = useState('');
 
   const handleAccept = (userRole, memberId) => {
-    if (userRole === 'A') {
+    if ((userRole === 'SP') && (selectedRole === 'A')) {
+      enqueueSnackbar('Usted no tiene permisos para asignar el rol de administrador a otro usuario', {variant: 'warning'})
+    } else {
       const assignRole = async () => {
-        await axios
-          .put(`/api/members/update/${memberId}`, { role: selectedRole })
-          .then(fetchMembers());
+        await axios.put(`/api/members/update/${memberId}`, { role: selectedRole })
+        enqueueSnackbar('Rol asignado con exito', {variant: 'success'})
+        fetchMembers()
       };
       assignRole();
-    } else {
-      console.log('Usted no tiene permisos para asignar roles');
     }
     handleClose();
   };
