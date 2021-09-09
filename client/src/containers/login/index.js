@@ -82,6 +82,7 @@ const SignIn = ({ history, location }) => {
             'Por favor introduzca el codigo de verificacion de su aplicacion de Google Authenticator',
             { variant: 'info' }
           );
+          Session.set('user', data)
           history.push('/2fa-verification', { user: data });
         } else {
           enqueueSnackbar(
@@ -122,6 +123,7 @@ const SignIn = ({ history, location }) => {
         'Habilite el codigo de seguridad para completar su registro',
         { variant: 'info' }
       );
+      Session.set('user', res.data)
       history.push('/activate-2fa', { user: res.data });
     })
     .catch(error => {

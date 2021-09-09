@@ -7,6 +7,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import EditGroupDialog from '../../components/EditGroupDialog';
+import ConfirmDialog from '../../components/ConfirmDialog';
 
 export default function Group({
   group,
@@ -15,19 +16,15 @@ export default function Group({
   role,
   acceptEditarGrupo,
   acceptDeleteMembers,
+  deleteGroup
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [editarOpen, setEditarOpen] = useState(false);
   const [eliminarOpen, setEliminarOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false)
   const { enqueueSnackbar } = useSnackbar();
 
-  const deleteGroup = (groupId) => {
-    axios.delete(`/api/groups/${groupId}/delete`).then((res) => {
-      console.log(res.data);
-      enqueueSnackbar('Grupo eliminado con exito', { variant: 'success' });
-      window.location.replace('');
-    });
-  };
+  
 
   const filter = usuario.contactos.filter(
     (o1) => !miembros.some((o2) => o1._id === o2.userId._id)
@@ -62,10 +59,9 @@ export default function Group({
     setAnchorEl(null);
   };
 
-  const handleDelete = () => {
+  const handleDeleteOpen = () => {
     if (role === "A"){
-      deleteGroup(group._id);
-      setAnchorEl(null);
+      setDeleteOpen(true)
     }else{
       enqueueSnackbar('No tiene permisos para borrar el grupo', {variant: 'warning'})
     }
@@ -78,6 +74,10 @@ export default function Group({
   const handleEliminarClose = () => {
     setEliminarOpen(false);
   };
+
+  const handleDeleteClose = () => {
+    setDeleteOpen(false)
+  }
 
   const handleAcceptEditar = (contactos, nombreGrupo) => {
     acceptEditarGrupo(contactos, nombreGrupo);
@@ -104,7 +104,7 @@ export default function Group({
         >
           <MenuItem onClick={handleEditarOpen}>Editar Grupo</MenuItem>
           <MenuItem onClick={handleEliminarOpen}>Eliminar Miembros</MenuItem>
-          <MenuItem onClick={handleDelete}>Borrar Grupo</MenuItem>
+          <MenuItem onClick={handleDeleteOpen}>Borrar Grupo</MenuItem>
         </Menu>
       </div>
 
@@ -124,6 +124,13 @@ export default function Group({
         borrar={true}
         handleAccept={handleAcceptBorrar}
         title={'Eliminar Miembros'}
+      />
+
+      <ConfirmDialog 
+      open={deleteOpen}
+      handleClose={handleDeleteClose}
+      id={group._id}
+      handleConfirm={deleteGroup}
       />
     </div>
   );

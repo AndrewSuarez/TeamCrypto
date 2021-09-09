@@ -17,7 +17,7 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import useStyles from './style';
 
-const ElementsList = ({ items, controlItem }) => {
+const ElementsList = ({ items, controlItem, handleDialogOpen }) => {
   const classes = useStyles();
 
   return (
@@ -38,7 +38,7 @@ const ElementsList = ({ items, controlItem }) => {
             <ListItemText primary={i.title} secondary={i.description} />
             <ListItemSecondaryAction>
               {i.children ? (
-                <IconButton edge='end' aria-label='comments'>
+                <IconButton edge='end' aria-label='comments' onClick={() => handleDialogOpen(i)}>
                   {i.children}
                 </IconButton>
               ) : (
