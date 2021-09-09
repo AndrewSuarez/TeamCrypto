@@ -1,6 +1,6 @@
 const User = require('../../models/User');
 const router = require('express').Router();
-// const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt')
 
 //Update
 // router.put('/:id', async(req,res)=> {
@@ -109,7 +109,7 @@ router.put('/:id/agregar', async (req, res) => {
         res.status(200).json('Han sido agregados como contactos');
       } else {
         await user.update({ $pull: { solicitudes: req.body.userId } });
-        res.status(403).json('Este usuario ya esta agregado como contacto');
+        res.status(405).json('Este usuario ya esta agregado como contacto');
       }
     } catch (err) {
       res.status(500).json(err);
@@ -150,7 +150,7 @@ router.put('/:id/solicitud', async (req, res) => {
         await otherUser.updateOne({ $push: { solicitudes: req.params.id } });
         res.status(200).json('Se ha enviado una solicitud');
       } else {
-        res.status(403).json('Este usuario ya tiene una solicitud pendiente');
+        res.status(405).json('Este usuario ya tiene una solicitud pendiente');
       }
     } catch (err) {
       res.status(500).json(err);

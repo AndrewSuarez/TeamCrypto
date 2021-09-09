@@ -123,6 +123,7 @@ const Verificate2FA = ({ history, location }) => {
       const data = res.data;
 
       if (data) {
+        console.log(data)
         history.push('/chat');
       } else {
         enqueueSnackbar('El codigo de verificacion es incorrecto', {

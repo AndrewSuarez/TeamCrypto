@@ -36,8 +36,8 @@ export default function Message({ message, own, file }) {
             :
             <>
               <img
-              className={file && 'fileMessageImage'}
-              src={file && fileMessageIcon}
+              className={file ? 'fileMessageImage' : undefined}
+              src={file ? fileMessageIcon : undefined}
               alt='' 
               onClick={()=> downloadFile()}
               />

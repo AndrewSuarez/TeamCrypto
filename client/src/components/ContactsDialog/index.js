@@ -7,14 +7,16 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import PropTypes from 'prop-types';
 import AddContactsDialog from './AddContactDialog';
 import axios from 'axios';
+import { useSnackbar } from 'notistack';
 
 const ContactsDialog = ({ open, handleClose, usuario, nonContacts, avatars }) => {
   //   const classes = useStyles();
-
+  
   const [userAvatar, setUserAvatar] = useState([]);
   const [addContact, setAddContact] = useState(false);
   const [selectedUser, setSelectedUser] = useState([])
-
+  const { enqueueSnackbar } = useSnackbar();
+  
   useEffect(() => {
    
   }, []);
@@ -26,14 +28,20 @@ const ContactsDialog = ({ open, handleClose, usuario, nonContacts, avatars }) =>
     setAddContact(false);
   };
 
-  const handleSolicitud = async (selectedUser) => {
-    try{
-      const res = await axios.put(`/api/users/${usuario._id}/solicitud`, {userId: selectedUser})
-      console.log(res.data)
-      handleCloseAddContact()
-    }catch(err){
-      console.log(err)
-    }
+  const handleSolicitud = (selectedUser) => {
+      axios.put(`/api/users/${usuario._id}/solicitud`, {userId: selectedUser})
+      .then(() => {
+        handleCloseAddContact()
+        enqueueSnackbar('Se ha enviado una solicitud al usuario', { variant: 'success' });
+      })
+      .catch(error => {
+        if(error.response && error.response.status === 405){
+          enqueueSnackbar('Este usuario ya tiene una solicitud pendiente', {variant: 'warning'})
+        }else{
+          enqueueSnackbar('Ha ocurrido un error', {variant: 'error'})
+        }
+      })
+      
   }
 
   const items = usuario.contactos?.map(contacto => (
@@ -43,28 +51,7 @@ const ContactsDialog = ({ open, handleClose, usuario, nonContacts, avatars }) =>
       children: <DeleteIcon />
     }
   ))
-    // {
-    //   avatar: userAvatar[0],
-    //   title: 'Andres Suarez',
-    //   children: <DeleteIcon />,
-    // },
-    // {
-    //   avatar: userAvatar[1],
-    //   title: 'Marielys Brijaldo',
-    //   children: <DeleteIcon />,
-    // },
-    // {
-    //   avatar: userAvatar[2],
-    //   title: 'Eduardo Lopez',
-    //   children: <DeleteIcon />,
-    // },
-    // {
-    //   avatar: userAvatar[3],
-    //   title: 'Eduardo Leon',
-    //   children: <DeleteIcon />,
-    // },
   
-
   return (
     <Modal
       open={open}

@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const mailgun = require('mailgun-js');
 const request = require('request');
 const _ = require('lodash');
-// const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt')
 const MAILGUN_APIKEY = '033bf32c94a6507f85aaa9bd84d2972b-156db0f1-6403b70b';
 const DOMAIN = 'sandbox04f6f8ba727a4801a8343ca4686f2fe8.mailgun.org';
 const JWT_SECRET =
@@ -15,22 +15,30 @@ const mg = mailgun({ apiKey: MAILGUN_APIKEY, domain: DOMAIN });
 // registro
 router.post('/register', async (req, res) => {
   try {
-    //encrypt password
-    // const salt = await bcrypt.genSalt(8);
-    // const hashedPassword = await bcrypt.hash(req.body.password, salt);
-
-    //nuevo usuario
-    const newUser = new User({
-      nombre: req.body.nombre,
-      apellido: req.body.apellido,
-      username: req.body.username,
-      email: req.body.email,
-      password: req.body.password,
-    });
-
-    // save and response
-    const user = await newUser.save();
-    res.status(200).json(user);
+    const emailUsed = await User.findOne({ email: req.body.email });
+    const usernameUsed = await User.findOne({username: req.body.username})
+    if(emailUsed){
+      return res.status(409).json('Este correo ya esta en uso')
+    } else if (usernameUsed){
+      return res.status(409).json('Este nombre de usuario ya esta en uso')
+    } else {
+      //encrypt password
+      const salt = await bcrypt.genSalt(8);
+      const hashedPassword = await bcrypt.hash(req.body.password, salt);
+  
+      //nuevo usuario
+      const newUser = new User({
+        nombre: req.body.nombre,
+        apellido: req.body.apellido,
+        username: req.body.username,
+        email: req.body.email,
+        password: hashedPassword,
+      });
+  
+      // save and response
+      const user = await newUser.save();
+      res.status(200).json(user);
+    }
   } catch (err) {
     res.status(500).json(err);
   }
@@ -42,13 +50,12 @@ router.post('/login', async (req, res) => {
     //find email
     const user = await User.findOne({ email: req.body.email });
     !user && res.status(404).json('Usuario no encontrado');
-    console.log(user);
 
     //find password
-    // const validPass = await bcrypt.compare(req.body.password, user.password);
-    const tempValidPass = req.body.password == user.password ? true : false;
-    console.log(tempValidPass);
-    !tempValidPass && res.status(400).json('Contraseña incorrecta');
+    const validPass = await bcrypt.compare(req.body.password, user.password);
+    // const tempValidPass = req.body.password == user.password ? true : false;
+    // console.log(tempValidPass);
+    !validPass && res.status(400).json('Contraseña incorrecta');
 
     //send request
     res.status(200).json(user);

@@ -5,7 +5,7 @@ import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import useStyles from './style';
 
-const CustomTabs = ({ options, handleClick }) => {
+const CustomTabs = ({ options, handleClick, disabled }) => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
@@ -23,7 +23,7 @@ const CustomTabs = ({ options, handleClick }) => {
         centered
       >
         {options.map((tab) => {
-          return <Tab label={tab} onClick={handleClick(value)} />;
+          return <Tab label={tab} onClick={handleClick(value)} disabled={disabled}/>;
         })}
       </Tabs>
     </Paper>
