@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SettingsDialog = ({ open, handleClose, userId }) => {
+const SettingsDialog = ({ open, handleClose, user }) => {
   const classes = useStyles();
   const [changePass, setChangePass] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -45,27 +45,39 @@ const SettingsDialog = ({ open, handleClose, userId }) => {
   const [name, setName] = useState('');
   const [apellido, setApellido] = useState('');
   const [email, setEmail] = useState('');
+  const [oldPassword, setOldPassword] = useState('')
+  const [newPassword1, setNewPassword1] = useState('')
+  const [newPassword2, setNewPassword2] = useState('')
 
-  const changeData = (userId, user) => {
-    axios
-      .post(`/api/users/${userId}/update`, { ...user })
-      .then(enqueueSnackbar('Datos actualizados', { variant: 'success' }));
-  };
 
-  const createUser = (username, name, apellido, email) => {
-    const user = {
+  const createUser = (username, name, apellido, email, newPassword1) => {
+    const userData = {
       nombre: name,
       apellido: apellido,
       username: username,
       email: email,
+      password: newPassword1
     };
 
-    return user;
+    return userData;
   };
 
   const handleUpdateData = () => {
-    const user = createUser(username, name, apellido, email);
-    changeData(userId, user);
+    axios.post(`/api/auth/login`, {email: user.email, password: oldPassword})
+    .then(() => {
+      if(newPassword1 !== newPassword2){
+        enqueueSnackbar('La nueva contraseña debe coincidir', {variant: 'warning'})
+      }else{
+        const userData = createUser(username, name, apellido, email, newPassword1);
+        changeData(userData);
+      }
+    })
+    .catch(error => {
+      if(error.response){
+        if(error.response.status === 400) enqueueSnackbar(error.response.data, {variant: 'warning'})
+        else enqueueSnackbar('Ha ocurrido un error', {variant: 'error'})
+      }
+    })
   };
 
   const handleDataChange = (e) => {
@@ -84,6 +96,15 @@ const SettingsDialog = ({ open, handleClose, userId }) => {
       case 'email':
         setEmail(e.target.value);
         break;
+      case 'oldPassword':
+        setOldPassword(e.target.value)
+        break;
+      case 'newPassword1':
+        setNewPassword1(e.target.value)
+        break;
+      case 'newPassword2':
+        setNewPassword2(e.target.value)
+        break;
       default:
         break;
     }
@@ -96,6 +117,21 @@ const SettingsDialog = ({ open, handleClose, userId }) => {
   const closeModal = () => {
     setChangePass(false);
     handleClose();
+  };
+
+  const changeData = (userData) => {
+    Object.getOwnPropertyNames(userData).forEach(
+      function(val, idx, array){
+        if (userData[val].length === 0) {
+          console.log(userData[val].length)
+          delete userData[val]
+        }
+      }
+    )
+    axios.put(`/api/users/${user._id}`, userData)
+    .then(() => {
+        enqueueSnackbar('Datos actualizados', { variant: 'success' });
+      })
   };
 
   return (
@@ -173,40 +209,42 @@ const SettingsDialog = ({ open, handleClose, userId }) => {
                     <TextField
                       variant='outlined'
                       fullWidth
-                      name='password'
-                      label='Password'
+                      name='oldPassword'
+                      label='Contraseña Actual'
                       type='password'
-                      id='password'
-                      autoComplete='current-password'
+                      id='oldPassword'
+                      onChange={handleDataChange}
+                      autoComplete='oldPassword'
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <TextField
                       variant='outlined'
                       fullWidth
-                      name='password'
-                      label='Password'
+                      name='newPassword1'
+                      label='Nueva Contraseña'
                       type='password'
-                      id='password'
-                      autoComplete='current-password'
+                      id='newPassword1'
+                      onChange={handleDataChange}
+                      autoComplete='newPassword1'
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <TextField
                       variant='outlined'
                       fullWidth
-                      name='password'
-                      label='Password'
+                      name='newPassword2'
+                      label='Nueva Contraseña'
                       type='password'
-                      id='password'
-                      autoComplete='current-password'
+                      id='newPassword2'
+                      onChange={handleDataChange}
+                      autoComplete='newPassword2'
                     />
                   </Grid>
                 </>
               )}
             </Grid>
             <Button
-              type={'submit'}
               fullWidth
               variant='contained'
               color='primary'

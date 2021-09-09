@@ -8,14 +8,18 @@ import PropTypes from 'prop-types';
 import AddContactsDialog from './AddContactDialog';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
+import ConfirmDialog from '../ConfirmDialog';
 
-const ContactsDialog = ({ open, handleClose, usuario, nonContacts, avatars }) => {
+const ContactsDialog = ({ open, handleClose, usuario, nonContacts, deleteContact, avatars }) => {
   //   const classes = useStyles();
   
   const [userAvatar, setUserAvatar] = useState([]);
   const [addContact, setAddContact] = useState(false);
   const [selectedUser, setSelectedUser] = useState([])
   const { enqueueSnackbar } = useSnackbar();
+  const [id, setId] = useState([])
+
+  const [deleteOpen, setDeleteOpen] = useState(false)
   
   useEffect(() => {
    
@@ -27,6 +31,15 @@ const ContactsDialog = ({ open, handleClose, usuario, nonContacts, avatars }) =>
   const handleCloseAddContact = () => {
     setAddContact(false);
   };
+
+  const handleDeleteOpen = (item) => {
+    setId(item._id)
+    setDeleteOpen(true)
+  }
+
+  const handleDeleteClose = () => {
+    setDeleteOpen(false)
+  }
 
   const handleSolicitud = (selectedUser) => {
       axios.put(`/api/users/${usuario._id}/solicitud`, {userId: selectedUser})
@@ -48,30 +61,39 @@ const ContactsDialog = ({ open, handleClose, usuario, nonContacts, avatars }) =>
     {
       avatar: contacto.profilePicture,
       title: `${contacto.nombre} ${contacto.apellido}`,
+      _id: contacto._id,
       children: <DeleteIcon />
     }
   ))
   
   return (
-    <Modal
-      open={open}
-      title='Contactos'
-      closeText='Cerrar'
-      acceptText='Agregar'
-      onAccept={handleAddContact}
-      handleClose={handleClose}
-      maxWidth='xs'
-    >
-      <ElementsList items={items} avatar={avatars ? avatars : userAvatar} />
-      <AddContactsDialog
-        open={addContact}
-        handleClose={handleCloseAddContact}
-        handleAccept={() => handleSolicitud(selectedUser)}
-        noContacts={nonContacts}
-        selectedUser={selectedUser}
-        setSelectedUser={setSelectedUser}
+    <>
+      <Modal
+        open={open}
+        title='Contactos'
+        closeText='Cerrar'
+        acceptText='Agregar'
+        onAccept={handleAddContact}
+        handleClose={handleClose}
+        maxWidth='xs'
+      >
+        <ElementsList items={items} avatar={avatars ? avatars : userAvatar} handleDialogOpen={handleDeleteOpen}/>
+        <AddContactsDialog
+          open={addContact}
+          handleClose={handleCloseAddContact}
+          handleAccept={() => handleSolicitud(selectedUser)}
+          noContacts={nonContacts}
+          selectedUser={selectedUser}
+          setSelectedUser={setSelectedUser}
+        />
+      </Modal>
+      <ConfirmDialog 
+      open={deleteOpen}
+      handleClose={handleDeleteClose}
+      id={id}
+      handleConfirm={deleteContact} 
       />
-    </Modal>
+    </>
   );
 };
 

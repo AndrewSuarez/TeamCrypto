@@ -22,6 +22,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import UserProfile from '../../objects/user';
 import { makeStyles } from '@material-ui/core/styles';
+import Session from 'react-session-api';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -190,7 +191,7 @@ const Verificate2FA = ({ history, location }) => {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link to='/access/login' variant='body2'>
+                <Link to='/access/login' variant='body2' onClick={() => Session.remove('user')}>
                   Regresar
                 </Link>
               </Grid>

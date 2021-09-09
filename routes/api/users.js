@@ -3,29 +3,46 @@ const router = require('express').Router();
 const bcrypt = require('bcrypt')
 
 //Update
-// router.put('/:id', async(req,res)=> {
-//     if(req.body.userId === req.params.id){
-//         if(req.body.password){
-//             try{
-//                 const salt = await bcrypt.genSalt(8)
-//                 req.body.password = await bcrypt.hash(req.body.password, salt)
-//             }catch(err){
-//                 return res.status(500).json(err)
-//             }
-//         }
+router.put('/:id', async(req,res)=> {
+    if(req.body.password){
+        try{
+            const salt = await bcrypt.genSalt(8)
+            req.body.password = await bcrypt.hash(req.body.password, salt)
+        }catch(err){
+            return res.status(500).json(err)
+        }
+    }
+    try{
+        const user = await User.findByIdAndUpdate(req.params.id, {
+            $set: req.body
+        });
+        res.status(200).json('Cuenta actualizada')
+    }catch(err){
+        return res.status(500).json(err)
+    }
+});
 
-//         try{
-//             const user = await User.findByIdAndUpdate(req.params.id, {
-//                 $set: req.body
-//             });
-//             res.status(200).json('Cuenta actualizada')
-//         }catch(err){
-//             return res.status(500).json(err)
-//         }
-
-//     }else {
-//         return res.status(403).json('Solo puedes modificar tu cuenta')
+//Update data users
+// router.post('/:userId/update', async (req, res) => {
+//   const userId = req.params.userId;
+//   console.log(userId);
+//   if (null != userId) {
+//     try {
+//       user = await User.findById(userId);
+//       await user.updateOne({
+//         $set: {
+//           username: req.body.username ? req.body.username : user.username,
+//           nombre: req.body.nombre ? req.body.nombre : user.nombre,
+//           apellido: req.body.apellido ? req.body.apellido : user.apellido,
+//           email: req.body.email ? req.body.email : user.email,
+//         },
+//       });
+//       const updatedUser = await User.findById(userId);
+//       res.status(200).json(updatedUser);
+//     } catch (err) {
+//       res.status(500).json(err);
 //     }
+//   }
 // });
 
 //Delete
@@ -179,27 +196,6 @@ router.put('/:id/solicitud/delete', async (req, res) => {
   }
 });
 
-//Update data users
-router.post('/:userId/update', async (req, res) => {
-  const userId = req.params.userId;
-  console.log(userId);
-  if (null != userId) {
-    try {
-      user = await User.findById(userId);
-      await user.updateOne({
-        $set: {
-          username: req.body.username ? req.body.username : user.username,
-          nombre: req.body.nombre ? req.body.nombre : user.nombre,
-          apellido: req.body.apellido ? req.body.apellido : user.apellido,
-          email: req.body.email ? req.body.email : user.email,
-        },
-      });
-      const updatedUser = await User.findById(userId);
-      res.status(200).json(updatedUser);
-    } catch (err) {
-      res.status(500).json(err);
-    }
-  }
-});
+
 
 module.exports = router;
