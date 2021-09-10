@@ -41,6 +41,11 @@ const ContactsDialog = ({ open, handleClose, usuario, nonContacts, deleteContact
     setDeleteOpen(false)
   }
 
+  const handleConfirmDelete = (id) => {
+    deleteContact(id)
+    setDeleteOpen(false)
+  }
+
   const handleSolicitud = (selectedUser) => {
       axios.put(`/api/users/${usuario._id}/solicitud`, {userId: selectedUser})
       .then(() => {
@@ -91,7 +96,7 @@ const ContactsDialog = ({ open, handleClose, usuario, nonContacts, deleteContact
       open={deleteOpen}
       handleClose={handleDeleteClose}
       id={id}
-      handleConfirm={deleteContact} 
+      handleConfirm={handleConfirmDelete} 
       />
     </>
   );

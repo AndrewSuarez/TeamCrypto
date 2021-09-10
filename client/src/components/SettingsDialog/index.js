@@ -63,21 +63,26 @@ const SettingsDialog = ({ open, handleClose, user }) => {
   };
 
   const handleUpdateData = () => {
-    axios.post(`/api/auth/login`, {email: user.email, password: oldPassword})
-    .then(() => {
-      if(newPassword1 !== newPassword2){
-        enqueueSnackbar('La nueva contraseña debe coincidir', {variant: 'warning'})
-      }else{
-        const userData = createUser(username, name, apellido, email, newPassword1);
-        changeData(userData);
-      }
-    })
-    .catch(error => {
-      if(error.response){
-        if(error.response.status === 400) enqueueSnackbar(error.response.data, {variant: 'warning'})
-        else enqueueSnackbar('Ha ocurrido un error', {variant: 'error'})
-      }
-    })
+    if(oldPassword){
+      axios.post(`/api/auth/login`, {email: user.email, password: oldPassword})
+      .then(() => {
+        if(newPassword1 !== newPassword2){
+          enqueueSnackbar('La nueva contraseña debe coincidir', {variant: 'warning'})
+        }else{
+          const userData = createUser(username, name, apellido, email, newPassword1);
+          changeData(userData);
+        }
+      })
+      .catch(error => {
+        if(error.response){
+          if(error.response.status === 400) enqueueSnackbar(error.response.data, {variant: 'warning'})
+          else enqueueSnackbar('Ha ocurrido un error', {variant: 'error'})
+        }
+      })
+    }else{
+      const userData = createUser(username, name, apellido, email, newPassword1);
+      changeData(userData);
+    }
   };
 
   const handleDataChange = (e) => {

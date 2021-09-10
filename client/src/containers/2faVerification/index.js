@@ -65,6 +65,8 @@ const Verificate2FA = ({ history, location }) => {
   console.log(verificationState);
   console.log(location);
 
+  const user = Session.get('user')
+
   useEffect(() => {
     if (verificationState) {
       setFormTitle('Ingresar el codigo de seguridad Google Auth');
@@ -105,7 +107,7 @@ const Verificate2FA = ({ history, location }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
   };
-  const link = `https://www.authenticatorApi.com/pair.aspx?AppName=TeamCrypto&AppInfo=Byron&SecretCode=${JWT_SECRET}`;
+  const link = `https://www.authenticatorApi.com/pair.aspx?AppName=TeamCrypto&AppInfo=${location?.state?.user?.username}&SecretCode=${JWT_SECRET}`;
 
   const handleAccessChange = (e) => {
     const target = e.target;

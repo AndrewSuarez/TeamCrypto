@@ -38,27 +38,27 @@ const AssignRoleDialog = ({
 
   const roles = [
     {
-      label: 'Administrador',
+      label: 'Administrador "A"',
       description:
-        'Este rol tiene control total del equipo, puede crear tareas, asignarlas eliminarlas, agregar nuevos miembros a equipos, etc',
+        'Este rol tiene control total del equipo,',
       id: 'A',
     },
     {
-      label: 'Supervisor',
+      label: 'Supervisor "SP"',
       description:
-        'Este rol tiene control parcial del equipo, puede ver las tareas, no puede eliminarlas y puede asignar roles a otros miembros.',
+        'Puede Asignar tareas y asignar otros roles excepto administrador a otros usuarios.',
       id: 'SP',
     },
     {
-      label: 'Asistente',
+      label: 'Asistente "ST"',
       description:
-        'Este rol tiene control solo en la seccion de tareas del equipo, puede crear tareas, eliminarlas, asignarlas y editarlas',
+        'Puede asignar tareas',
       id: 'ST',
     },
     {
-      label: 'Manager',
+      label: 'Manager "MG"',
       description:
-        'Este rol puede crear un tipo especial de tareas, las reuniones o tareas que envian notificaciones a los usuarios involucrados',
+        'Puede editar los miembros del grupo',
       id: 'MG',
     },
   ];

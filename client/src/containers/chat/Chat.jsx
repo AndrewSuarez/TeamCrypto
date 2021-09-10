@@ -405,6 +405,7 @@ export default function Chat({ history, location }) {
 
   const handleCerrarSesion = () => {
     enqueueSnackbar('Sesion Cerrada', { variant: 'info' });
+    Session.clear()
     history.push('/');
   };
 
@@ -467,6 +468,7 @@ export default function Chat({ history, location }) {
       setChatGroup(false);
       setSelectedUser(member);
     }
+    console.log(user)
   };
 
   const handleSendClick = async (e) => {
@@ -678,6 +680,7 @@ export default function Chat({ history, location }) {
         handleClose={onCloseAddWorks}
         onAccept={handleAssignWork}
         maxWidth={'xs'}
+        
       >
         <CustomTabs
           options={workItems}
