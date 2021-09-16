@@ -1,0 +1,139 @@
+.chat{
+    height: 79vh;
+    display: flex;
+    margin-top: 78px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.chatGroup{
+    flex: 3.5;
+    overflow-y: scroll;
+}
+
+.chatGroupInput{
+    width: 85%;
+    display: flex;
+    padding: 10px 0;
+    border: none;
+    border-bottom: 1px solid;
+}
+
+.addGroup{
+    display: flex;
+}
+
+.addGroupIcon{
+    display: flex;
+
+}
+.addGroupIcon{
+    transform: scale(1.6);
+    margin-top: 10px;
+    margin-left: 20px;
+}
+.addGroupIcon:hover{
+    cursor: pointer;
+}
+
+.chatBox{
+    flex: 5.5;
+}
+
+.chatBoxWrapper{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;     
+}
+
+.chatBoxTop{
+    height: 100%;
+    overflow-y: scroll;
+    padding-right: 10px;
+}
+
+.chatNameWrapper{
+    position: sticky;
+    top: 0;
+    background-color: white;
+}
+
+.chatName{
+    font-size: 20px;
+    text-align: center;
+
+}
+
+.lock{
+    position: absolute;
+    right: 0;
+}
+
+.attachFile:hover{
+    cursor: pointer;
+}
+
+.chatBoxBottom{
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    justify-content:space-between;
+}
+
+.chatMessageInput{
+    width: 85%;
+    height: 65px;
+    padding: 10px;
+    resize: none;
+    border: 3px solid #513266;
+    border-radius: 15px;
+}
+.chatMessageInput:focus{
+    border: 3px solid #513266;
+    border-radius: 15px;
+    box-shadow: 0px 0px 2px 2px #301044;
+    outline: none;
+}
+
+.chatMessageInput::-webkit-scrollbar{
+  width: 10px;
+  margin-right: 2px;
+}
+.chatMessageInput::-webkit-scrollbar-track{
+    border-radius: 25px;
+}
+.chatMessageInput::-webkit-scrollbar-thumb{
+    border-radius: 25px;
+}
+
+.chatSubmitButton{
+    margin-right: 10px;
+    width: 50px;
+    height: 40px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: teal;
+    color: white;
+}
+
+.chatMember{
+    flex: 3;
+    overflow-y: scroll;
+}
+
+.chatGroupWrapper, .chatBoxWrapper, .chatMemberWrapper{
+    padding: 10px;
+    height: 110.1%;
+}
+
+.chatGroupNameWrapper{
+    padding: 8px;
+    position: sticky;
+    top: 0;
+    background-color: white;
+}
+
+.chatGroupMemberBox{
+    font-size: 15px;
+    text-align: center;
+}

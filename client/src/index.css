@@ -26,7 +26,7 @@ input {
   border: none;
 }
 .logo img {
-  width: 90px;
+  width: 40px;
 }
 #main {
   width: 100%;
@@ -34,8 +34,32 @@ input {
   position: relative;
   background-repeat: no-repeat;
   background-size: cover;
-  background-image: url('./assets/images/background.png');
+  background-position: center;
+  background-image: url('./assets/images/neonBackground.jpg');
 }
+.mainLogo{
+  position: absolute;
+  right: 140px;
+  top: 125px;
+  width: 400px;
+}
+
+::-webkit-scrollbar{
+  width: 15px;
+  background: #2c1b2e;
+}
+::-webkit-scrollbar-track{
+  background: #2c1b2e;
+  border-radius: 25px;
+}
+::-webkit-scrollbar-thumb{
+  background-image: linear-gradient(#76497a, #452758); 
+  border-radius: 25px;
+}
+::-webkit-scrollbar-thumb:hover{
+  background-image: linear-gradient(#875a8b, #563869) ; 
+}
+
 nav {
   display: flex;
   justify-content: space-around;
@@ -45,7 +69,7 @@ nav {
   top: 0;
   width: 100%;
   z-index: 1;
-  background-color: #ffffff;
+  background-color: #341647;
   transition: 0.6s ease-in-out;
 }
 nav.active {
@@ -54,12 +78,6 @@ nav.active {
 }
 nav ul {
   display: flex;
-}
-.active {
-  background-color: #4b2b95;
-  color: #ffffff;
-  box-shadow: 5px 10px 30px #56579f;
-  transition: all ease 0.2s;
 }
 nav ul li a {
   font-family: calibri;
@@ -71,7 +89,22 @@ nav ul li a {
   font-size: 0.9rem;
   text-transform: uppercase;
   font-weight: 500;
-  color: #0c0f2a;
+  color: #ffffff;
+  letter-spacing: 1px;
+  border-radius: 3px;
+  transition: 0.2s ease-in-out;
+}
+nav.active ul li a {
+  font-family: calibri;
+  height: 40px;
+  line-height: 43px;
+  margin: 3px;
+  padding: 0px 22px;
+  display: flex;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: #000000;
   letter-spacing: 1px;
   border-radius: 3px;
   transition: 0.2s ease-in-out;
@@ -95,17 +128,17 @@ nav .menu-btn,
   transform: translate(-22%, -50%);
 }
 .name span {
-  color: #4b2b95;
+  color: #ffffff;
 }
 .name .details {
-  color: #969696;
+  color: #d1c8c8;
 }
 .name h1 {
   font-family: 'Montserrat';
   font-size: 40px;
   margin: 0px;
   letter-spacing: 2px;
-  color: #0c0f2a;
+  color: #873cb6;
 }
 .header-btns {
   display: flex;
@@ -117,10 +150,10 @@ nav .menu-btn,
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #4b2b95;
+  background-color: #ffffff;
   box-shadow: 5px 10px 30px #0c0f2a;
   border-radius: 10px;
-  color: #ffffff;
+  color: #4b2b95;
 }
 .cv-btn:hover {
   background-color: #383c3f;
@@ -139,6 +172,7 @@ nav .menu-btn,
   font-size: 1rem;
   margin: 0px;
   padding: 0px;
+  font-family: 'Courier New', Courier, monospace;
 }
 .f-heading {
   text-align: center;
@@ -146,10 +180,12 @@ nav .menu-btn,
   margin-bottom: -80px;
 }
 #about {
-  margin-top: 100px;
   width: 100%;
-  height: 120vh;
+  height: 105vh;
   background-color: #f3fdff;
+  background-image: url('./assets/images/neonBackground.jpg');
+  background-size: cover;
+  background-position: center;
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -173,7 +209,7 @@ nav .menu-btn,
 .about-text p {
   width: 80%;
   font-size: 1.2rem;
-  color: #272727;
+  color: #d0cad6;
 }
 .about-text button {
   margin-top: 20px;
@@ -199,7 +235,7 @@ nav .menu-btn,
 
 #features {
   width: 100%;
-  height: 100vh;
+  height: 105vh;
   box-sizing: border-box;
   font-family: calibri;
   display: flex;
@@ -208,6 +244,10 @@ nav .menu-btn,
   justify-content: center;
   padding-top: 40px;
   background-color: #ffffff;
+  background-image: url('./assets/images/neonBackground.jpg');
+  background-size: cover;
+  background-position: center;
+
 }
 .a-container {
   display: flex;

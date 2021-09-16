@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
-import logo from '../../assets/images/logo.png';
+import React, { useContext, useState } from 'react';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import logo from '../../assets/images/TeamCryptoLogo.png';
+import { AuthContext } from '../../context/AuthContext';
 
-const NavBar = () => {
+const NavBar = ({ options }) => {
   const [nav, setNav] = useState(false);
 
   const changeBackground = () => {
@@ -16,28 +19,30 @@ const NavBar = () => {
 
   return (
     <nav className={nav ? 'nav active' : 'nav'}>
-      <a href="#" className="logo">
-        <img src={logo} alt="" />
-      </a>
-      <input type="checkbox" className="menu-btn" id="menu-btn" />
-      <label className="menu-icon" for="menu-btn">
-        <span className="nav-icon"></span>
+      <div className='logo ' >
+        <img src={logo} alt=''/>
+      </div>
+      <input type='checkbox' className='menu-btn' id='menu-btn' />
+      <label className='menu-icon' for='menu-btn'>
+        <span className='nav-icon'></span>
       </label>
-      <ul className="menu">
-        <li>
-          <a href="#" className="active">
-            Inicio
-          </a>
-        </li>
-        <li>
-          <a href="#">Iniciar Sesión</a>
-        </li>
-        <li>
-          <a href="#">Acerca de CryptoChat</a>
-        </li>
+      <ul className='menu'>
+        {options.map((option) => {
+          return (
+            <li>
+              <Link to={option.direction} className='active'>
+                {option.label}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );
+};
+
+NavBar.propTypes = {
+  options: PropTypes.array.isRequired,
 };
 
 export default NavBar;

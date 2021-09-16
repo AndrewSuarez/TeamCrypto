@@ -1,0 +1,61 @@
+.groupMember {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 500;
+  margin-top: 15px;
+  position: relative;
+}
+
+.groupMember:hover {
+  background-color: lightgray;
+}
+
+.groupMemberImgContainer {
+  position: relative;
+  margin-right: 10px;
+}
+.groupMemberImage {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.groupMemberOnlineBadge {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  right: 0px;
+  background-color: lime;
+}
+
+.memberFileIcon {
+  position: absolute;
+  right: 0px;
+  cursor: pointer;
+}
+
+.memberFileIcon:hover {
+  cursor: pointer;
+}
+
+.role {
+  position: absolute;
+  right: 40px;
+  width: 30px;
+  cursor: pointer;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 50%;
+  background: #341647;
+  color: white;
+  font-size: 12px;
+  text-align: center;
+}
+
+.role:hover {
+  cursor: pointer;
+}

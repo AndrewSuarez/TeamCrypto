@@ -1,0 +1,70 @@
+.imageInBubble{
+    width: 25vw;
+    height: 25vw;
+    min-width: 10em;
+    min-height: 10em;
+    max-width: 20em;
+    max-height: 20em;
+    object-fit: contain;
+}
+
+
+.message{
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+.messageTop{
+    display: flex;
+}
+
+.messageImg{
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.messageBubble{
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: aquamarine;
+    max-width: 350px;
+}
+
+.messageText{
+    font-weight: 500;
+}
+
+.messageBottom{
+    font-size: 10px;
+    margin-left: 30px;
+}
+
+.message.own{
+    align-items: flex-end;
+}
+
+.message.own .messageBubble{
+    background-color: dodgerblue;
+    color: white;
+}
+
+.fileMessageImage{
+    object-fit: contain;
+    height: 100%;
+    width: 20px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.senderName{
+    font-size: 14px;
+    margin-left: 50px;
+    margin-bottom: 5px;
+}
